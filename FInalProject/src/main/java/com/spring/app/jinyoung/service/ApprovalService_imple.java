@@ -551,7 +551,7 @@ public class ApprovalService_imple implements ApprovalService {
 			OfficialAprvLineVO oapVO = new OfficialAprvLineVO();
 			oapVO.setOfficial_aprv_line_no(official_aprv_line_no);
 			oapVO.setFk_draft_type_no(Integer.parseInt(draft_type_no));
-			oapVO.setFk_approval_empno1(1);
+			oapVO.setFk_approval_empno1("10000");
 			
 			n = dao.saveOfficialApprovalLine(oapVO);
 		}

@@ -28,7 +28,7 @@
 }
 
 #editBtn {
-	background-color: #E3F2FD;
+	background-color: ##E0F8EB;
 }
 
 #editBtn:hover {
@@ -36,7 +36,7 @@
 }
 
 #saveBtn {
-	background-color: #086BDE;
+	background-color: #03C75A;
 	color: white;
 }
 

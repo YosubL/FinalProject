@@ -17,11 +17,12 @@
 }
 
 #editBtn {
-	background-color: #E3F2FD;
+	background-color: #E0F8EB;
 }
 
 #editBtn:hover {
-	background-color: #cfe9fc;
+	background-color: #03C75A;
+	color: white;
 }
 
 .active, .accordion:hover {
@@ -36,7 +37,7 @@
 }
 
 #saveBtn {
-	background-color: #086BDE;
+	background-color: #03C75A;
 	color: white;
 }
 
@@ -50,8 +51,12 @@
 }
 
 .table th {
-	background-color: #E3F2FD;
+	background-color: #E0F8EB;
 	vertical-align: middle;
+	text-align: center;
+}
+
+.table td {
 	text-align: center;
 }
 
