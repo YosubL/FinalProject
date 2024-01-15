@@ -3,9 +3,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <% String ctxPath = request.getContextPath(); %>
 
-<%-- sweet alert --%>
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-
 <link rel = "stylesheet" href = "<%=ctxPath%>/resources/css/draft_detail_style.css">
 
 <script>
@@ -100,19 +97,19 @@ const updateApproval = approval_status => {
         cache:false,
         success:function(json){
         	if(json.result == true) {
-          		let result = '결재';
-           		if (approval_status == 2) {
+				let result = '결재';
+				if (approval_status == 2) {
            			result = '반려';
            		}
-    	    	alert("처리 완료\n기안을 처리하였습니다.");
+    	    	alert("처리 완료", "기안을 처리하였습니다.", "success")
    	    		location.href = "<%=ctxPath%>/approval/draftDetail.gw?draft_no=${draftMap.dvo.draft_no}&fk_draft_type_no=${draftMap.dvo.fk_draft_type_no}";
         	}
         	else {
-        		alert("기안 처리에 실패하였습니다.");
+        		alert("처리 실패", "처리에 실패하였습니다.", "error");
         	}
         },
         error: function(request, status, error){
-			alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 		}
     });
 }
@@ -144,14 +141,16 @@ const updateApprovalProxy = () => {
         dataType:'json',
         cache:false,
         success:function(json){
-   	    	alert("대결 완료", "기안을 대결 처리하였습니다.", "success")
-   	    	location.href = "<%=ctxPath%>/approval/draftDetail.gw?draft_no=${draftMap.dvo.draft_no}&fk_draft_type_no=${draftMap.dvo.fk_draft_type_no}";
-       	},
-       	else
-       		alert("대결 실패\n대결 처리 실패하였습니다.");
+        	if(json.result == true) {
+    	    	alert("대결 완료", "기안을 대결 처리하였습니다.", "success")
+    	    	location.href = "<%=ctxPath%>/approval/draftDetail.gw?draft_no=${draftMap.dvo.draft_no}&fk_draft_type_no=${draftMap.dvo.fk_draft_type_no}";
+        	}
+        	else {
+        		alert("대결 실패", "대결 처리 실패하였습니다.", "error");
+        	}
         },
         error: function(request, status, error){
-			alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 		}
     });
 }
