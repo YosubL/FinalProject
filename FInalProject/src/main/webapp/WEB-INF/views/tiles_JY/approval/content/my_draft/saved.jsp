@@ -5,9 +5,6 @@
 
 <link rel = "stylesheet" href = "<%=ctxPath%>/resources/css/draft_list_style.css">
 
-<%-- sweet alert --%>
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-
 <style>
 
 label {
@@ -75,7 +72,7 @@ const goSearch = () => {
 	const frm = document.searchFrm;
 	
 	frm.method = "get";
-	frm.action = "<%=ctxPath%>/approval/personal/saved.on";
+	frm.action = "<%=ctxPath%>/approval/personal/saved.gw";
 	frm.submit();
 }
 
@@ -87,10 +84,16 @@ function checkAllBtns (e) {
 
 function deleteDraft() {
 	
+	// 체크된 체크박스 요소들을 배열로 가져오기
 	let selectedArr = Array.from($(".checkboxes")).filter(el=>el.checked);
+
+	// 선택된 체크박스 요소들의 값(attribute: value)을 추출하여 배열로 만들기
 	let valueArr = selectedArr.map(el=>el.previousElementSibling.value);
+	
+	// 배열을 콤마로 구분된 문자열로 변환
 	const deleteList = valueArr.join(',');
 	
+	// FormData 객체를 생성하고 deleteList를 추가
 	let formData = new FormData();
 	formData.append('deleteList', deleteList);	
 	
@@ -101,10 +104,8 @@ function deleteDraft() {
 	})
 	.then((response) => response.json())
 	.then((data) => {
-		swal(data.result + "건의 문서가 성공적으로 삭제되었습니다.")
-		.then((value) => {
-				location.href="javascript:history.go(0)"
-			});
+		alert(data.result + "건의 문서가 성공적으로 삭제되었습니다.")
+		location.href="javascript:history.go(0)"
 	})
 	.catch((err) => {
 	   console.error(err)

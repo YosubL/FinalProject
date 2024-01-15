@@ -132,9 +132,7 @@ $(() => {
 
 	    if( draft_content == ""  || draft_content == null || draft_content == '&nbsp;' || draft_content == '<p>&nbsp;</p>')  {
 			alert("지출사유를 입력하세요!")
-			.then(function (result) {
-				obj.getById["draft_content"].exec("FOCUS"); //포커싱
-		      })
+			obj.getById["draft_content"].exec("FOCUS"); //포커싱
 			return;
 	    }
 	    
@@ -408,9 +406,8 @@ const saveTemp = () => {
 		success:function(json){
    	     	if(json.temp_draft_no != "" && json.temp_draft_no !== undefined) {
    	     		alert("저장 완료\n임시저장 되었습니다.")
-   	     		.then((value) => {
-   	 	    		$("input[name='temp_draft_no']").val(json.temp_draft_no); // 임시저장 번호 대입
- 	     		});
+  	 	    	$("input[name='temp_draft_no']").val(json.temp_draft_no); // 임시저장 번호 대입
+   	     		location.href = "<%=ctxPath%>/approval/personal/saved.gw";
    	     	}
 	    	else
 	    		alert("저장 실패\n임시저장 실패하였습니다.");

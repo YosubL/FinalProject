@@ -580,9 +580,6 @@ public class ApprovalService_imple implements ApprovalService {
 		// temp_draft에서 select
 		dvo = dao.getTempDraftInfo(dvo);
 		
-		// 에디터로 작성한 내용은 태그를 되돌린다.
-//		String unescapedContent = XssPreventer.unescape(dvo.getDraft_content());
-//		dvo.setDraft_content(unescapedContent);
 		draftMap.put("dvo", dvo);
 		
 		// approval에서 select

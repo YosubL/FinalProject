@@ -201,7 +201,8 @@ const checkUrgent = () => {
 
 	if(urgent.prop("checked")){
 		urgent.val(1);
-	}else{
+	}
+	else{
 		urgent.val(0);
 	}
 	
@@ -284,13 +285,13 @@ const saveTemp = () => {
 		cache:false,
 		success:function(json){
    	     	if(json.temp_draft_no != "" && json.temp_draft_no !== undefined) {
-   	     		alert("저장 완료", "임시저장 되었습니다.", "success")
-   	     		.then((value) => {
-   	 	    		$("input[name='temp_draft_no']").val(json.temp_draft_no); // 임시저장 번호 대입
- 	     		});
+   	     		alert("저장 완료\n임시저장 되었습니다.")
+ 	 	    	$("input[name='temp_draft_no']").val(json.temp_draft_no); // 임시저장 번호 대입
+   	     		location.href = "<%=ctxPath%>/approval/personal/saved.gw";
    	     	}
-	    	else
+	    	else {
 	    		alert("저장 실패\n임시저장 실패하였습니다.");
+	    	}
 	    },
 	    error: function(request, status, error){
 		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);

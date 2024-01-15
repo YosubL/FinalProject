@@ -792,11 +792,16 @@
 	</update>
 		
 	<!-- 임시 출장보고 등록하기 -->
-	<insert id="addTempBiztripReport" parameterType="com.spring.app.domain.BiztripReportVO">
-		INSERT INTO TBL_TEMP_BIZTRIP_REPORT
-		(TEMP_BIZTRIP_REPORT_NO, FK_TEMP_DRAFT_NO, TRIP_PURPOSE, TRIP_START_DATE, TRIP_END_DATE, TRIP_LOCATION)
+	<update id="addTempBiztripReport" parameterType="com.spring.app.domain.BiztripReportVO">
+		MERGE INTO TBL_TEMP_BIZTRIP_REPORT
+		USING DUAL
+		ON (FK_TEMP_DRAFT_NO = #{fk_draft_no})
+		WHEN MATCHED THEN
+		UPDATE SET TRIP_PURPOSE = #{trip_purpose}, TRIP_START_DATE = #{trip_start_date}, TRIP_END_DATE = #{trip_end_date}, TRIP_LOCATION = #{trip_location}
+		WHEN NOT MATCHED THEN
+		INSERT(TEMP_BIZTRIP_REPORT_NO, FK_TEMP_DRAFT_NO, TRIP_PURPOSE, TRIP_START_DATE, TRIP_END_DATE, TRIP_LOCATION)
 		VALUES (SEQ_TEMP_BIZTRIP_REPORT_NO.NEXTVAL, #{fk_draft_no}, #{trip_purpose}, #{trip_start_date}, #{trip_end_date}, #{trip_location})
-	</insert>
+	</update>
 	
 	<!-- 개인문서함-임시저장함 글 삭제 -->
  	<delete id="deleteDraftList" parameterType="map">
@@ -854,14 +859,14 @@
 	</select>
 
 	<!-- 임시저장 지출내역 조회 -->
-	<select id="getTempExpenseListInfo" resultType="com.spring.app.domain.ExpenseListVO" parameterType="com.spring.app.domain.EmployeesVO" >
+	<select id="getTempExpenseListInfo" resultType="com.spring.app.domain.ExpenseListVO" parameterType="com.spring.app.domain.DraftVO" >
 		SELECT TEMP_EXPENSE_LIST_NO AS EXPENSE_LIST_NO, FK_TEMP_DRAFT_NO AS FK_DRAFT_NO, EXPENSE_DATE, EXPENSE_TYPE, EXPENSE_DETAIL, EXPENSE_AMOUNT, EXPENSE_REMARK
 		FROM TBL_TEMP_EXPENSE_LIST
 		WHERE FK_TEMP_DRAFT_NO = #{draft_no}
 	</select>
 	
 	<!-- 임시저장 출장보고 조회 -->
-	<select id="getTempBiztripReportInfo" resultType="com.spring.app.domain.BiztripReportVO" parameterType="com.spring.app.domain.EmployeesVO" >
+	<select id="getTempBiztripReportInfo" resultType="com.spring.app.domain.BiztripReportVO" parameterType="com.spring.app.domain.DraftVO" >
 		SELECT TEMP_BIZTRIP_REPORT_NO AS BIZTRIP_REPORT_NO, FK_TEMP_DRAFT_NO AS FK_DRAFT_NO, TRIP_PURPOSE, TRIP_START_DATE, TRIP_END_DATE, TRIP_LOCATION 
 		FROM TBL_TEMP_BIZTRIP_REPORT
 		WHERE FK_TEMP_DRAFT_NO = #{draft_no}

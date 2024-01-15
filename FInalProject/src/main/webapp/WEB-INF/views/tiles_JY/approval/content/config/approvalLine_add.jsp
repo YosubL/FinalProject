@@ -113,13 +113,13 @@ const saveAprvLine = () => {
 	// 선택한 결재자가 있는지 검사
 	const length = $("#tblBody").find('tr').length;
 	if (length == 0){
-		swal("결재자가 선택되지 않았습니다.");
+		alert("결재자가 선택되지 않았습니다.");
 		return;
 	}
 	
 	// 이름이 있는지 검사
 	if ($("#aprv_line_name").val() == ''){
-		swal("결재라인 이름을 입력하세요.");
+		alert("결재라인 이름을 입력하세요.");
 		return;
 	}
 		

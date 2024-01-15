@@ -214,7 +214,7 @@ function saveAprvLine(official_aprv_line_no) {
 	
 	const length = body.find('tr').length;
 	if (length == 0){
-		swal("결재자가 선택되지 않았습니다.");
+		alert("결재자가 선택되지 않았습니다.");
 		return;
 	}
 	
