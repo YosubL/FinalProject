@@ -85,6 +85,7 @@ div#empContainer, #aprvContainer {
 </style>
 
 <script>
+
 // 부서 json배열
 let deptArray = JSON.parse('${deptArray}');
 // 팀 json배열
@@ -92,7 +93,7 @@ let teamArray = JSON.parse('${teamArray}');
 // 사원 json배열
 let empArray = JSON.parse('${empArray}');
 
-$(()=>{
+$(document).ready(function(){
 
 	makeTree(); // 사원목록 트리 만들기
 	
@@ -114,14 +115,14 @@ $(()=>{
 	}
 	
 	// 체크박스 클릭 시
-	$("input[type='checkbox']").click((e)=>{
+	$("input[type='checkbox']").click(function(e){
 		const target = $(e.target);
 		const checked = target.prop('checked');
 		
 		// 선택된 사람의 사원번호
 		const selectedEmpNo = target.prop('id').substring(3);
 		
-		console.log(selectedEmpNo);
+//		console.log(selectedEmpNo);
 		
 		if(checked) {
 			// 결재자는 4명까지만 추가 가능
@@ -141,72 +142,70 @@ $(()=>{
 
 	});
 	
-});
+});// end of $(document).ready(function(){})-----------------------
 
-const makeTree = () => {
 
-	let html = "";
-	deptArray.forEach(function(dept, index) {
-		html += "<ul id='dept"+index+"'>"
-			+ "<li id='dept"+dept.department_id+"'><i class='caret fas fa-minus-square'></i>"+dept.department_name;
-		
-		// 팀에 해당하지 않은 부서장만 필터링
-		let newDmArray = empArray.filter(emp => emp.gradelevel == '5');
-		
-		if (newDmArray.length > 0) {
-		    const dm = newDmArray[0];
+function makeTree() {
+    let html = "";
 
-		    html += "<ul class='nested active' id='dmEmp'>"
-		    	+ "<li>"
-				+ "<input type='checkbox' id='emp"+dm.employee_id+"'/>"
-				+ "<label for='emp"+dm.employee_id+"'>" + dm.name + " " + dm.grade + "</label></li>";
-		    
-		} else {
-		    // newDmArray가 비어있는 경우
-		    console.log('newDmArray는 비어있습니다.');
-		}
-		
-		// 부서에 해당하는 팀만 필터링
-		let newTeamArray = teamArray.filter(team => team.department_id == dept.department_id);
-		newTeamArray.forEach(function(team, index) {
- 			if(index == 0) {
-				html += "<ul class='nested active' id='team'>"
-			} 
-			html += "<li id='dept"+team.team_no+"'><i class='caret fas fa-minus-square'></i>"+team.team_name;
+    let newDmArray = empArray.filter(emp => emp.gradelevel == '5');
+    
+//  console.log('newDmArray => ' + JSON.stringify(newDmArray));
 
-			// 팀에 해당하는 사원만 필터링
-			let newEmpArray = empArray.filter(emp => emp.fk_team_id == team.team_id);
-			if (newEmpArray.length > 0) {
-				newEmpArray.forEach(function(emp, index) {
-					if(index == 0) {
-						html += "<ul class='nested active' id='emp'>"
-					}
-					html += "<li>"
-						+ "<input type='checkbox' id='emp"+emp.employee_id+"'/>"
-						+ "<label for='emp"+emp.employee_id+"'>" + emp.name + " " + emp.grade + "</label></li>";
-					if(index == newEmpArray.length-1) {
-						html += "</ul></li>";
-					}
-				});
-			}
-			else {
-				html += "<ul class='nested active'><li>비어있음</ul></li>";
-			}
-			
-			if(index == newTeamArray.length-1) {
-				html += "</ul></li>";
-			}
-		});
-		html += "</ul>";
-	});
-	
-	$("#empContainer").html(html);
-	
+    deptArray.forEach(function(dept, index) {
+        html += "<ul id='dept" + index + "'>" +
+            "<li id='dept" + dept.department_id + "'><i class='caret fas fa-minus-square'></i>" + dept.department_name;
+
+        newDmArray.forEach(function(dm, dmIndex) {
+            if (dept.department_id == dm.fk_department_id) {
+                html += "<br><input type='checkbox' id='emp" + dm.employee_id + "'/>" +
+                    	"<label for='emp" + dm.employee_id + "'>" + dm.name + " " + dm.grade + "</label>";
+            }
+        });
+
+        let newTeamArray = teamArray.filter(function(team) {
+            return team.department_id == dept.department_id;
+        });
+
+        newTeamArray.forEach(function(team) {
+            html += "<ul class='nested active' id='team'>" +
+                "<li id='dept" + team.team_no + "'><i class='caret fas fa-minus-square'></i>" + team.team_name;
+
+            let newEmpArray = empArray.filter(function(emp) {
+                return emp.fk_team_id == team.team_id;
+            });
+
+            if (newEmpArray.length > 0) {
+                html += "<ul class='nested active' id='emp'>";
+                newEmpArray.forEach(function(emp) {
+                    html += "<li>" +
+                        "<input type='checkbox' id='emp" + emp.employee_id + "'/>" +
+                        "<label for='emp" + emp.employee_id + "'>" + emp.name + " " + emp.grade + "</label>" +
+                        "</li>";
+                });
+                html += "</ul>";
+            } else {
+                html += "<ul class='nested active'><li>비어있음</li></ul>";
+            }
+
+            html += "</li></ul>";
+        });
+
+        html += "</li></ul>";
+    });
+
+    $("#empContainer").html(html);
 }
 
-const selectAprvMember = (selectedEmpNo) => {
+
+function selectAprvMember(selectedEmpNo) {
 	// 선택된 사원을 오른쪽에 표시함
-	const emp = empArray.find(el => el.employee_id == selectedEmpNo);
+	const emp = empArray.find(function(el) {
+		return el.employee_id == selectedEmpNo;
+	});
+	
+//	console.log("확인용 emp => ", emp);
+//	console.log("확인용 emp.employee_id => ", emp.employee_id);
 	
 	const body = $('#tblBody');
 	const cnt = body.children('tr').length;
@@ -223,24 +222,32 @@ const selectAprvMember = (selectedEmpNo) => {
 	
 	// 결재순서 부여하기
 	orderLevelno();
-}
+	
+}// end of function selectAprvMember(selectedEmpNo)------------------------
 
-const orderLevelno = () => {
+
+function orderLevelno() {
+	
 	levelArr = Array.from($("td.levelno"));
 	
-	levelArr.forEach((el, index) => {
+	levelArr.forEach(function(el, index) {
 		el.innerText = index+1;
 	});
-}
+	
+}// end of function orderLevelno()-----------------------------------------
 
-const cancelAprvMember = (selectedEmpNo) => {
+
+function cancelAprvMember(selectedEmpNo) {
+	
 	$('tr#'+selectedEmpNo).remove();
 	
 	// 결재순서 부여하기
 	orderLevelno();
-}
+	
+}// end of function cancelAprvMember(selectedEmpNo)------------------------
 
-const submitAprvLine = () => {
+
+function submitAprvLine() {
 	// 사용자가 지정한 결재라인의 직급 배열
 	const positionArr = Array.from($("#tblBody > tr").parent().find('.position_no').text());
 	
@@ -269,7 +276,7 @@ const submitAprvLine = () => {
 
 	console.log(aprvArr);
 	
-	aprvArr.forEach(el => {
+	aprvArr.forEach(function(el) {
 		
 		// 각 사원의 정보를 담을 객체
 		const empObj = new Object();
@@ -279,17 +286,18 @@ const submitAprvLine = () => {
 		empObj.empno = el.getElementsByClassName('empno')[0].innerText;
 		empObj.name = el.getElementsByClassName('name')[0].innerText;
 		
+		console.log("확인용 empObj.empno => ", empObj.empno);
+		
 		jsonArr.push(empObj); // json배열에 결재자 정보를 담는다
 	});
 
  	window.opener.postMessage(jsonArr, '*');
 	window.self.close();
-//	console.log(jsonArr.empno);
-	
-	
-}
+		
+}// end of function submitAprvLine()-----------------------------------------
 
-const checkAprvOrder = (positionArr) => {
+
+function checkAprvOrder(positionArr) {
 	
 	// 직급 배열을 복사하여 오름차순으로 정렬한 것
 	let sortedArr = JSON.parse(JSON.stringify(positionArr)).sort();
@@ -298,9 +306,11 @@ const checkAprvOrder = (positionArr) => {
 	const isSameArray = JSON.stringify(positionArr) === JSON.stringify(sortedArr); 
 	
 	return isSameArray;
-}
+	
+}// end of function checkAprvOrder(positionArr)-----------------------------
 
-const checkDuplication = (positionArr) => {
+
+function checkDuplication(positionArr) {
 
 	// 직급 배열을 가지고 set을 만든다
 	const positionSet = new Set(positionArr);
@@ -310,7 +320,8 @@ const checkDuplication = (positionArr) => {
 	
 	return isDuplicated;
 	
-}
+}// end of function checkDuplication(positionArr)---------------------------
+
 </script>
 
 </head>

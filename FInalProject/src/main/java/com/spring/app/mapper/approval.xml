@@ -18,7 +18,7 @@
 			   and lower(draft_subject) like '%'||lower(#{searchWord})||'%' 
 			</when>
 			<when test='searchType == "draft_content" and searchWord != ""'>
-			   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(content) like '%'||lower(#{searchWord})||'%')  
+			   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(draft_content) like '%'||lower(#{searchWord})||'%')  
 			</when>
 			<when test='searchType == "draft_emp_name" and searchWord != ""'>
 			   and lower(draft_emp_name) like '%'||lower(#{searchWord})||'%' 
@@ -47,7 +47,7 @@
 						   and lower(draft_subject) like '%'||lower(#{searchWord})||'%' 
 						</when>
 						<when test='searchType == "draft_content" and searchWord != ""'>
-						   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(content) like '%'||lower(#{searchWord})||'%')  
+						   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(draft_content) like '%'||lower(#{searchWord})||'%')  
 						</when>
 						<when test='searchType == "draft_emp_name" and searchWord != ""'>
 						   and lower(draft_emp_name) like '%'||lower(#{searchWord})||'%' 
@@ -72,7 +72,7 @@
 			   and lower(draft_subject) like '%'||lower(#{searchWord})||'%' 
 			</when>
 			<when test='searchType == "draft_content" and searchWord != ""'>
-			   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(content) like '%'||lower(#{searchWord})||'%')  
+			   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(draft_content) like '%'||lower(#{searchWord})||'%')  
 			</when>
 			<when test='searchType == "draft_emp_name" and searchWord != ""'>
 			   and lower(draft_emp_name) like '%'||lower(#{searchWord})||'%' 
@@ -98,7 +98,7 @@
 						   and lower(draft_subject) like '%'||lower(#{searchWord})||'%' 
 						</when>
 						<when test='searchType == "draft_content" and searchWord != ""'>
-						   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(content) like '%'||lower(#{searchWord})||'%')  
+						   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(draft_content) like '%'||lower(#{searchWord})||'%')  
 						</when>
 						<when test='searchType == "draft_emp_name" and searchWord != ""'>
 						   and lower(draft_emp_name) like '%'||lower(#{searchWord})||'%' 
@@ -123,7 +123,7 @@
 			   and lower(draft_subject) like '%'||lower(#{searchWord})||'%' 
 			</when>
 			<when test='searchType == "draft_content" and searchWord != ""'>
-			   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(content) like '%'||lower(#{searchWord})||'%')  
+			   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(draft_content) like '%'||lower(#{searchWord})||'%')  
 			</when>
 			<when test='searchType == "draft_emp_name" and searchWord != ""'>
 			   and lower(draft_emp_name) like '%'||lower(#{searchWord})||'%' 
@@ -149,7 +149,7 @@
 						   and lower(draft_subject) like '%'||lower(#{searchWord})||'%' 
 						</when>
 						<when test='searchType == "draft_content" and searchWord != ""'>
-						   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(content) like '%'||lower(#{searchWord})||'%')  
+						   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(draft_content) like '%'||lower(#{searchWord})||'%')  
 						</when>
 						<when test='searchType == "draft_emp_name" and searchWord != ""'>
 						   and lower(draft_emp_name) like '%'||lower(#{searchWord})||'%' 
@@ -168,14 +168,14 @@
 		FROM VIEW_TEMP_DRAFT
 		WHERE FK_DRAFT_EMPNO = #{empno}
 		<choose>
-			<when test='searchType == "draft_no" and searchWord != ""'>
+			<when test='searchType == "temp_draft_no" and searchWord != ""'>
 			   and lower(draft_no) like '%'||lower(#{searchWord})||'%' 
 			</when>
 			<when test='searchType == "draft_subject" and searchWord != ""'>
 			   and lower(draft_subject) like '%'||lower(#{searchWord})||'%' 
 			</when>
 			<when test='searchType == "draft_content" and searchWord != ""'>
-			   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(content) like '%'||lower(#{searchWord})||'%')  
+			   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(draft_content) like '%'||lower(#{searchWord})||'%')  
 			</when>
 			<when test='searchType == "draft_emp_name" and searchWord != ""'>
 			   and lower(draft_emp_name) like '%'||lower(#{searchWord})||'%' 
@@ -192,14 +192,14 @@
 			FROM (SELECT * FROM VIEW_TEMP_DRAFT
 					WHERE FK_DRAFT_EMPNO = #{empno}
 					<choose>
-						<when test='searchType == "draft_no" and searchWord != ""'>
+						<when test='searchType == "temp_draft_no" and searchWord != ""'>
 						   and lower(draft_no) like '%'||lower(#{searchWord})||'%' 
 						</when>
 						<when test='searchType == "draft_subject" and searchWord != ""'>
 						   and lower(draft_subject) like '%'||lower(#{searchWord})||'%' 
 						</when>
 						<when test='searchType == "draft_content" and searchWord != ""'>
-						   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(content) like '%'||lower(#{searchWord})||'%')  
+						   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(draft_content) like '%'||lower(#{searchWord})||'%')  
 						</when>
 						<when test='searchType == "draft_emp_name" and searchWord != ""'>
 						   and lower(draft_emp_name) like '%'||lower(#{searchWord})||'%' 
@@ -264,7 +264,7 @@
 			   and lower(draft_subject) like '%'||lower(#{searchWord})||'%' 
 			</when>
 			<when test='searchType == "draft_content" and searchWord != ""'>
-			   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(content) like '%'||lower(#{searchWord})||'%')  
+			   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(draft_content) like '%'||lower(#{searchWord})||'%')  
 			</when>
 			<when test='searchType == "draft_emp_name" and searchWord != ""'>
 			   and lower(draft_emp_name) like '%'||lower(#{searchWord})||'%' 
@@ -293,7 +293,7 @@
 						   and lower(draft_subject) like '%'||lower(#{searchWord})||'%' 
 						</when>
 						<when test='searchType == "draft_content" and searchWord != ""'>
-						   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(content) like '%'||lower(#{searchWord})||'%')  
+						   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(draft_content) like '%'||lower(#{searchWord})||'%')  
 						</when>
 						<when test='searchType == "draft_emp_name" and searchWord != ""'>
 						   and lower(draft_emp_name) like '%'||lower(#{searchWord})||'%' 
@@ -334,7 +334,7 @@
 			   and lower(draft_subject) like '%'||lower(#{searchWord})||'%' 
 			</when>
 			<when test='searchType == "draft_content" and searchWord != ""'>
-			   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(content) like '%'||lower(#{searchWord})||'%')  
+			   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(draft_content) like '%'||lower(#{searchWord})||'%')  
 			</when>
 			<when test='searchType == "draft_emp_name" and searchWord != ""'>
 			   and lower(draft_emp_name) like '%'||lower(#{searchWord})||'%' 
@@ -363,7 +363,7 @@
 						   and lower(draft_subject) like '%'||lower(#{searchWord})||'%' 
 						</when>
 						<when test='searchType == "draft_content" and searchWord != ""'>
-						   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(content) like '%'||lower(#{searchWord})||'%')  
+						   and (lower(draft_content) like '%'||lower(#{searchWord})||'%' or lower(draft_content) like '%'||lower(#{searchWord})||'%')  
 						</when>
 						<when test='searchType == "draft_emp_name" and searchWord != ""'>
 						   and lower(draft_emp_name) like '%'||lower(#{searchWord})||'%' 
@@ -435,22 +435,25 @@
 	
 	<!-- 결재라인 저장하기 -->
 	<insert id="saveApprovalLine" parameterType="com.spring.app.domain.SavedAprvLineVO">
-		INSERT INTO TBL_MY_APRV_LINE
-		VALUES (SEQ_APRV_LINE_NO.nextval, #{aprv_line_name}, #{fk_empno}, #{fk_approval_empno1}
-		<if test="fk_approval_empno2 == null">
-		, null
-		</if>
-		<if test="fk_approval_empno2 != null">
-		, #{fk_approval_empno2}
-		</if>
-		)
+		INSERT INTO TBL_MY_APRV_LINE (APRV_LINE_NO, APRV_LINE_NAME, FK_EMPNO, FK_APPROVAL_EMPNO1, FK_APPROVAL_EMPNO2)
+	    VALUES (SEQ_APRV_LINE_NO.nextval, #{aprv_line_name}, #{fk_empno}, #{fk_approval_empno1},
+	    <if test="fk_approval_empno2 == null">
+	        NULL
+	    </if>
+	    <if test="fk_approval_empno2 != null">
+	        #{fk_approval_empno2}
+	    </if>
+	    )
 	</insert>
 		
 	<!-- 결재라인 수정하기 -->
 	<update id="editApprovalLine" parameterType="com.spring.app.domain.SavedAprvLineVO">
-		UPDATE TBL_MY_APRV_LINE
-		SET FK_APPROVAL_EMPNO1 = #{fk_approval_empno1}, FK_APPROVAL_EMPNO2 = #{fk_approval_empno2}
-		WHERE APRV_LINE_NO = #{aprv_line_no}
+	    UPDATE TBL_MY_APRV_LINE
+	    SET 
+	    FK_APPROVAL_EMPNO1 = #{fk_approval_empno1},
+	    <if test="fk_approval_empno2 != null">FK_APPROVAL_EMPNO2 = #{fk_approval_empno2}</if>
+	    <if test="fk_approval_empno2 == null">FK_APPROVAL_EMPNO2 = null</if>
+	    WHERE APRV_LINE_NO = #{aprv_line_no}
 	</update>
 		
 	<!-- 결재라인 삭제하기 -->
@@ -481,7 +484,7 @@
 	
 	<!-- 저장된 결재라인 결재자 정보 - 결재라인번호로 조회 -->
 	<select id="getOneAprvLine" resultType="com.spring.app.domain.EmployeesVO" parameterType="String">
-		SELECT EMPLOYEE_ID AS EMPNO, NAME, GRADELEVEL, DEPARTMENT_ID, DEPARTMENT_NAME, FK_DEPARTMENT_ID
+		SELECT EMPLOYEE_ID, NAME, GRADELEVEL, FK_DEPARTMENT_ID
 		FROM TBL_EMPLOYEES E JOIN TBL_DEPARTMENT D
 		ON E.FK_DEPARTMENT_ID = D.DEPARTMENT_ID
 		WHERE EXISTS
@@ -529,7 +532,7 @@
 	<select id="getOneOfficialAprvLine" resultType="com.spring.app.domain.EmployeesVO" parameterType="String">
 		SELECT EMPLOYEE_ID, NAME
 			 , CASE E.GRADELEVEL WHEN 1 THEN '사원' WHEN 3 THEN '팀장' WHEN 5 THEN '부서장' ELSE '사장' END AS GRADELEVEL
-			 , DEPARTMENT_ID, DEPARTMENT_NAME
+			 , FK_DEPARTMENT_ID, DEPARTMENT_NAME
 		FROM TBL_EMPLOYEES E JOIN TBL_DEPARTMENT D
 		ON E.FK_DEPARTMENT_ID = D.DEPARTMENT_ID
 		WHERE EXISTS
@@ -702,10 +705,15 @@
 		USING DUAL
 		ON (OFFICIAL_APRV_LINE_NO = #{official_aprv_line_no})
 		WHEN MATCHED THEN
+		<if test="fk_approval_empno2 != null">
 		UPDATE SET FK_APPROVAL_EMPNO1 = #{fk_approval_empno1}, FK_APPROVAL_EMPNO2 = #{fk_approval_empno2}
+		</if>
+		<if test="fk_approval_empno2 == null">
+		UPDATE SET FK_APPROVAL_EMPNO1 = #{fk_approval_empno1}, FK_APPROVAL_EMPNO2 = null
+		</if>
 		WHEN NOT MATCHED THEN
 		INSERT(OFFICIAL_APRV_LINE_NO, FK_DRAFT_TYPE_NO, FK_APPROVAL_EMPNO1, FK_APPROVAL_EMPNO2)
-		VALUES (#{official_aprv_line_no}, #{fk_draft_type_no}, #{fk_approval_empno1}, #{fk_approval_empno2})
+		VALUES (#{official_aprv_line_no}, #{fk_draft_type_no}, #{fk_approval_empno1}, null)
 	</update>
 		
 	<!-- 공통결재라인 삭제하기 -->
@@ -715,18 +723,18 @@
 	</delete>
 		
 	<!-- 공통결재라인 사용 안하기 -->
-	<delete id="setNoUseOfficialAprvLine" parameterType="String">
+	<update id="setNoUseOfficialAprvLine" parameterType="String">
 		UPDATE TBL_DRAFT_TYPE
 		SET DRAFT_RECEIVE = 0
 		WHERE DRAFT_TYPE_NO = #{draft_type_no}
-	</delete>
+	</update>
 		
 	<!-- 공통결재라인 사용으로 변경하기 -->
-	<delete id="setUseOfficialLine" parameterType="String">
+	<update id="setUseOfficialLine" parameterType="String">
 		UPDATE TBL_DRAFT_TYPE
 		SET DRAFT_RECEIVE = 1
 		WHERE DRAFT_TYPE_NO = #{draft_type_no}
-	</delete>
+	</update>
 			
 	<!-- 공통결재선 번호 가져오기 -->
 	<select id="getNewOfficialLineNo" resultType="int">
@@ -820,7 +828,7 @@
 	<!-- 30일 지난 임시저장 글 삭제하기 -->
 	<delete id="autoDeleteSavedDraft" >
 		DELETE FROM TBL_TEMP_DRAFT
-		WHERE to_date(DRAFT_DATE, 'yyyy-mm-dd') lte to_date(ADD_MONTHS(sysdate, -1),'yyyy-mm-dd')
+		WHERE to_date(DRAFT_DATE, 'yyyy-mm-dd') &lt;= to_date(ADD_MONTHS(sysdate, -1),'yyyy-mm-dd')
 	</delete>
 	
 	<!-- 임시저장 기안 문서 조회 -->
@@ -830,7 +838,7 @@
         FROM TBL_TEMP_DRAFT JOIN TBL_EMPLOYEES
         ON EMPLOYEE_ID = FK_DRAFT_EMPNO JOIN TBL_DEPARTMENT
         ON FK_DEPARTMENT_ID = DEPARTMENT_ID
-		WHERE TEMP_DRAFT_NO = #{draft_no}
+		WHERE TEMP_DRAFT_NO = #{draft_no} and fk_draft_type_no = #{fk_draft_type_no}
 	</select>
 
 	<!-- 임시저장 기안 결재 정보 조회 -->
