@@ -9,6 +9,12 @@
 %>
 
 <style type="text/css">
+#container {width: 75%; margin:0 auto; margin-top:100px;}
+#container1 {width: 70%; margin:0 auto; margin-top:30px;}
+#container2 {width: 70%; margin:0 auto; margin-top:70px;}
+#shadowDiv {padding: 20px; border-radius: 10px;}
+#Navbar {margin-left: 2%; margin-right: 5%; width: 80%; background-size: cover; background-position: center; background-repeat: no-repeat; height: 70px;}
+
 #Navbar > li > a{color: black;}
 
 #Navbar > li > a {
@@ -20,6 +26,18 @@
 #Navbar > li > a:hover {
 	color: black;
 }
+
+#hTag {margin-left: 5%; font-weight: bold;}
+
+.table {width: 90%;}
+
+#trRow {background-color: #ccff99;}
+
+#countSum {color: orange; font-size: 8pt; margin-left: 5%;}
+
+.vacSpan {color: gray; font-size: 10pt;}
+
+textarea#vacation_reason {width: 100%; height: 100px; margin: 1% auto; border:solid 2px gray;}
 
 #myModal {
     display: none;
@@ -47,6 +65,7 @@ div.vacBoard {
 	border-radius: 10px;   /* 모서리 둥글기 정도를 조절, 필요에 따라 조절하세요 */
     padding: 10px;  
     background-color: white;
+    margin: 0 2%;
 }
 
 div.vacBoard > img {
@@ -66,11 +85,27 @@ div.vacBoard, div.listContainer, div.shadow {
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.1);
+    padding: 20px; 
 }
-
-
-
-
+/* 버튼 스타일링 */
+button#modalBtn {
+  	padding: 6px 15px; /* 버튼 내부 여백 설정 */
+  	cursor: pointer; /* 커서 모양 설정 */
+  	background-color: #00ace6; /* 배경 색상 설정 */
+  	color: #fff; /* 글자 색상 설정 */
+  	border: none; /* 테두리 제거 */
+  	border-radius: 5px; /* 테두리 반경 설정 */
+  	transition: background-color 0.3s; /* 배경 색상 전환 효과 설정 */
+}
+button#modalClose {
+	padding: 6px 15px; /* 버튼 내부 여백 설정 */
+  	cursor: pointer; /* 커서 모양 설정 */
+  	background-color: #bfbfbf; /* 배경 색상 설정 */
+  	color: #fff; /* 글자 색상 설정 */
+  	border: none; /* 테두리 제거 */
+  	border-radius: 5px; /* 테두리 반경 설정 */
+  	transition: background-color 0.3s; /* 배경 색상 전환 효과 설정 */
+}
 </style>
 
 <script type="text/javascript">
@@ -82,7 +117,7 @@ $(document).ready(function(){
 		const vacation_type = $("input#vacation_type").val().trim(); 			 // 사용자가 선택한 휴가종류
 		const vacation_start_date = $("input#vacation_start_date").val().trim(); // 사용자가 입력한 시작일 값
         const vacation_end_date = $("input#vacation_end_date").val().trim();     // 사용자가 입력한 종료일 값
-        const vacation_reason = $("textarea#vacation_reason").val().trim();	     // 사용자가 입력한 휴가신청사유
+        const vacation_reason = $("input#vacation_reason").val().trim();	     // 사용자가 입력한 휴가신청사유
         const annual = $("input:hidden[name='annual']").val().trim();
         
 	    const startParts = vacation_start_date.split('-');
@@ -96,29 +131,29 @@ $(document).ready(function(){
 	
 	    if(daysDiff < 0) { 
 	       alert("날짜를 정확하게 입력하세요.");
-	       return;
+	       return false;
 	    }
 	    
 	    if(vacation_start_date == "") {
 	    	alert("시작일을 지정하세요.");
-	    	return;
+	    	return false;
 	    }
 	    
 	    if(vacation_end_date == "") {
 	    	alert("종료일을 지정하세요.");
-	    	return;
+	    	return false;
 	    }
 	    
 	    if(vacation_type == 1) {
 		    if(annual < daysDiff) {
 		    	alert("보유 연차가 신청 일수보다 적습니다.");
-		    	return;
+		    	return false;
 		    }
 	    }
 	    
 	    if(vacation_reason == "") {
 	       alert("사유를 입력하세요.");
-	       return;
+	       return false;
 	    }
 	    
 	    // 보낼 데이터
@@ -156,14 +191,12 @@ window.onclick = function(event) {
     }
 }                     
 
-
-
 </script>
 
-<div id="container" style="width: 75%; margin:0 auto; margin-top:100px;">
+<div id="container" style="">
 
    <%-- 상단 메뉴바 시작 --%>
-   <nav class="navbar navbar-expand-lg mt-5 mb-4" style=" margin-left: 2%; margin-right: 5%; width: 80%; background-size: cover; background-position: center; background-repeat: no-repeat; height: 70px">
+   <nav class="navbar navbar-expand-lg mt-5 mb-4">
 		<div class="collapse navbar-collapse">
 			<ul class="navbar-nav" id="Navbar">
 				<li class="nav-item">
@@ -192,41 +225,41 @@ window.onclick = function(event) {
 
 
 <%-- 본문 시작 --%>
-<div id="container" style="width: 70%; margin:0 auto; margin-top:30px;">
-   <div class='shadow border' style='padding: 20px; border-radius: 10px;'>
-      <div class="container" id="container">
+<div id="container1">
+   <div class='shadow border' id='shadowDiv'>
+      <div class="container" id="container3">
         <div class="row">
             <div id="annual" class="col-sm-3" onclick="openModal('1')">
-            	<div class="vacBoard mt-4" id="annual_div" style="margin: 0 2%;">
-	                <img src="<%= ctxPath%>/resources/images/연차아이콘.png"/>
+            	<div class="vacBoard mt-4" id="annual_div">
+	                <img src="<%= ctxPath%>/resources/images/vacation_img/연차아이콘.png"/>
 	                <br><br><br>
 	                <span>연차</span> <br>
-	                <span style="color: gray; font-size: 10pt;">${requestScope.annual}일</span>
+	                <span class='vacSpan'>${requestScope.annual}일</span>
 	                <input type="hidden" name="annual" value="${requestScope.annual}"/>
                 </div>
             </div>
             <div id="family_care" class="col-sm-3" onclick="openModal('2')">
-            	<div class="vacBoard mt-4" style="margin: 0 2%;">
-	                <img src="<%= ctxPath%>/resources/images/가족아이콘.png"/>
+            	<div class="vacBoard mt-4">
+	                <img src="<%= ctxPath%>/resources/images/vacation_img/가족아이콘.png"/>
 	                <br><br><br>
 	                <span>가족돌봄</span> <br>
-	                <span style="color: gray; font-size: 10pt;">신청 시 1일 지급</span>
+	                <span class='vacSpan'>신청 시 1일 지급</span>
                 </div>
             </div>
             <div id="reserve_forces" class="col-sm-3" onclick="openModal('3')">
-            	<div class="vacBoard mt-4" style="margin: 0 2%;">
-	                <img src="<%= ctxPath%>/resources/images/예비군아이콘.png"/>
+            	<div class="vacBoard mt-4">
+	                <img src="<%= ctxPath%>/resources/images/vacation_img/예비군아이콘.png"/>
 	                <br><br><br>
 	                <span>군소집훈련</span> <br>
-	                <span style="color: gray; font-size: 10pt;">신청 시 지급</span>
+	                <span class='vacSpan'>신청 시 지급</span>
                 </div>
             </div>
             <div id="infertility_treatment" class="col-sm-3" onclick="openModal('4')">
-            	<div class="vacBoard mt-4" style="margin: 0 2%;">
-	                <img src="<%= ctxPath%>/resources/images/치료아이콘.png"/>
+            	<div class="vacBoard mt-4">
+	                <img src="<%= ctxPath%>/resources/images/vacation_img/치료아이콘.png"/>
 	                <br><br><br>
 	                <span>난임 치료</span> <br>
-	                <span style="color: gray; font-size: 10pt;">매년 3일 지급</span>
+	                <span class='vacSpan'>매년 3일 지급</span>
                 </div>
             </div>
         </div>
@@ -235,27 +268,27 @@ window.onclick = function(event) {
             <br>
             
             <div id="infertility_treatment" class="col-sm-3" onclick="openModal('5')">
-            	<div class="vacBoard mb-4 mt-3" style="margin: 0 2%;">
-	                <img src="<%= ctxPath%>/resources/images/출산아이콘.png"/>
+            	<div class="vacBoard mb-4">
+	                <img src="<%= ctxPath%>/resources/images/vacation_img/출산아이콘.png"/>
 	                <br><br><br>
 	                <span>배우자 출산</span> <br>
-	                <span style="color: gray; font-size: 10pt;">매년 3일 지급</span>
+	                <span class='vacSpan'>매년 3일 지급</span>
                 </div>
             </div>
             <div id="infertility_treatment" class="col-sm-3" onclick="openModal('6')">
-            	<div class="vacBoard mb-4 mt-3" style="margin: 0 2%;">
-	                <img src="<%= ctxPath%>/resources/images/결혼아이콘.png"/>
+            	<div class="vacBoard mb-4">
+	                <img src="<%= ctxPath%>/resources/images/vacation_img/결혼아이콘.png"/>
 	                <br><br><br>
 	                <span>결혼</span> <br>
-	                <span style="color: gray; font-size: 10pt;">매년 3일 지급</span>
+	                <span class='vacSpan'>매년 3일 지급</span>
                 </div>
             </div>
             <div id="infertility_treatment" class="col-sm-3" onclick="openModal('7')">
-           		<div class="vacBoard mb-4 mt-3" style="margin: 0 2%;">
-	                <img src="<%= ctxPath%>/resources/images/포상아이콘.png"/>
+           		<div class="vacBoard mb-4">
+	                <img src="<%= ctxPath%>/resources/images/vacation_img/포상아이콘.png"/>
 	                <br><br><br>
 	                <span>포상</span> <br>
-	                <span style="color: gray; font-size: 10pt;">매년 3일 지급</span>
+	                <span class='vacSpan'>매년 3일 지급</span>
                 </div>
             </div>
         </div>
@@ -265,15 +298,15 @@ window.onclick = function(event) {
   
   <%-- ========================================================================= --%>
   <%-- 본문 시작 --%>
-<div id="container" style="width: 70%; margin:0 auto; margin-top:70px;">
-   <div class='listContainer border' style='padding: 20px; border-radius: 10px;'>
-      <h5 class='mb-3' style="margin-left: 5%; font-weight: bold;">내 휴가 </h5>
+<div id="container2">
+   <div class='listContainer border'>
+      <h5 class='mb-3' id='hTag'>내 휴가 </h5>
       
       <div class="max-form">
-      <table class="table" style="width: 95%;">
+      <table class="table ml-5">
          <thead>
-            <tr class='row' style='background-color: #ccff99;'>
-	        	<th class='col' style="margin-left: 5%;">연차</th>
+            <tr class='row' id='trRow'>
+	        	<th class='col'>&nbsp;&nbsp;연차</th>
 	            <th class='col'>가족돌봄</th>
 	            <th class='col'>군소집훈련</th>
 	            <th class='col'>난임치료</th>
@@ -287,7 +320,7 @@ window.onclick = function(event) {
          <tbody>
             
 	        <tr class='row'>
-	        	<td class='col' style="margin-left: 5%;">${requestScope.annual}일</td>
+	        	<td class='col'>&nbsp;&nbsp;${requestScope.annual}일</td>
 	            <td class='col'>${requestScope.family_care}일</td>
 	            <td class='col'>${requestScope.reserve_forces}일</td>
 	            <td class='col'>${requestScope.infertility_treatment}일</td>
@@ -298,7 +331,7 @@ window.onclick = function(event) {
          </tbody>
       </table>
       </div>
-      <div style="color: orange; font-size: 8pt; margin-left: 5%;">연차를 제외한 휴가는 승인된 휴가의 누적합계를 표시합니다.</div>
+      <div id='countSum'>연차를 제외한 휴가는 승인된 휴가의 누적합계를 표시합니다.</div>
 	</div>
   </div>
 
@@ -306,27 +339,31 @@ window.onclick = function(event) {
 <div id="myModal" class="modal">
 	<form name="modalFrm">
 	    <div class="modal-content">
-	        <span onclick="closeModal()" style="cursor: pointer;">&times;</span> <!-- 닫기 버튼 -->
 	        <h4>휴가 신청</h4>
-	        <div style="display: flex; margin-right: auto;">
+	        <div class='flex mr-auto'>
+	        	<table style="width: 100%;" class="table table-bordered">
+	        	  <tr>
+	        	  	<td style='width: 30%;'>시작일</td>
+	        	  	<td><input type="date" id="vacation_start_date" name="vacation_start_date" class="border p-2.5" required></td>
+	        	  </tr>
+	        	  <tr>
+	        	  	<td>종료일</td>
+	        	  	<td><input type="date" id="vacation_end_date" name="vacation_end_date" class="border p-2.5" required></td>
+	        	  </tr>
+	        	  <tr>
+	        	  	<td>사유</td>
+	        	  	<td><input id="vacation_reason" name="vacation_reason" class='border'/></td>
+	        	  </tr>
+	        	</table>
 	        	<input type="hidden"value="${sessionScope.loginuser.employee_id}" name="employee_id"/>
-		        <input type="date" id="vacation_start_date" name="vacation_start_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5" required>
 		        <input type="hidden" id="vacation_type" name="vacation_type" />
 		        <input type="hidden" id="vacation_reg_date" name="vacation_reg_date" />
-		        <i class="fa-solid fa-arrow-right" style="margin-top: 1.5%;"></i>&nbsp;
-		        <input type="date" id="vacation_end_date" name="vacation_end_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" required>
 		        <input type="hidden" id="daysDiff" name="daysDiff" />
 		        <input type="hidden" id="annual" name="annual" value="${requestScope.annual}"/>
 	        </div>
-	        
-	        <div class="mt-3">
-	        	<span>사유(선택)</span>
-	        	<textarea style="width: 100%; height: 100px; margin: 1% auto; border:solid 2px gray;" id="vacation_reason" name="vacation_reason"></textarea>
-	        </div>
-	        
-	        <div style="text-align: right;">
-	        	<button type="submit" id="modalBtn" class="mr-2">신청</button>	
-	        	<button type="reset" id="modalClose">취소</button>	
+	        <div class='text-right'>
+	        	<button type="submit" id="modalBtn" class="mr-2 btn-sm">확인</button>	
+	        	<button type="reset" id="modalClose" class='btn-sm'>취소</button>	
 	        </div>
 	    </div>
     </form>

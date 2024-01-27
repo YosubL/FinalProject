@@ -203,6 +203,13 @@ public class ReservationDAO_imple implements ReservationDAO {
 		return n;
 	}
 
+
+	@Override
+	public List<Map<String, String>> meetingroomchart() {
+		List<Map<String, String>> list = sqlsession.selectList("yunsu.meetingroomchart");
+		return list;
+	}
+
 	
 	
 	

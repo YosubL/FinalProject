@@ -3,7 +3,9 @@
 body {font-family: Arial, Helvetica, sans-serif, 돋움; }
 
 #myheader		{ position: fixed; padding: 10px; min-height:10px;  right: 10px; width:18%; }
-#mycontent		{ min-height:970px; position: relative; padding-top: 15px; background-color:#F5F5F5;
+
+
+#mycontent		{ min-height:700px; position: relative; padding:3% 1% 1% 1%; background-color:#F5F5F5;
                   float:right; width:97%; }
 
 #mysideinfo		{ position: fixed; min-height:970px; padding: 15px; padding-top:20px ; background-color:rgb(3,199,90) ;

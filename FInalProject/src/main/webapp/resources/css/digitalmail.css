@@ -1,0 +1,351 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+	*{
+	    margin: 0;
+	    padding: 0;
+	    box-sizing: border-box;
+	    font-family: 'Poppins';
+	}
+	
+	
+	/*  헤더시작 */
+	.header_left img {
+	    object-fit: contain;
+	    height: 100px;
+	    margin-left: 3px;
+	    
+	
+	}
+	.header{
+	    display: flex;
+	    align-items: center;
+	    justify-content: space-between;
+	    border-bottom: 1px solid whitesmoke;
+	
+	}
+	.header_left {
+	    display: flex;
+	    align-items: center;
+	}
+	.header_middle {
+	    display: flex;
+	    flex: .75;
+	    align-items: center;
+	    background-color: whitesmoke;
+	    padding: 10px;
+	    border-radius: 10px;
+	}
+	
+	.header_middle input {
+	    border: none;
+	    width: 100%;
+	    padding: 10px;
+	    outline: none;
+	    background: transparent;
+	    font-size: medium;
+	}
+
+	div.icon_set{
+		position: relative;
+	}
+ 	
+	span.icon_text {
+		font-size:12px;
+	    position: absolute;
+	    width: 80px;
+	    color: black;
+	    top: 30px; /* 말풍선이 아래로 나타나도록 조정 */
+	    text-align: center;
+	    padding: 10px;
+	    border-radius: 5px;
+	    left: 50%;
+	    transform: translateX(-50%);
+	    opacity: 0;
+	    transition: 0.5s;
+	    visibility: hidden;
+	}
+		
+
+	div.icon_set span.icon_text:after {
+	    position: absolute;
+	    transform: rotate(45deg) translateX(-50%) translateY(-100%); /* 말풍선 밑으로 위치하도록 조정 */
+	    left: 50%;
+	}
+	
+	div.icon_set:hover span.icon_text,
+	div.icon_set:hover span.icon_img {
+		cursor:pointer; !important;
+	    opacity: 1;
+	    visibility: visible;
+	}
+		
+    div.textbox {
+        text-align : center;     /*글자 중앙 정렬*/
+        display: flex;           /*가로로 일렬 배치*/
+        justify-content: center; /*수평 중앙*/
+        align-items: center;     /*수직 중앙 -> container의 높이값이 있어야 적용됨*/       
+    }
+
+	.dropdown-toggle {
+       	border: none;
+       	outline: none; /* 선택 상자 클릭 시 외곽선 제거 */
+       	background-color: transparent; /* 배경색을 투명으로 설정 */
+   	}
+
+
+	/* 헤더끝  */
+
+	/*  사이드 시작 */
+	.sidebar {
+	    flex: .20;
+	    max-width: 300px;
+	    padding-right: 20;
+	    
+	}
+	
+	.sidebarOption {
+		width : 90%;
+	    display: flex;
+	    align-items: center;
+	    height: 40px;
+	    cursor: pointer;
+	    color: black;
+	    margin-top: 5px; 
+	    border-bottom: 1px solid whitesmoke;
+	}
+	
+	.emailinf {
+		width : 50%;
+	    display: flex;
+	    align-items: center;
+	    height: 40px;
+	    cursor: pointer;
+	   
+	}
+	
+	.sidebarOption> a.menu_name{
+	    margin-left: 10px;
+	    font-size: 14px;
+		color : black;
+	}
+	
+	
+	div.sidebarOption:hover > a.menu_name:hover:hover
+	{
+	    background-color: white;
+	    color: rgb(3, 199, 90);
+	    font-weight: 800;
+	}
+	
+	.sidebarOption> span.menu_name{
+	    margin-left: 10px;
+	    font-size: 14px;
+	
+	}
+	
+	div.sidebarOption:hover > span.menu_name:hover:hover
+	{
+	    background-color: white;
+	    color: rgb(3, 199, 90);
+	    font-weight: 800;
+	}
+	
+	
+	.sidebar_footer{
+	    display: flex;
+	    justify-content: center;
+	}
+	
+	.sidebar_footerIcons .material-icons-outlined{
+	    margin: 7px;
+	    cursor: pointer;
+	}
+	
+	.cart__mainbtns {
+	 		max-width: 300px;
+	 		display: block;
+	 		margin: auto;
+	}
+			
+	.cart__bigorderbtn {
+	  background-color: rgb(3, 199, 90);
+	  width: 220px;
+	  height: 45px;
+	  font-size: 14px;
+	  font-weight:bold;
+	  margin: auto;
+	  border-radius: 5px;
+	  color: white;
+	  border: none;
+	}
+
+/*  사이드 시작 */
+
+
+.main_body{
+    display: flex;
+    height: 100vh;
+}
+
+
+
+body{
+   height: 1100vh; 
+   overflow-y: hidden;
+}
+
+
+
+
+.emailList{
+	max-height: calc(100vh - 100px); /* 적절한 값으로 조절해보세요 */
+    flex: 1;
+    overflow-y: scroll;
+}
+
+.emailList_settings{
+    position: sticky;
+    top: 0;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid whitesmoke;
+    z-index: 999;
+    padding: 10px;
+}
+
+.emailList_settingsLeft{
+    display: flex;
+    align-items: center;
+    text-align : center;     /*글자 중앙 정렬*/
+	justify-content: center; /*수평 중앙*/
+      
+}
+
+.emailList_settingsRight{
+    display: flex;
+    align-items: center;
+    text-align : center;     /*글자 중앙 정렬*/
+	justify-content: center; /*수평 중앙*/
+      
+}
+
+.material-icons-outlined, .material-icons{
+	font-size: 14px;
+}
+
+.emailList_settings .material-icons-outlined{
+    margin: 5px;
+    cursor: pointer;
+}
+
+.section{
+    display: flex;
+    align-items: center;
+    border-bottom-width: 2px;
+    padding: 15px;
+    min-width: 200px;
+    cursor: pointer;
+    color: black;
+    border-width: 0;
+}
+
+.emailList_sections{
+    position: sticky;
+    top: 0;
+    display: flex;
+    background-color: white;
+    border-bottom: 1px solid whitesmoke;
+    z-index: 999;
+}
+
+.section_selected{
+    background-color: white;
+    border-width: 4px;
+    color: rgb(3, 199, 90);
+    border-bottom: 3px solid rgb(3, 199, 90);
+}
+
+.section_selected .material-icons-outlined{
+    color: rgb(3, 199, 90);
+}
+
+.section:hover{
+    background-color: whitesmoke;
+    border-width: 3px;
+}
+
+.section span.list_name{
+    font-size: 18px;
+    font-weight:bold;
+    margin-left: 23px;
+}
+
+
+.emailRow_options{
+    display: flex;
+    align-items: center;
+}
+
+.emailRow_options.material-icons-outlined, input{
+    margin: 5px;
+}
+
+.emailRow{
+    display: flex;
+    align-items: center;
+    height: 50px;
+    border-bottom: 1px solid whitesmoke;
+    cursor: pointer;
+    z-index: 999;
+}
+
+.emailRow:hover{
+    border-top: 1px  solid whitesmoke;
+    box-shadow: 0 4px 4px -2px rgba(0, 0, 0, 0.24);
+}
+
+.emailRow_message{
+    display: flex;
+    flex: .8;
+    align-items: center;
+    font-size: 12px;
+}
+
+.emailRow_message span{
+    width: 400px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 5px;
+    padding-right: 5px;
+    font-weight: 400;
+    font-size: 16pt;
+}
+
+.emailRow_title{
+    font-size: 14px;
+    flex: .3;
+}
+
+.emailRow_time{
+    padding-right: 15px;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+	.section-title h5:after {
+		position: absolute;
+		left: 0;
+		top: -6px;
+		height: 32px;
+		width: 4px;
+		background: rgb(3, 199, 90);
+		content: "";
+	}
+
+/*
+.emailRow_description{
+    font-weight: 400;
+    color: black;
+}
+*/

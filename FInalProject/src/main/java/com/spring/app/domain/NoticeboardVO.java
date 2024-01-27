@@ -17,11 +17,18 @@ public class NoticeboardVO {
 	private String previoussubject;  // 이전글제목
 	private String nextseq;          // 다음글번호
 	private String nextsubject;      // 다음글제목	
-	private String file_Name;    // WAS(톰캣)에 저장될 파일명(20230101.png) 
-	private String org_Filename; // 진짜 파일명(강아지.png)  // 사용자가 파일을 업로드 하거나 파일을 다운로드 할때 사용되어지는 파일명  
-	private String file_Size;    // 파일크기 
-	private String department_name;
+	private String attachfile;  
+	private String rno;
+	private MultipartFile attach;  
+	private String department_name; //부서번호
 	
+	public String getAttachfile() {
+		return attachfile;
+	}
+	public void setAttachfile(String attachfile) {
+		this.attachfile = attachfile;
+	}
+
 	public String getDepartment_name() {
 		return department_name;
 	}
@@ -29,8 +36,6 @@ public class NoticeboardVO {
 		this.department_name = department_name;
 	}
 
-	private MultipartFile attach; 
-	
 	public String getSeq() {
 		return seq;
 	}
@@ -79,25 +84,7 @@ public class NoticeboardVO {
 	public void setReg_Date(String reg_Date) {
 		this.reg_Date = reg_Date;
 	}
-	public String getFile_Name() {
-		return file_Name;
-	}
-	public void setFile_Name(String file_Name) {
-		this.file_Name = file_Name;
-	}
-	
-	public String getOrg_Filename() {
-		return org_Filename;
-	}
-	public void setOrg_Filename(String org_Filename) {
-		this.org_Filename = org_Filename;
-	}
-	public String getFile_Size() {
-		return file_Size;
-	}
-	public void setFile_Size(String file_Size) {
-		this.file_Size = file_Size;
-	}
+
 	public String getStatus() {
 		return status;
 	}
@@ -136,7 +123,37 @@ public class NoticeboardVO {
 		this.attach = attach;
 	}
 	
+	public String getRno() {
+		return rno;
+	}
+	public void setRno(String rno) {
+		this.rno = rno;
+	}
 	
+	public NoticeboardVO() {}
+	
+	public NoticeboardVO(String seq, String fk_emp_id, String name, String subject, String content, String pw,
+			String read_Count, String reg_Date, String status, String previousseq, String previoussubject,
+			String nextseq, String nextsubject, String attachfile, String department_name, MultipartFile attach, String rno) {
+		super();
+		this.seq = seq;
+		this.fk_emp_id = fk_emp_id;
+		this.name = name;
+		this.subject = subject;
+		this.content = content;
+		this.pw = pw;
+		this.read_Count = read_Count;
+		this.reg_Date = reg_Date;
+		this.status = status;
+		this.previousseq = previousseq;
+		this.previoussubject = previoussubject;
+		this.nextseq = nextseq;
+		this.nextsubject = nextsubject;
+		this.attachfile = attachfile;
+		this.department_name = department_name;
+		this.attach = attach;
+		this.rno = rno;
+	}
 	
 	
 	

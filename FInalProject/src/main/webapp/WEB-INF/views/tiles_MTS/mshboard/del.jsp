@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%
 	String ctxPath = request.getContextPath();
 %>
@@ -37,16 +39,13 @@ $(document).ready(function(){
 			frm.submit();
 		}
 	}); // end of $("button#btnDelete").click(function(){-------------
-	// ==== 삭제완료 버튼을 눌렀을 때 암호 유효성 및 전송 끝 =====
-			
+	// ==== 삭제완료 버튼을 눌렀을 때 암호 유효성 및 전송 끝 =====			
 });// end of $(document).ready(function(){})-----------
 
 </script>
 
-
 	<div style="display: flex;">
-	  <div style="margin: auto; padding-left: 3%;">
-	     
+	  <div style="margin: auto; padding-left: 3%;">  
 	     <h2 style="margin-bottom: 30px;">글삭제</h2>
 	     
 	     <form name="delFrm">
@@ -64,7 +63,6 @@ $(document).ready(function(){
 	            <button type="button" class="btn btn-secondary btn-sm mr-3" id="btnDelete">삭제완료</button>
 	            <button type="button" class="btn btn-secondary btn-sm" onclick="javascript:history.back()">취소</button>  
 	        </div>
-	        
 	     </form>
 	     
 	  </div>

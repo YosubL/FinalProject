@@ -20,7 +20,7 @@ $(document).ready(function(){
 			  // 폼(form)을 전송(submit)
 			const frm = document.admin_delFrm;
 			frm.method = "post";
-			frm.action = "<%= ctxPath%>/notice_del_End.gw";
+			frm.action = "<%= ctxPath%>/notice_delEnd.gw";
 			frm.submit();
 		}
 	});
@@ -29,11 +29,11 @@ $(document).ready(function(){
 	// ==== 삭제완료 버튼을 눌렀을 때 암호 유효성 및 전송 시작 =====
     $("button#btnDelete").click(function(){
 		  
-	// 글암호 유효성 검사
-	const pw = $("input:password[name='pw']").val();
+		// 글암호 유효성 검사
+		const pw = $("input:password[name='pw']").val();
 		if(pw == "") {
 			alert("글암호를 입력하세요!!");
-		  	return; // 종료
+			 return; // 종료
 		}
 		else{
 			if("${requestScope.boardvo.pw}" != pw) {
@@ -46,7 +46,7 @@ $(document).ready(function(){
 			  // 폼(form)을 전송(submit)
 			const frm = document.delFrm;
 			frm.method = "post";
-			frm.action = "<%= ctxPath%>/notice_del_End.gw";
+			frm.action = "<%= ctxPath%>/notice_delEnd.gw";
 			frm.submit();
 		}
 	}); // end of $("button#btnDelete").click(function(){-------------
@@ -57,19 +57,19 @@ $(document).ready(function(){
 </script>
 	
 	<div style="display: flex;">
-	  <div style="margin: auto; padding-left: 3%;">
+		<div style="margin: auto; padding-left: 3%;">
 	     
 	     <h2 style="margin-bottom: 30px; margin-left:30px;">글삭제</h2>
-	     <c:if test="${sessionScope.loginuser.employee_id == requestScope.boardvo.fk_emp_id && sessionScope.loginuser.gradelevel == 10}">
-			<form name="admin_delFrm">
-				<input type="hidden" name="seq" value="${requestScope.boardvo.seq}" readonly />
-				<input type="hidden" name="pw"  value="${requestScope.boardvo.pw}" maxlength="20" />
-				<div style="margin: 20px;">
-					<button type="button" class="btn btn-secondary btn-sm mr-3" id="btnDelete2">삭제완료</button>
-					<button type="button" class="btn btn-secondary btn-sm" onclick="javascript:history.back()">취소</button>  
-				</div>
-			</form>
-	     </c:if> 
+		     <c:if test="${sessionScope.loginuser.employee_id == requestScope.boardvo.fk_emp_id && sessionScope.loginuser.gradelevel == 10}">
+				<form name="admin_delFrm">
+					<input type="hidden" name="seq" value="${requestScope.boardvo.seq}" readonly />
+					<input type="hidden" name="pw"  value="${requestScope.boardvo.pw}" maxlength="20" />
+					<div style="margin: 20px;">
+						<button type="button" class="btn btn-secondary btn-sm mr-3" id="btnDelete2">삭제완료</button>
+						<button type="button" class="btn btn-secondary btn-sm" onclick="javascript:history.back()">취소</button>  
+					</div>
+				</form>
+		     </c:if> 
 	     
 	      <c:if test="${sessionScope.loginuser.employee_id == requestScope.boardvo.fk_emp_id && sessionScope.loginuser.gradelevel < 10}">
 	       		<form name="delFrm">
@@ -82,7 +82,7 @@ $(document).ready(function(){
 							</td>
 						</tr>	
 		        	</table>
-				<input type="hidden" name="seq" value="${requestScope.boardvo.seq}" readonly />
+					<input type="hidden" name="seq" value="${requestScope.boardvo.seq}" readonly />
     		        <div style="margin: 20px;">
                     	<button type="button" class="btn btn-secondary btn-sm mr-3" id="btnDelete">삭제완료</button>
             	    	<button type="button" class="btn btn-secondary btn-sm" onclick="javascript:history.back()">취소</button>  
@@ -101,9 +101,7 @@ $(document).ready(function(){
 					</div>
 				</form>
 	     	</c:if> 
-		
-		
-	  </div>
+		</div>
 	</div>
 
 

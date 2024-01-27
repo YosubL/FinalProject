@@ -211,6 +211,13 @@ public class ReservationService_imple implements ReservationService {
 		return n;
 	}
 
+
+	@Override
+	public List<Map<String, String>> meetingroomchart() {
+		List<Map<String, String>> list = dao.meetingroomchart();
+		return list;
+	}
+
 	
 	
 	

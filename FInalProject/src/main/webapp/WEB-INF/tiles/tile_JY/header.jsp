@@ -2,27 +2,15 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<%-- ===== #28. tile 중 header 페이지 만들기 ===== --%>
 <%
 	String ctxPath = request.getContextPath();
-	
 %>
-<style type="text/css">
-
-	#msgStack {
-		position: fixed;
-		right: 16px;
-		z-index: 1;
-	}
-	
-</style>
-
 <script type="text/javascript">
-
 $(document).ready(function(){
 	
 	loopshowNowTime();
-
-
+	
 });
 
 function showNowTime() {
@@ -83,7 +71,7 @@ function showNowTime() {
  
 </script>
      
-<div id="msgStack"></div>
+
     <div class="d-flex justify-content-between align-items-center w-10">
         <div style="font-size: 8pt;">
             <span>현재시각 : <span id="clock"></span></span>

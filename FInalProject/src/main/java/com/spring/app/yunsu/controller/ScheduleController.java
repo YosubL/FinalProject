@@ -142,7 +142,7 @@ public class ScheduleController {
 		// form 에서 받아온 날짜
 		String chooseDate = request.getParameter("chooseDate");
 		
-		System.out.println(chooseDate);
+		//System.out.println(chooseDate);
 		
 		mav.addObject("chooseDate", chooseDate);
 		mav.setViewName("schedule/insertSchedule.tiles_MTS");
@@ -344,6 +344,7 @@ public class ScheduleController {
 		}
 		
 		return mav;
+		
 	}
 	
 	

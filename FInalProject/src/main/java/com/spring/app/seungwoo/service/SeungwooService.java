@@ -60,8 +60,7 @@ public interface SeungwooService {
 	// 최종적으로 대기회원 삭제
 	int last_unreadydel(Map<String, Object> empidMap);
 	
-	// 전자메일 시작
-	ModelAndView digitalmail(ModelAndView mav);
+
 	
 
 

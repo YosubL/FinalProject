@@ -446,7 +446,7 @@
 		
 	</select>
 	
-	<!-- 자원예약 맵퍼 시작 ========================================================= -->
+	<!--  ========================자원예약 맵퍼 시작================================= -->
 	
 	
 	<!-- 자원 항목 불러오기 -->	
@@ -501,12 +501,12 @@
 		    from tbl_reservation R
 		    join tbl_employees E
 		    ON  R.fk_employee_id = E.employee_id
-		
+			where R.reservationno &lt; 9000
 			<choose>
 				<when test='startdate == "" and enddate == ""'></when>
 				
 				<otherwise>
-					where (( to_char(startdate,'YYYY-MM-DD') between #{startdate} and #{enddate} )
+					and (( to_char(startdate,'YYYY-MM-DD') between #{startdate} and #{enddate} )
 					or  ( to_char(enddate,'YYYY-MM-DD') between #{startdate} and #{enddate} ) )					
 				
 					<!-- 검색타입과 검색어가 없는 경우 -->
@@ -571,12 +571,12 @@
 		    ON  R.fk_employee_id = E.employee_id
 		    join tbl_reservation_small_category C
 		    ON R.fk_smcatgono = C.smcatgono
-		
+			where R.reservationno &lt; 9000
 			<choose>
 				<when test='startdate == "" and enddate == ""'></when>
 				
 				<otherwise>
-					where (( to_char(startdate,'YYYY-MM-DD') between #{startdate} and #{enddate} )
+					and (( to_char(startdate,'YYYY-MM-DD') between #{startdate} and #{enddate} )
 					or  ( to_char(enddate,'YYYY-MM-DD') between #{startdate} and #{enddate} ) )					
 				
 					<!-- 검색타입과 검색어가 없는 경우 -->
@@ -677,7 +677,7 @@
 		    join tbl_employees E
 		    ON  R.fk_employee_id = E.employee_id
 			where (R.fk_employee_id = #{employee_id} or lower(R.realuser) like '%'||lower(#{email})||'%')
-					
+					and R.reservationno &lt; 9000
 				<if test='startdate != "" and enddate != ""'>
 					and  ((to_char(startdate,'YYYY-MM-DD') between #{startdate} and #{enddate} )
 							or  ( to_char(enddate,'YYYY-MM-DD') between #{startdate} and #{enddate} ))
@@ -693,7 +693,7 @@
 					
 					<!--  검색 타입은 없고 검색어가 있는 경우 -->
 					<if test='pagination.searchType == "" and pagination.searchWord != ""'>
-						  and lower(realuser) like '%'||lower(#{pagination.searchWord})||'%'  or lower(name) like '%'||lower(#{pagination.searchWord})||'%'
+						  and (lower(realuser) like '%'||lower(#{pagination.searchWord})||'%'  or lower(name) like '%'||lower(#{pagination.searchWord})||'%')
 					</if>
 					
 					<!-- 검색 타입과 검색어가 모두 있는 경우 -->
@@ -746,7 +746,7 @@
 		    join tbl_reservation_small_category C
 		    ON R.fk_smcatgono = C.smcatgono
 			where (R.fk_employee_id = #{employee_id} or lower(R.realuser) like '%'||lower(#{email})||'%')
-				
+			and R.reservationno &lt; 9000
 			<if test='startdate != "" and enddate != ""'>
 				and  ((to_char(startdate,'YYYY-MM-DD') between #{startdate} and #{enddate} )
 						or  ( to_char(enddate,'YYYY-MM-DD') between #{startdate} and #{enddate} ))
@@ -762,7 +762,7 @@
 				
 				<!--  검색 타입은 없고 검색어가 있는 경우 -->
 				<if test='pagination.searchType == "" and pagination.searchWord != ""'>
-					  and lower(realuser) like '%'||lower(#{pagination.searchWord})||'%'  or lower(name) like '%'||lower(#{pagination.searchWord})||'%'
+					  and (lower(realuser) like '%'||lower(#{pagination.searchWord})||'%'  or lower(name) like '%'||lower(#{pagination.searchWord})||'%')
 				</if>
 				
 				<!-- 검색 타입과 검색어가 모두 있는 경우 -->
@@ -896,9 +896,204 @@
 	
 	</update>
 	
+	<!--  ========================자원예약 맵퍼 끝================================= -->
+	
+	<!-- 증명서 발급 시작 -->
+		<resultMap type="HashMap" id="oneMemberMap">
+	    <result property="employee_id" 			column="employee_id" 		javaType="String"/>
+	    <result property="name" 				column="name" 				javaType="String"/>
+	    <result property="email" 				column="email" 				javaType="String"/>
+	    <result property="phone" 				column="phone" 				javaType="String"/>
+	    <result property="postcode" 			column="postcode" 			javaType="String"/>
+	    <result property="address" 				column="address" 			javaType="String"/>
+	    <result property="jubun" 				column="jubun" 				javaType="String"/>
+	    <result property="hire_date" 			column="hire_date" 			javaType="String"/>
+	    <result property="salary" 				column="salary" 			javaType="String"/>
+	    <result property="commission_pct" 		column="commission_pct" 	javaType="String"/>
+	    <result property="fk_department_id" 	column="fk_department_id" 	javaType="String"/>
+	    <result property="fk_team_id" 			column="fk_team_id" 		javaType="String"/>
+	    <result property="manager_id" 			column="manager_id" 		javaType="String"/>
+	    <result property="t_manager_id" 		column="t_manager_id" 		javaType="String"/>
+	    <result property="status" 				column="status" 			javaType="String"/>
+	    <result property="idle" 				column="idle" 				javaType="String"/>
+	    <result property="gradelevel" 			column="gradelevel" 		javaType="String"/>
+	    <result property="photo" 				column="photo" 				javaType="String"/>
+	    <result property="bank_name" 			column="bank_name" 			javaType="String"/>
+	    <result property="bank_code" 			column="bank_code" 			javaType="String"/>
+	    <result property="department_name"  	column="department_name" 	javaType="String"/>
+	    <result property="job_name" 			column="job_name" 			javaType="String"/>
+	    <result property="basic_salary" 		column="basic_salary" 		javaType="String"/>
+	    <result property="t_manager_name" 		column="t_manager_name" 	javaType="String"/>
+	    <result property="t_manager_email" 		column="t_manager_email" 	javaType="String"/>
+	    <result property="t_manager_phone" 		column="t_manager_phone" 	javaType="String"/>
+	    <result property="t_manager_job_name" 	column="t_manager_job_name" javaType="String"/>
+	    <result property="manager_name" 		column="manager_name" 		javaType="String"/>
+	    <result property="manager_email" 		column="manager_email" 		javaType="String"/>
+	    <result property="manager_phone" 		column="manager_phone" 		javaType="String"/>
+	    <result property="manager_job_name" 	column="manager_job_name" 	javaType="String"/>
+	    <result property="birthday" 			column="birthday" 			javaType="String"/>
+	</resultMap>
+   
+	 <select id="documentDown" parameterType="String" resultMap="oneMemberMap">
+		SELECT E.employee_id, E.name, E.email, E.phone, E.postcode, E.address || ' ' ||E.detailaddress ||' ' || E.extraaddress AS address, E.jubun, E.hire_date, E.salary, E.commission_pct, E.fk_department_id, E.fk_team_id, D.manager_id, T.t_manager_id, 
+		            E.status, E.idle, E.gradelevel, E.photo, E.bank_name, E.bank_code, D.department_name, J.Job_name, J.basic_salary, E1.name, E1.email, E1.phone, J1.job_name, E2.name, E2.email, E2.phone, J2.job_name
+		            ,CASE WHEN SUBSTR(jubun, 7, 1) in ('0', '9') THEN '18'
+            				WHEN SUBSTR(jubun, 7, 1) in ('1', '2') THEN '19'
+            				WHEN SUBSTR(jubun, 7, 1) in ('3', '4') THEN '20'
+        					END
+    						|| SUBSTR(jubun, 1, 2) ||'년 '
+    						|| SUBSTR(jubun, 3, 2) ||'월 '
+    						|| SUBSTR(jubun, 5, 2) ||'일 ' as birthday
+		FROM tbl_employees E
+		LEFT JOIN tbl_department D ON E.FK_DEPARTMENT_ID = D.DEPARTMENT_ID
+		LEFT JOIN tbl_jobs J ON E.FK_JOB_ID = J.JOB_ID
+		LEFT JOIN tbl_team T ON J.FK_TEAM_ID = T.TEAM_ID
+		JOIN tbl_employees E1 ON E.T_MANAGER_ID = E1.EMPLOYEE_ID
+		LEFT JOIN tbl_jobs J1 ON E1.FK_JOB_ID = J1.JOB_ID
+		JOIN tbl_employees E2 ON E.MANAGER_ID = E2.EMPLOYEE_ID
+		LEFT JOIN tbl_jobs J2 ON E2.FK_JOB_ID = J2.JOB_ID
+		where E.employee_id = #{employee_id}
+   </select>
+   
+   
+   <insert id="documentInsert" parameterType="HashMap">
+   	INSERT INTO tbl_document_download (seq, fk_employee_id, document_name, downloadtime)
+	VALUES (seq_document_download.nextval, #{employee_id}, #{document_name}, SYSDATE)
+   
+   </insert>
+	
+	<!-- 증명서 발급 끝 -->
+	
+	<!-- 문서 정보 넣기 -->
+	<insert id="insertDocument" parameterType="com.spring.app.domain.DocumentVO">
+	INSERT INTO tbl_document (seq, documentSubject, fk_employee_id, fileName, orgFilename, fileSize)
+	VALUES (seq_document.nextval, #{documentSubject}, #{fk_employee_id}, #{fileName}, #{orgFilename}, #{fileSize})
+	
+	</insert>
+	
+	<!-- 삭제할 문서 서버 파일 이름 가져오기 -->
+	<select id="deleteDocumentSelect" parameterType="String" resultType="String">
+		select fileName
+		from tbl_document
+		where seq = #{seq}
+	</select>
+	
+	<!-- 문서 삭제하기 -->
+	<delete id="deleteDocument" parameterType="HashMap">
+		delete from tbl_document
+		where seq = #{seq}
+	</delete>
+	
+	<!-- 문서 다운로드 -->
+	<select id="viewDocument" parameterType="HashMap" resultType="com.spring.app.domain.DocumentVO">
+		select fileName, orgFilename
+		from tbl_document
+		where seq = #{seq}
+	</select>
+	
+	<!-- 문서 다운 기록 넣기 -->
+	<insert id="insertDownLoadrecord" parameterType="HashMap">
+		INSERT INTO tbl_document_download (seq, fk_employee_id, document_name, downloadtime)
+		VALUES (seq_document_download.nextval, #{employee_id}, #{orgFilename}, sysdate)
+	</insert>
+	
+	<!-- 문서 수정을 위해 삭제할 파일명 가져오기 -->
+	<select id="selectUpdateDeleteFile" parameterType="com.spring.app.domain.DocumentVO" resultType="String">
+		select fileName
+		from tbl_document
+		where seq = #{seq}
+	</select>
+	
+	<!-- 문서 테이블 업데이트 -->
+	<update id="updateDocument" parameterType="com.spring.app.domain.DocumentVO" > 
+		update tbl_document set fileName = #{fileName}
+							   ,fk_employee_id = #{fk_employee_id}
+							   ,documentSubject = #{documentSubject}
+							   ,orgFilename = #{orgFilename}
+							   ,fileSize = #{fileSize}
+		where seq = #{seq}
+	</update>
+	
+	<!-- 문서 갯수 가져오기 -->
+	<select id="getDocuSearchCnt" parameterType="HashMap" resultType="int">
+    	SELECT COUNT(*)
+    	FROM (
+        SELECT row_number() over(order by seq desc) as rno
+        FROM tbl_document
+        WHERE 1=1
+        <if test="pagination.searchWord == ''">
+            
+        </if>
+        <if test="pagination.searchWord != ''">
+            AND (LOWER(documentsubject) LIKE '%' || LOWER(#{pagination.searchWord}) || '%')
+        </if>
+    	)
+    	
+	</select>
+	
+	<resultMap type="HashMap" id="getDocumentListMap">
+		<result property="seq" 				column="seq" 				javaType="String" />
+		<result property="documentsubject" 	column="documentsubject" 	javaType="String" />
+		
+	</resultMap>
+	<!-- 문서 내역 가져오기 -->
+	<select id="getDocumentList" parameterType="HashMap" resultMap="getDocumentListMap">
+		select seq, documentsubject
+		from
+		(
+		select row_number() over(order by seq desc) as rno,
+	        	seq, documentsubject 
+		from tbl_document 
+		where 1=1
+		
+		<!-- 검색타입과 검색어가 없는 경우 -->
+		<if test='pagination.searchType == "" and pagination.searchWord == ""'>
+		</if>
+		
+		<!--  검색 타입은 없고 검색어가 있는 경우 -->
+		<if test='pagination.searchType == "" and pagination.searchWord != ""'>
+			  and (lower(documentsubject) like '%'||lower(#{pagination.searchWord})||'%')
+		</if>
+		)
+		where rno between #{pagination.startRno} and #{pagination.endRno}
+			
+	</select>
 	
 	
+	<resultMap type="HashMap" id="meetingroomchart_map">
+		<result property="MeetingRoom" 	column="MeetingRoom" javaType="String" />
+		<result property="nowMonth6" 	column="nowMonth6"	 javaType="String" />
+		<result property="nowMonth5" 	column="nowMonth5" 	 javaType="String" />
+		<result property="nowMonth4" 	column="nowMonth4" 	 javaType="String" />
+		<result property="nowMonth3" 	column="nowMonth3" 	 javaType="String" />
+		<result property="nowMonth2" 	column="nowMonth2" 	 javaType="String" />
+		<result property="nowMonth1" 	column="nowMonth1" 	 javaType="String" />
+		
+	</resultMap>
 	
+	<!-- 자원예약 회의실 차트 보기 -->
+	<select id="meetingroomchart" resultMap="meetingroomchart_map">
+		SELECT
+     CASE
+        WHEN FK_SMCATGONO = 1 THEN '1층 회의실'
+        WHEN FK_SMCATGONO = 2 THEN '2층 회의실'
+        WHEN FK_SMCATGONO = 3 THEN '3층 회의실'
+        WHEN FK_SMCATGONO = 4 THEN '4층 회의실'
+        ELSE '기타'  -- 다른 값이 있을 경우에 대한 처리
+    		END AS MeetingRoom,
+    	COUNT(CASE WHEN TO_CHAR(startdate, 'YYYY-MM') = TO_CHAR(ADD_MONTHS(SYSDATE, -6), 'YYYY-MM') THEN 1 END) AS "nowMonth6",
+    	COUNT(CASE WHEN TO_CHAR(startdate, 'YYYY-MM') = TO_CHAR(ADD_MONTHS(SYSDATE, -5), 'YYYY-MM') THEN 1 END) AS "nowMonth5",
+    	COUNT(CASE WHEN TO_CHAR(startdate, 'YYYY-MM') = TO_CHAR(ADD_MONTHS(SYSDATE, -4), 'YYYY-MM') THEN 1 END) AS "nowMonth4",
+    	COUNT(CASE WHEN TO_CHAR(startdate, 'YYYY-MM') = TO_CHAR(ADD_MONTHS(SYSDATE, -3), 'YYYY-MM') THEN 1 END) AS "nowMonth3",
+    	COUNT(CASE WHEN TO_CHAR(startdate, 'YYYY-MM') = TO_CHAR(ADD_MONTHS(SYSDATE, -2), 'YYYY-MM') THEN 1 END) AS "nowMonth2",
+    	COUNT(CASE WHEN TO_CHAR(startdate, 'YYYY-MM') = TO_CHAR(ADD_MONTHS(SYSDATE, -1), 'YYYY-MM') THEN 1 END) AS "nowMonth1",
+    	COUNT(CASE WHEN TO_CHAR(startdate, 'YYYY-MM') = TO_CHAR(SYSDATE, 'YYYY-MM') THEN 1 END) AS "nowMonth"
+	FROM tbl_reservation
+	WHERE FK_SMCATGONO IN (1, 2, 3, 4)
+    AND startdate >= ADD_MONTHS(SYSDATE, -7)
+	GROUP BY FK_SMCATGONO
+	ORDER BY FK_SMCATGONO ASC
+	</select>
 </mapper>
 
 

@@ -15,6 +15,7 @@ public class DraftVO {
 
 	private String draft_emp_name; // 기안자 이름(join)
 	private String draft_department; // 기안부서(join)
+	private String draft_department_name; // 기안부서(join)
 	private int draft_department_no; // 기안부서(join)
 	private String position; // 기안자 부서(join)
 	private String empimg; // 기안자 프로필이미지(join)
@@ -168,5 +169,15 @@ public class DraftVO {
 	public void setDraft_department_no(int draft_department_no) {
 		this.draft_department_no = draft_department_no;
 	}
+
+	public String getDraft_department_name() {
+		return draft_department_name;
+	}
+
+	public void setDraft_department_name(String draft_department_name) {
+		this.draft_department_name = draft_department_name;
+	}
+	
+	
 
 }

@@ -1,7 +1,7 @@
 package com.spring.app.domain;
 
-
 public class JobsVO {
+
 	
 	private String job_id;
 	private String job_name;
@@ -10,7 +10,7 @@ public class JobsVO {
 	private String basic_salary;
 	private String min_salary;
 	private String max_salary;
-	private String Fk_team_id;
+	private String fk_team_id;
 	
 	public String getJob_id() {
 		return job_id;
@@ -55,11 +55,12 @@ public class JobsVO {
 		this.max_salary = max_salary;
 	}
 	public String getFk_team_id() {
-		return Fk_team_id;
+		return fk_team_id;
 	}
 	public void setFk_team_id(String fk_team_id) {
-		Fk_team_id = fk_team_id;
+		this.fk_team_id = fk_team_id;
 	}
+	
 
 	
 	

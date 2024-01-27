@@ -129,9 +129,9 @@
 
 </script>
 
-<div style="display:flex; width:100%; margin-top:100px;">
-<div style="margin-left: 80px; width: 60%; margin: 0 auto;">
-<h3 style="display: inline-block;">일정 상세보기</h3>&nbsp;&nbsp;<a href="<%= ctxPath%>/schedule/scheduleManagement.gw"><span>◀캘린더로 돌아가기</span></a> 
+		<div style="display:flex; width:100%; margin-top:100px;">
+		<div style="margin-left: 80px; width: 60%; margin: 0 auto;">
+		<h3 style="display: inline-block;">일정 상세보기</h3>&nbsp;&nbsp;<a href="<%= ctxPath%>/schedule/scheduleManagement.gw"><span>◀캘린더로 돌아가기</span></a> 
 
 		<table id="schedule" class="table table-bordered">
 			<tr>

@@ -8,7 +8,7 @@
 <script>
 $(()=>{
 	
-	$('a#sentList').css('color','#086BDE');
+	$('a#sentList').css('color','#03C75A');
 	$('.personalMenu').show();
 	
 	// 검색창에서 엔터시 검색하기 함수 실행
@@ -72,7 +72,6 @@ const excelDownLoad = () => {
 				<%-- 검색 구분 --%>
 				<select id="searchType" name="searchType" class="mr-1" style="padding: 3px">
 					<option value="draft_no">문서번호</option>
-					<option value="draft_type">종류</option>
 					<option value="draft_subject">제목</option>
 					<option value="draft_content">내용</option>				
 				</select>

@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import com.spring.app.domain.EmployeesVO;
+
 //==== #32. Repository(DAO) 선언 ====
 //@Component
 @Repository
@@ -97,8 +99,16 @@ public class EmpDAO_imple implements EmpDAO {
 	@Override
 	public int update_employees_department_id(Map<String, String> paraMap) {
 		
-		int n = sql.update("yosub.update_employees_department_id", paraMap);
+		String job_id = sql.selectOne("yosub.employees_department_job", paraMap);
 		
+		paraMap.put("job_id", job_id);
+		
+		int n =0;
+		
+		if(job_id != "") {
+		
+		 n = sql.update("yosub.update_employees_department_id", paraMap);
+		}
 		return n;
 	}
 
@@ -152,8 +162,15 @@ public class EmpDAO_imple implements EmpDAO {
 	@Override
 	public int update_employees_team_id(Map<String, String> paraMap) {
 		
-		int n = sql.update("yosub.update_employees_team_id", paraMap);
+		String job_id = sql.selectOne("yosub.employees_team_job", paraMap);
 		
+		paraMap.put("job_id", job_id);
+		
+		int n =0;
+		
+		if(job_id != "") {
+		n = sql.update("yosub.update_employees_team_id", paraMap);
+		}
 		return n;
 	}
 	
@@ -162,9 +179,52 @@ public class EmpDAO_imple implements EmpDAO {
 	@Override
 	public List<Map<String, String>> get_department_info(String department_id) {
 		
-		List<Map<String, String>> get_department_info = sql.selectOne("yosub.get_department_info", department_id);
+		List<Map<String, String>> get_department_info = sql.selectList("yosub.get_department_info", department_id);
 		
 		return get_department_info;
 	}
 
+	@Override
+	public List<Map<String, String>> get_team_info(String team_id) {
+		
+		List<Map<String, String>> get_team_info = sql.selectList("yosub.get_team_info", team_id);
+		
+		return get_team_info;
+	}
+
+	@Override
+	public int department_del(String department_id) {
+		int n = sql.delete("yosub.department_del",department_id);
+		return n;
+	}
+
+	@Override
+	public List<Map<String, String>> team_id_select_by_department(String department_id) {
+		
+			List<Map<String, String>> team_id_select_by_department = sql.selectList("yosub.team_id_select_by_department", department_id);
+		
+		return team_id_select_by_department;
+	}
+
+	@Override
+	public int team_del(String team_id) {
+		int n = sql.delete("yosub.team_del",team_id);
+		return n;
+	}
+
+	@Override
+	public List<Map<String, String>> job_id_select_by_department(String department_id) {
+	
+			List<Map<String, String>> job_id_select_by_department = sql.selectList("yosub.job_id_select_by_department", department_id);
+		
+		return job_id_select_by_department;
+	}
+
+	@Override
+	public int infoEditEnd(EmployeesVO evo) {
+		
+			int n = sql.update("yosub.infoEditEnd", evo);
+			
+		return n;
+	}
 }

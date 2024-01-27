@@ -11,7 +11,9 @@ import org.mybatis.spring.SqlSessionTemplate;
 //import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
+import com.spring.app.digitalmail.domain.EmailVO;
 import com.spring.app.domain.Calendar_schedule_VO;
+import com.spring.app.domain.DraftVO;
 import com.spring.app.domain.EmployeesVO;
 
 //==== #32. Repository(DAO) 선언 ====
@@ -53,6 +55,25 @@ public class YosubDAO_imple implements YosubDAO {
 		List<Calendar_schedule_VO> scheduleselectList = sqlsession.selectList("yosub.scheduleselect", paraMap);
 		
 		return scheduleselectList;
+	}
+
+
+	@Override
+	public List<EmailVO> SelectMyEmail_withPaging(Map<String, Object> paraMap) {
+		
+		List<EmailVO> emailVOList = sqlsession.selectList("yosub.SelectMyEmail_withPaging",paraMap);
+		
+		return emailVOList;
+	}
+
+	@Override
+	public List<DraftVO> getMyDraftProcessing(String empno) {
+		return sqlsession.selectList("approval.getMyDraftProcessing", empno);
+	}
+
+	@Override
+	public List<DraftVO> getMyDraftProcessed(String empno) {
+		return sqlsession.selectList("approval.getMyDraftProcessed", empno);
 	}
 
 

@@ -164,13 +164,13 @@ $(document).ready(function(){
 			// 암호가 정규표현식에 위배된 경우 
 			$(e.target).closest(".div1").find("span.error").show();
 			$(e.target).closest(".div2").addClass("div2_error");
-			$("input:text[id='pwd']").val(0);
+			$("input:hidden[id='pwd']").val(0);
 		}
 		else {
 			// 암호가 정규표현식에 맞는 경우 
 			$(e.target).closest(".div1").find("span.error").hide();
 			$(e.target).closest(".div2").removeClass("div2_error");
-			$("input:text[id='pwd']").val(1);
+			$("input:hidden[id='pwd']").val(1);
 		}
 				
 	});
@@ -183,13 +183,13 @@ $(document).ready(function(){
 			// 암호와 암호확인값이 틀린 경우 
 			$(e.target).closest(".div1").find("span.error").show();
 			$(e.target).closest(".div2").addClass("div2_error");
-			$("input:text[id='pwdcheck_v']").val(0);
+			$("input:hidden[id='pwdcheck_v']").val(0);
 		}
 		else {
 			// 암호와 암호확인값이 같은 경우
 			$(e.target).closest(".div1").find("span.error").hide();
 			$(e.target).closest(".div2").removeClass("div2_error");
-			$("input:text[id='pwdcheck_v']").val(1);
+			$("input:hidden[id='pwdcheck_v']").val(1);
 		}
 	
 	});
@@ -205,12 +205,12 @@ $(document).ready(function(){
 		if(!bool) {
 			$(e.target).closest(".div1").find("span.error").show();
 			$(e.target).closest(".div2").addClass("div2_error");
-			$("input:text[id='phone']").val(0);
+			$("input:hidden[id='phone']").val(0);
 		}
 		else {
 			$(e.target).closest(".div1").find("span.error").hide();
 			$(e.target).closest(".div2").removeClass("div2_error");
-			$("input:text[id='phone']").val(1);
+			$("input:hidden[id='phone']").val(1);
 		}
 		
 	});
@@ -226,12 +226,12 @@ $(document).ready(function(){
 		if(!bool) {
 			$(e.target).closest(".div1").find("span.error").show();
 			$(e.target).closest(".div2").addClass("div2_error");
-			$("input:text[id='jubun']").val(0);
+			$("input:hidden[id='jubun']").val(0);
 		}
 		else {
 			$(e.target).closest(".div1").find("span.error").hide();
 			$(e.target).closest(".div2").removeClass("div2_error");
-			$("input:text[id='jubun']").val(1);
+			$("input:hidden[id='jubun']").val(1);
 		}
 	});
 	
@@ -255,12 +255,12 @@ $(document).ready(function(){
 		if ($(this).val() === "") {
 			$(e.target).closest(".div1").find("span.error").show();
 			$(e.target).closest(".div2").addClass("div2_error");
-			$("input:text[id='bank_name']").val(0);
+			$("input:hidden[id='bank_name']").val(0);
 	    } 
 		else {
 	    	$(e.target).closest(".div1").find("span.error").hide();
 			$(e.target).closest(".div2").removeClass("div2_error");
-			$("input:text[id='bank_name']").val(1);
+			$("input:hidden[id='bank_name']").val(1);
 	    }
 		
 	});
@@ -276,12 +276,12 @@ $(document).ready(function(){
 		if(!bool) {
 			$(e.target).closest(".div1").find("span.error").show();
 			$(e.target).closest(".div2").addClass("div2_error");
-			$("input:text[id='bank_code']").val(0);
+			$("input:hidden[id='bank_code']").val(0);
 		}
 		else {
 			$(e.target).closest(".div1").find("span.error").hide();
 			$(e.target).closest(".div2").removeClass("div2_error");
-			$("input:text[id='bank_code']").val(1);
+			$("input:hidden[id='bank_code']").val(1);
 		}
 		
 	});
@@ -372,8 +372,8 @@ function daumPost() {
             // 우편번호와 주소 정보를 해당 필드에 넣는다.
             document.getElementById('postcode').value = data.zonecode;
             document.getElementById("address").value = addr;
-            $("input:text[id='postcode_v']").val(1);
-            $("input:text[id='address_v']").val(1);
+            $("input:hidden[id='postcode_v']").val(1);
+            $("input:hidden[id='address_v']").val(1);
             // 커서를 상세주소 필드로 이동한다.
             document.getElementById("detailAddress").focus();
         }
@@ -435,12 +435,12 @@ function goRegister() {
 	    b_requiredInfo = true;
 	}
 	
-	if($("input:hidden[id='address']").val() != 1) {
+	if($("input:hidden[id='address_v']").val() != 1) {
 		alert("주소를 입력해 주세요.");
 	    b_requiredInfo = true;
 	}
 	
-	if($("input:text[name='detailaddress_v']").val().trim != "") {
+	if($("input:text[name='detailaddress']").val().trim() != "") {
 		$("input:hidden[id='detailaddress_v']").val(1);
 	}
 	
@@ -461,6 +461,7 @@ function goRegister() {
 	
 	
 	if(b_requiredInfo) {
+		alert("함수종료")
 		return; // goRegister() 함수를 종료한다.
 	}
 	
@@ -537,7 +538,7 @@ function goRegister() {
 				<span class="title s_display">주민번호</span>
 				<div class="div2 div2_display">
 					<span class="icon"><i class="fa-regular fa-calendar"></i></span>
-					<input type="text" name="jubun" class="requiredInfo" placeholder="앞자리 6자리와 뒷자리 1자리만 입력해주세요."  />
+					<input type="text" name="jubun" class="requiredInfo" maxlength="7" placeholder="앞자리 6자리와 뒷자리 1자리만 입력해주세요."  />
 					<span class="clear"><i class="fa-solid fa-circle-xmark" style="color: #6f6d6d;"></i></span>
 				</div>
 				<span class="error">올바른 주민번호를 입력해 주세요.</span>
@@ -600,7 +601,7 @@ function goRegister() {
 					<span class="clear"><i class="fa-solid fa-circle-xmark" style="color: #6f6d6d;"></i></span>
 				</div>
 				<span class="error">올바른 계좌번호를 입력해주세요.</span>
-				<input type="text" id="bank_code" />
+				<input type="hidden" id="bank_code" />
 			</div>
 
 			

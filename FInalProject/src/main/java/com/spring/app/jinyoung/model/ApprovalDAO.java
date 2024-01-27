@@ -161,6 +161,9 @@ public interface ApprovalDAO {
 	// 결재 처리하기
 	int updateApproval(Map<String, Object> approvalMap);
 
+	// JOIN 을 통해 가져올 로그인한 유저의 정보
+	EmployeesVO getLoginuser(String empno);
+	
 	// 기안종류번호로 공통결재라인 가져오기
 	List<EmployeesVO> getRecipientList(String type_no);
 
@@ -178,10 +181,10 @@ public interface ApprovalDAO {
 
 	// 관리자메뉴-공통결재라인 저장
 	int saveOfficialApprovalLine(OfficialAprvLineVO oapVO);
-/*
+
 	// 환경설정-서명이미지 수정
 	int updateSignature(Map<String, String> paraMap);
-*/
+
 	// temp_draft에서 select
 	DraftVO getTempDraftInfo(DraftVO dvo);
 
@@ -226,5 +229,7 @@ public interface ApprovalDAO {
 
 	// 기안 1개 삭제하기
 	int deleteOneDraft(String draft_no);
+
+	
 
 }

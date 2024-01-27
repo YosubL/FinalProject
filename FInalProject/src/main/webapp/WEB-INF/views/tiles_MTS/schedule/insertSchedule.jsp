@@ -276,8 +276,35 @@
 				return;
 			}
 			
+			smallc = calType;
+			
 			if($("select.small_category").val()==null){
-				alert("소분류를 선택하세요");
+				
+				if(smallc =='1'){
+					smallc = '개인 캘린더';
+					alert(smallc+"의 소분류를 만들어주세요.");
+					
+					addMyCalendar2();
+					
+					
+				}
+				
+				if(smallc =='2'){
+					smallc = '회사 캘린더';
+					alert(smallc+"의 소분류를 만들어주세요.");
+					
+					addComCalendar2();
+					
+				}
+				
+				if(smallc =='3'){
+					smallc = '부서 캘린더';
+					alert(smallc+"의 소분류를 만들어주세요.");
+					addDepCalendar2();
+					
+				}
+				
+				
 				return;
 			}
 			
@@ -355,6 +382,19 @@
 		
 	}// end of function add_joinUser(value){}----------------------------			
 
+	function addComCalendar2(){
+		$('#modal_addComCal2').modal('show'); // 모달창 보여주기	
+	}// end of function addComCalendar(){}--------------------
+	
+	function addDepCalendar2(){
+		$('#modal_addDepCal2').modal('show');	
+	}// end of function addMyCalendar(){}-----------------
+	
+	function addMyCalendar2(){
+		$('#modal_addMyCal2').modal('show');	
+	}// end of function addMyCalendar(){}-----------------
+	
+	
 </script>
 <div style="display:flex; width:100%; margin-top:100px;">
 <div style="margin-left: 80px; width: 60%; margin:0 auto;">
@@ -402,14 +442,7 @@
 							<option value="3">부서 캘린더</option>
 						</c:when>
 						
-						<%-- 일정등록시 부서캘린더 등록은 loginuser.gradelevel =='5' 인 사용자만 등록이 가능하도록 한다. --%> 
-						<c:when test="${loginuser.gradelevel =='5'}"> 
-							<option value="">선택하세요</option>
-							<option value="1">개인 캘린더</option>
-							<option value="3">부서 캘린더</option>
-						</c:when>
-						
-					<%-- 일정등록시 내캘린더 등록은 로그인 된 사용자이라면 누구나 등록이 가능하다. --%> 	
+					<%-- 일정등록시 부서캘린더와 내캘린더 등록은 로그인 된 사용자이라면 누구나 등록이 가능하다. --%> 	
 						<c:otherwise>
 							<option value="">선택하세요</option>
 							<option value="1">개인 캘린더</option>
@@ -453,3 +486,5 @@
 	</div>
 </div>
 </div>
+
+<jsp:include page="/WEB-INF/views/tiles_MTS/schedule/scheduleModal.jsp"></jsp:include>

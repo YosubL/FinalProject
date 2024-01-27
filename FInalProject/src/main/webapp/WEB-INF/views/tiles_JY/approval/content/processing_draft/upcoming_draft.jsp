@@ -9,7 +9,7 @@
 $(()=>{
 	
 	$('.processingMenu').show();
-	$('a#upcomingList').css('color','#086BDE');
+	$('a#upcomingList').css('color','#03C75A');
 	
 	// 검색창에서 엔터시 검색하기 함수 실행
 	$("#searchWord").bind("keydown", (e) => {
@@ -38,7 +38,7 @@ const goSearch = () => {
 	
 	const frm = document.searchFrm;
 	frm.method = "get";
-	frm.action = "<%=ctxPath%>/approval/upcoming.on";
+	frm.action = "<%=ctxPath%>/approval/upcoming.gw";
 	frm.submit();
 }
 
@@ -53,7 +53,7 @@ const excelDownLoad = () => {
 	frm.downloadList.value = downloadList;
 	
 	frm.method="get";
-	frm.action="<%=ctxPath%>/approval/excel/downloadExcelFile.on";
+	frm.action="<%=ctxPath%>/approval/excel/downloadExcelFile.gw";
 	frm.submit();
 	
 }
@@ -79,7 +79,6 @@ const excelDownLoad = () => {
 				<%-- 검색 구분 --%>
 				<select id="searchType" name="searchType" class="mr-1" style="padding: 3px">
 					<option value="draft_no">문서번호</option>
-					<option value="draft_type">종류</option>
 					<option value="draft_subject">제목</option>					
 					<option value="draft_content">내용</option>					
 					<option value="draft_emp_name">기안자</option>					
@@ -139,12 +138,12 @@ const excelDownLoad = () => {
                             <td class='col'>${draft.draft_type}</td>
                             <td class='col'>${draft.draft_no}</td>
                             <td class='col col-4'>
-                            <a href='<%=ctxPath%>/approval/draftDetail.on?draft_no=${draft.draft_no}&fk_draft_type_no=${draft.fk_draft_type_no}'>
+                            <a href='<%=ctxPath%>/approval/draftDetail.gw?draft_no=${draft.draft_no}&fk_draft_type_no=${draft.fk_draft_type_no}'>
 							<c:if test="${draft.urgent_status == 1}">
 							<span class="badge badge-pill badge-danger">긴급</span>
                             </c:if>
                             ${draft.draft_subject}</a></td>
-                            <td class='col'>${draft.draft_department}</td>
+                            <td class='col'>${draft.draft_department_name}</td>
                             <td class='col'>${draft.draft_emp_name}</td>
                         </tr>
                     </c:forEach>

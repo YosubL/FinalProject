@@ -195,6 +195,22 @@ public class FileManager {
     	}
 		
 	}// end of 	public void doFileDelete(String fileName, String path) {
+	
+	// === 파일 삭제하기 === //
+		public int doFileDeleteYS(String fileName, String path) throws Exception{
+			
+			int n=0;
+			
+			String pathname = path + File.separator + fileName;
+			
+	    	File file = new File(pathname);
+	    	
+	    	if(file.exists()) {
+	    		file.delete();
+	    		n=1;
+	    	}
+			return n;
+		}// end of 	public void doFileDelete(String fileName, String path) {
 
 
 	// == 파일 업로드 하기 두번째 방법(네이버 스마트 에디터를 사용한 사진첨부에 해당하는 것임) ==

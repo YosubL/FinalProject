@@ -13,32 +13,9 @@ import org.springframework.stereotype.Repository;
 import com.spring.app.domain.VacationVO;
 import com.spring.app.domain.Vacation_manageVO;
 
-//==== #32. Repository(DAO) 선언 ====
 //@Component
 @Repository
 public class VacationDAO_imple implements VacationDAO {
-
-	// === #33. 의존객체 주입하기(DI: Dependency Injection) ===
-	// >>> 의존 객체 자동 주입(Automatic Dependency Injection)은
-	//     스프링 컨테이너가 자동적으로 의존 대상 객체를 찾아서 해당 객체에 필요한 의존객체를 주입하는 것을 말한다. 
-	//     단, 의존객체는 스프링 컨테이너속에 bean 으로 등록되어 있어야 한다. 
-
-	//     의존 객체 자동 주입(Automatic Dependency Injection)방법 3가지 
-	//     1. @Autowired ==> Spring Framework에서 지원하는 어노테이션이다. 
-	//                       스프링 컨테이너에 담겨진 의존객체를 주입할때 타입을 찾아서 연결(의존객체주입)한다.
-	
-	//     2. @Resource  ==> Java 에서 지원하는 어노테이션이다.
-	//                       스프링 컨테이너에 담겨진 의존객체를 주입할때 필드명(이름)을 찾아서 연결(의존객체주입)한다.
-	
-	//     3. @Inject    ==> Java 에서 지원하는 어노테이션이다.
-    //                       스프링 컨테이너에 담겨진 의존객체를 주입할때 타입을 찾아서 연결(의존객체주입)한다.
-	
-/*	
-	@Autowired  // Type에 따라 알아서 Bean 을 주입해준다.
-	private SqlSessionTemplate abc;
-	// Type 에 따라 Spring 컨테이너가 알아서 root-context.xml 에 생성된 org.mybatis.spring.SqlSessionTemplate 의 bean 을  abc 에 주입시켜준다. 
-    // 그러므로 abc 는 null 이 아니다.
-*/
 	
 	@Resource
 	private SqlSessionTemplate sqlsession;
@@ -46,9 +23,6 @@ public class VacationDAO_imple implements VacationDAO {
 	@Resource
 	private SqlSessionTemplate sqlsession_hr;
 	
-	
-
-	// === #38. 시작페이지에서 메인 이미지를 보여주는 것 === //
 	@Override
 	public List<String> getImgfilenameList() {
 		List<String> imgfilenameList = sqlsession.selectList("minjun.getImgfilenameList");
@@ -66,7 +40,6 @@ public class VacationDAO_imple implements VacationDAO {
 		return n;
 	}
 
-
 	// 특정 회원의 휴가 정보 가져오기
 	@Override
 	public VacationVO vacation_select(String employee_id) {
@@ -81,7 +54,6 @@ public class VacationDAO_imple implements VacationDAO {
 		return total_count;
 	}
 	
-
 	// 회원들의 신청된 휴가 중 대기중인 회원 가져오기
 	@Override
 	public List<Vacation_manageVO> vacList(String employee_id) {
@@ -89,14 +61,12 @@ public class VacationDAO_imple implements VacationDAO {
 		return vacList;
 	}
 	
-	
 	// 회원들의 신청된 휴가 중 반려된 회원 가져오기
 	@Override
 	public List<Vacation_manageVO> vacReturnList(String employee_id) {
 		List<Vacation_manageVO> vacReturnList = sqlsession.selectList("minjun.vacReturnList", employee_id);
 		return vacReturnList;
 	}
-
 	
 	// 회원들의 신청된 휴가 중 승인된 회원 가져오기
 	@Override
@@ -105,7 +75,6 @@ public class VacationDAO_imple implements VacationDAO {
 		return vacApprovedList;
 	}
 	
-		
 	//////////////////////////////////////////////////////////////////////
 	// 휴가 결재시 휴가관리테이블 업데이트 하기
 	@Override
@@ -125,9 +94,13 @@ public class VacationDAO_imple implements VacationDAO {
 		int n = sqlsession.update("minjun.vacUpdate_plus", paraMap2);
 		return n;
 	}
+	// 휴가 승인이 모두 끝나면 스케쥴 달력에 insert 하기
+	@Override
+	public int calendarInsert(Map<String, String> paraMap3) {
+		int n = sqlsession.insert("minjun.calendarInsert", paraMap3);
+		return n;
+	}
 	//////////////////////////////////////////////////////////////////////
-
-	
 
 	// 특정 사용자의 승인완료된 휴가 가져오기
 	@Override
@@ -143,7 +116,6 @@ public class VacationDAO_imple implements VacationDAO {
 		return myReturnList;
 	}
 
-
 	// 특정 회원의 신청한 휴가 중 대기중인 휴가 정보 가져오기
 	@Override
 	public Map<String, String> vacHoldList_one(String vacation_seq) {
@@ -152,14 +124,12 @@ public class VacationDAO_imple implements VacationDAO {
 		return vacHoldList_one;
 	}
 
-
 	// 휴가 반려시 반려테이블에 insert 하기
 	@Override
 	public int vacInsert_return(Map<String, String> paraMap) {
 		int n = sqlsession.insert("minjun.vacInsert_return", paraMap);
 		return n;
 	}
-
 
 	// 휴가 반려시 반려테이블에 update 하기
 	@Override
@@ -168,10 +138,6 @@ public class VacationDAO_imple implements VacationDAO {
 		return n;
 	}
 
-
-	
-
-
 	// 휴가 재신청 하기 위한 insert
 	@Override
 	public int vac_insert_insert(Map<String, String> paraMap) {
@@ -179,22 +145,19 @@ public class VacationDAO_imple implements VacationDAO {
 		return n;
 	}
 
-
 	// 특정 사용자의 승인완료된 휴가 가져오기
 	@Override
 	public List<Vacation_manageVO> myHoldList(String employee_id) {
 		List<Vacation_manageVO> myHoldList = sqlsession.selectList("minjun.myHoldList", employee_id);
 		return myHoldList;
 	}
-
-
+	
 	// 대기중인 휴가 총 건수 알아오기
 	@Override
 	public int totalCount(String employee_id) {
 		int totalCount = sqlsession.selectOne("minjun.totalCount", employee_id);
 		return totalCount;
 	}
-
 
 	// 대기중인휴가의 totalPage 수 알아오기
 	@Override
@@ -203,53 +166,17 @@ public class VacationDAO_imple implements VacationDAO {
 		return totalPage;
 	}
 
-
 	// 승인 대기중인 휴가 삭제하기
 	@Override
 	public void seq_delete(String vacation_seq) {
 		sqlsession.delete("minjun.seq_delete", vacation_seq);
 	}
 
-
-	
-
-	
-
-	
-	
-
-
-	
-
-
-	
-
-	
-
-
-
-	
-
-
-	
-
-	
-	
-	
-	
-	
-
-	
-
-
-
-
-	
-
-
-	
-	
-	
-	
+	// 차트그리기 (ajax) 월별 휴가사용 수
+	@Override
+	public List<Map<String, String>> monthlyVacCnt() {
+		List<Map<String, String>> monthlyVacCnt = sqlsession.selectList("minjun.monthlyVacCnt");
+		return monthlyVacCnt;
+	}
 	
 }

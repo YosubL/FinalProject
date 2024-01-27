@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.spring.app.domain.EmployeesVO;
 import com.spring.app.yosub.model.EmpDAO;
 
 // ==== #31. Service 선언 ====
@@ -162,6 +163,53 @@ public class EmpService_imple implements EmpService {
 		}
 		
 
+		@Override
+		public List<Map<String, String>> get_team_info(String team_id) {
+			
+			List<Map<String, String>> get_team_info = dao.get_team_info(team_id);
+			
+			return get_team_info;
+		}
+
+
+		@Override
+		public int department_del(String department_id) {
+			int	n = dao.department_del(department_id);
+			return 	n;
+		}
+
+
+		@Override
+		public List<Map<String, String>> team_id_select_by_department(String department_id) {
+				
+				List<Map<String, String>> team_id_select_by_department = dao.team_id_select_by_department(department_id);
+			
+			return team_id_select_by_department;
+		}
+
+
+		@Override
+		public int team_del(String team_id) {
+			int	n = dao.team_del(team_id);
+			return 	n;
+		}
+
+
+		@Override
+		public List<Map<String, String>> job_id_select_by_department(String department_id) {
+				
+			List<Map<String, String>> job_id_select_by_department = dao.job_id_select_by_department(department_id);
+			
+			return job_id_select_by_department;
+		}
+
+		
+		// 내 정보 수정하기
+		@Override
+		public int infoEditEnd(EmployeesVO evo) {
+			int n = dao.infoEditEnd(evo);
+			return n;
+		}
 
 
 	

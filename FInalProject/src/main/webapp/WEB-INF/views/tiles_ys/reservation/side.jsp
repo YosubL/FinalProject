@@ -270,7 +270,7 @@
 				now_hours = "0"+now_hours;
 			} 
 			
-			if(Number(now_hours +1) > Number(selectTime)) {
+			if(Number(now_hours)+1 > Number(selectTime)) {
 				alert("지난 시간은 예약할 수 없습니다.");
 				return false;
 			}
@@ -788,11 +788,13 @@
 			<a id="confirm" class="nav-link" href="<%=ctxPath%>/reservation/confirm.gw">예약 내역</a>
 	    </li>
 	    
+	    
 	    <c:if test="${loginuser != null && loginuser.fk_job_id == '3'}">
 	    <li style="margin-top: 7px;" class="nav-item topMenu">관리자 메뉴
 	      	<ul class='subMenus adminMenu'>
 	      		<li style="margin-top: 7px;"><a id="adminConfirm" class="nav-link" href="<%=ctxPath%>/reservation/admin/adminConfirm.gw">예약 내역 및 승인</a></li>
 	      		<li><a id="managementResource" class="nav-link" href="<%=ctxPath%>/reservation/admin/managementResource.gw">자원 관리</a></li>
+	      		<li><a id="reservationChart" class="nav-link" href="<%=ctxPath%>/reservationChart.gw">예약 통계</a></li>
 	      		<%-- <li><a id="management" class="nav-link" href="<%=ctxPath%>/reservation/admin/management.on">이용 안내 관리</a></li> --%>
 	      	</ul>
 	    </li>

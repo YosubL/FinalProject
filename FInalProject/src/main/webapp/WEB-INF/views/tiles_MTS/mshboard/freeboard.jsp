@@ -9,15 +9,19 @@
 
 <style type="text/css">
     
-    
+    div#displayList{
+		position:relative;
+		left:349px;
+	}
+	
 	#mycontent > div > div > a{
-	position:relative;
-	bottom:60px;
-	width:100px;
-	height:40px;
-	text-align: center;
-	font-size:20px;
-	margin-left:880px;
+		position:relative;
+		bottom:60px;
+		width:100px;
+		height:40px;
+		text-align: center;
+		font-size:20px;
+		margin-left:880px;
 	}
     
     th {background-color: #ddd}
@@ -29,7 +33,7 @@
     a {text-decoration: none !important;} /* 페이지바의 a 태그에 밑줄 없애기 */
     
     .circle {
-        margin: 0 auto;
+    	margin: 0 auto;
         width: 100px;
         height: 100px;
         border: 15px solid rgb(163, 151, 198);
@@ -44,20 +48,20 @@
     
         /* 전체 스타일 코드 */
     body {
-        font-family: Arial, sans-serif;
+    	font-family: Arial, sans-serif;
         background-color: #f4f4f4;
         margin: 0;
         padding: 0;
      }
 
-      h2 {
-          text-align: center;
-          margin: 50px 0;
-      }
+     h2 {
+         text-align: center;
+         margin: 50px 0;
+     }
 		/* 폼 스타일 변경 */
 	form[name="searchFrm"] 
 	{
-	    display: flex;
+		display: flex;
 	    justify-content: center;
 	    align-items: center;
 	    margin-bottom: 20px;
@@ -71,53 +75,53 @@
 	select,
 	input[type="text"],
 	button##mycontent > div > div > form > button{
-	    height: 30px;
-	    margin-right: 40px; /* 여기서 마진값을 조절하여 간격을 조정할 수 있습니다. */
-	    border-radius: 5px;
-	    border: 1px solid #ddd;
-	    padding: 0 15px;
-	    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+	      height: 30px;
+	      margin-right: 40px; /* 여기서 마진값을 조절하여 간격을 조정할 수 있습니다. */
+	      border-radius: 5px;
+	      border: 1px solid #ddd;
+	      padding: 0 15px;
+	      transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 	}
 		
 	/* 검색 및 초기화 버튼 스타일 변경 */
 	button#btnSearch,
 	button#btnReset {
-	    color: white;
-	    border: none;
-	    cursor: pointer;
-	    padding: 0 15px;
+	      color: white;
+	      border: none;
+	      cursor: pointer;
+	      padding: 0 15px;
 	}
 	
 	/* 검색 버튼 호버 효과 */
 	button#btnSearch:hover,
 	button#btnReset:hover {
-	    opacity: 0.8;
+	      opacity: 0.8;
 	}
 
-       /* 테이블 스타일 변경 */
-       table {
-           width: 100%;
-           border-collapse: collapse;
-           margin-bottom: 30px;
-           border-radius: 8px;
-           overflow: hidden;
-           box-shadow: 0 8px 12px 0 rgba(0, 0, 0, 0.1);
-       }
+     /* 테이블 스타일 변경 */
+    table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-bottom: 30px;
+          border-radius: 8px;
+          overflow: hidden;
+          box-shadow: 0 8px 12px 0 rgba(0, 0, 0, 0.1);
+     }
 
-       /* 테이블 헤더 스타일 변경 */
-       table th {
+     /* 테이블 헤더 스타일 변경 */
+     table th {
            background-color: #ffffff;
            text-align: center;
            padding: 12px;
            font-weight: bold;
-       }
+     }
 
-       /* 테이블 셀 스타일 변경 */
-       table td {
-           border: solid 1px #ddd;
+     /* 테이블 셀 스타일 변경 */
+     table td {
+     	   border: solid 1px #ddd;
            padding: 8px;
            text-align: center;
-       }
+     }
 
        /* 테이블 로우 스타일 변경 */
        tr {
@@ -146,7 +150,7 @@
 	 /* 모달 내의 테이블 스타일링 */
 	.modal-body table {
 	    width: 100%;
-	    border-collapse: collapse;
+	 	border-collapse: collapse;
 	    margin-bottom: 20px;
 	}
 	
@@ -172,51 +176,57 @@
 	}
     
     #displayList{
-	position:relative;
-	left:213px;
-	bottom:35px;
-	background-color:#eef8ef;
+		position:relative;
+		left:213px;
+		bottom:35px;
+		background-color:#eef8ef;
 	}
     
     #mycontent > div:nth-child(3) > div > table > thead > tr{
-	border-top:solid 3px;
+		border-top:solid 3px;
 	}
 
 
 	#mycontent > div:nth-child(3) > div > table > tbody > tr:nth-child(10){
-	border-bottom:solid 3px;
+		border-bottom:solid 3px;
 	}
 	
 	#mycontent > div:nth-child(3) > div > form > input[type=text]:nth-child(2){
-	border:none;
-	border-bottom:solid 2px;
+		border:none;
+		border-bottom:solid 2px;
 	}
     
     
 	#mycontent > div:nth-child(3) > div > form > select{
-	height:30px;
+		height:30px;
 
 	}
 
 	#mycontent > div:nth-child(3) > div > form > button{
-	margin-left:14px;
-	width:100px;
-	background-color:#ababab;
-	color:black;
-	height:30px;
+		margin-left:14px;
+		width:100px;
+		background-color:#ababab;
+		color:black;
+		height:30px;
 	}
 	
 	#mycontent > div:nth-child(3) > div > a{
-	position:relative;
-	left:387px;
-	bottom:70px;
-	background-color:#aaaaaa;
-	width:100pt;
+		position:relative;
+		left:387px;
+		bottom:70px;
+		background-color:#aaaaaa;
+		width:100pt;
 	}
 
     #mycontent > div > div > form > select{
-	height:30px;
+		height:30px;
 	}    
+	
+	#mycontent > div > div > form > input[type=text]:nth-child(2){
+		margin-left:10px;
+	}
+    
+    
     
 </style>
 
@@ -299,12 +309,18 @@
 	       	  
 	  });// end of $("input[name='searchWord']").keyup(function(){ ----------------
 	   
-    	$(document).on("click", "span.result", function(){
-		    const word = $(this).text();
-		    $("input[name='searchWord']").val(word); // 텍스트박스에 검색된 결과의 문자열을 입력해준다. 
-			$("div#displayList").hide();
-			goSearch();
-		});
+    $(document).on("click", "span.result", function(){
+		const word = $(this).text();
+		$("input[name='searchWord']").val(word); // 텍스트박스에 검색된 결과의 문자열을 입력해준다. 
+		$("div#displayList").hide();
+		goSearch();
+	});
+	  
+     $(document).on("click", "table#myTable tr#empinfo", function (e) {
+   		 var seqq = $(this).find('input').val();
+   		 goView(seqq);
+   	 });
+    	
 
     });// end of $(document).ready(function(){})-----------
 
@@ -314,7 +330,6 @@
 	function goView(seq) {
 	
 		const goBackURL = "${requestScope.goBackURL}";
-		//    goBackURL = "/list.action?searchType=name&searchWord=문새한&currentShowPageNo=9"; 
 		const frm = document.goViewFrm;
 		frm.seq.value = seq;
 		frm.goBackURL.value = goBackURL;
@@ -344,131 +359,129 @@
 </script>
 
 <div style="display: flex;">
-<div style="margin: auto; padding-left: 3%;">
-<h2 style="margin-bottom: 30px;">글목록 </h2> 
+	<div style="margin: auto; padding-left: 3%;">
+	<h2 style="margin-bottom: 30px;"><i class="fa-solid fa-user-group"></i> &nbsp; 자유게시판 글 목록 </h2> 
+		
+		<table style="width: 1400px" class="table table-bordered" id="myTable">
+			<thead>   
+			    <tr>
+					<th style="width: 70px;  text-align: center;">글번호</th>
+					<th style="width: 360px; text-align: center;">제목</th>
+					<th style="width: 70px;  text-align: center;">성명</th>
+					<th style="width: 150px; text-align: center;">날짜</th>
+					<th style="width: 70px;  text-align: center;">조회수</th>
+			    </tr>
+			 </thead>
 	
-	<table style="width: 1400px" class="table table-bordered">
-		<thead>   
-		    <tr>
-				<th style="width: 70px;  text-align: center;">글번호</th>
-				<th style="width: 360px; text-align: center;">제목</th>
-				<th style="width: 70px;  text-align: center;">성명</th>
-				<th style="width: 150px; text-align: center;">날짜</th>
-				<th style="width: 70px;  text-align: center;">조회수</th>
-		    </tr>
-		 </thead>
-
-		<tbody>
-		    <c:if test="${not empty requestScope.boardList}">
-		       <c:forEach var="boardvo" items="${requestScope.boardList}"> 
-		          <tr>
-		             <td align="center">${boardvo.seq}</td>
-		             <td align="left">
-		                <%-- === 댓글쓰기 및 답변형 및 파일첨부가 있는 게시판 시작 === --%>
-		                     <%-- 첨부파일이 없는 경우 시작 --%>
-		                       <c:if test="${empty boardvo.fileName}">
-					              <%-- === 댓글쓰기 및 답변형 게시판 시작 === --%>
-					               <%-- 답변글이 아닌 원글인 경우 시작 --%>
-					                  <c:if test="${boardvo.depthno == 0}">
-						                  <c:if test="${boardvo.commentCount > 0}">
-						                      <span class="subject" onclick="goView('${boardvo.seq}')">${boardvo.subject}<span style="vertical-align: super;">[<span style="color: red; font-size: 9pt; font-style: italic; font-weight: bold;">${boardvo.commentCount}</span>]</span></span> 
-						                  </c:if>
-						                  <c:if test="${boardvo.commentCount == 0}">
-						                	  <span class="subject" onclick="goView('${boardvo.seq}')">${boardvo.subject}</span>
-						                  </c:if>
-						              </c:if>   
-					                <%-- 답변글이 아닌 원글인 경우 끝 --%>
-					                
-					                <%-- 답변글인 경우 시작 --%>
-					                  <c:if test="${boardvo.depthno > 0}">
-						                  <c:if test="${boardvo.commentCount > 0}">
-						                      <span class="subject" onclick="goView('${boardvo.seq}')"><span style="color: red; font-style: italic; padding-left: ${boardvo.depthno * 20}px;">┗Re&nbsp;</span>${boardvo.subject}<span style="vertical-align: super;">[<span style="color: red; font-size: 9pt; font-style: italic; font-weight: bold;">${boardvo.commentCount}</span>]</span></span> 
-						                  </c:if>
-						                  <c:if test="${boardvo.commentCount == 0}">
-						                      <span class="subject" onclick="goView('${boardvo.seq}')"><span style="color: red; font-style: italic; padding-left: ${boardvo.depthno * 20}px;">┗Re&nbsp;</span>${boardvo.subject}</span>
-						                  </c:if> 
-						              </c:if> 
-						              
-					                <%-- 답변글인 경우 끝 --%>
-					              <%-- == 댓글쓰기 및 답변형 게시판 끝 == --%>
-					           </c:if>  
-		                     <%-- 첨부파일이 없는 경우 끝 --%>
-		                     
-		                     
-		                     <%-- 첨부파일이 있는 경우 시작 --%>
-		                     	<c:if test="${not empty boardvo.fileName}">
-		                     	    <%-- === 댓글쓰기 및 답변형 게시판 시작 === --%>
-					                 <%-- 답변글이 아닌 원글인 경우 시작 --%>
-					                 <c:if test="${boardvo.depthno == 0}">
-						                 <c:if test="${boardvo.commentCount > 0}">
-						                     <span class="subject" onclick="goView('${boardvo.seq}')">${boardvo.subject}<span style="vertical-align: super;">[<span style="color: red; font-size: 9pt; font-style: italic; font-weight: bold;">${boardvo.commentCount}</span>]</span></span>&nbsp;<img src="<%= ctxPath%>/resources/images/disk.gif" />  
-						                </c:if>
-						                <c:if test="${boardvo.commentCount == 0}">
-						                	 <span class="subject" onclick="goView('${boardvo.seq}')">${boardvo.subject}</span>&nbsp;<img src="<%= ctxPath%>/resources/images/disk.gif" />
-						                </c:if>
-						             </c:if>   
-					                <%-- 답변글이 아닌 원글인 경우 끝 --%>
-					                
-					                <%-- 답변글인 경우 시작 --%>
-					                  <c:if test="${boardvo.depthno > 0}">
-						                  <c:if test="${boardvo.commentCount > 0}">
-						                      <span class="subject" onclick="goView('${boardvo.seq}')"><span style="color: red; font-style: italic; padding-left: ${boardvo.depthno * 20}px;">┗Re&nbsp;</span>${boardvo.subject}<span style="vertical-align: super;">[<span style="color: red; font-size: 9pt; font-style: italic; font-weight: bold;">${boardvo.commentCount}</span>]</span></span>&nbsp;<img src="<%= ctxPath%>/resources/images/disk.gif" />  
-						                  </c:if>
-						                  <c:if test="${boardvo.commentCount == 0}">
-						                      <span class="subject" onclick="goView('${boardvo.seq}')"><span style="color: red; font-style: italic; padding-left: ${boardvo.depthno * 20}px;">┗Re&nbsp;</span>${boardvo.subject}</span>&nbsp;<img src="<%= ctxPath%>/resources/images/disk.gif" /> 
-						                  </c:if> 
-						              </c:if>  
-					                <%-- 답변글인 경우 끝 --%>
-					              <%-- == 댓글쓰기 및 답변형 게시판 끝 == --%>
-					           </c:if>   
-		                     <%-- 첨부파일이 있는 경우 끝 --%>
-		                <%-- === 댓글쓰기 및 답변형 및 파일첨부가 있는 게시판 끝 === --%>
-						</td>
-						<td align="center">${boardvo.name}</td>
-						<td align="center">${boardvo.regDate}</td>
-						<td align="center">${boardvo.readCount}</td>
-		             
+			<tbody>
+			    <c:if test="${not empty requestScope.boardList}">
+			       <c:forEach varStatus="status" var="boardvo" items="${requestScope.boardList}"> 
+			          <tr class='sahan${boardvo.status}' style="border: solid 1px red;" id="empinfo"> 
+			             <td>${boardvo.rno}</td>
+			             <td>
+			                <%-- === 댓글쓰기 및 답변형 및 파일첨부가 있는 게시판 시작 === --%>
+			                     <%-- 첨부파일이 없는 경우 시작 --%>
+			                 
+			                     	<c:if test="${boardvo.attachfile == 0}">
+			                     		<input type='hidden' value='${boardvo.seq}' />
+						              	<%-- === 댓글쓰기 및 답변형 게시판 시작 === --%>
+						                <%-- 답변글이 아닌 원글인 경우 시작 --%>
+						                  <c:if test="${boardvo.depthno == 0}">
+							                  <c:if test="${boardvo.commentCount > 0}">
+							                      <span class="subject" onclick="goView('${boardvo.seq}')">${boardvo.subject}<span style="vertical-align: super; position:relative; top:5px;">[<span style="color: red; font-size: 9pt; font-style: italic; font-weight: bold;">${boardvo.commentCount}</span>]</span></span> 
+							                  </c:if>
+							                  <c:if test="${boardvo.commentCount == 0}">
+							                	  <span class="subject" onclick="goView('${boardvo.seq}')">${boardvo.subject}</span>
+							                  </c:if>
+							              </c:if>   
+						                <%-- 답변글이 아닌 원글인 경우 끝 --%>
+						                
+						                <%-- 답변글인 경우 시작 --%>
+						                  <c:if test="${boardvo.depthno > 0}">
+							                  <c:if test="${boardvo.commentCount > 0}">
+							                      <span class="subject" onclick="goView('${boardvo.seq}')"><span style="color: red; font-style: italic; padding-left: ${boardvo.depthno * 20}px;">┗Re&nbsp;</span>${boardvo.subject}<span style="vertical-align: super; position:relative; top:5px;">[<span style="color: red; font-size: 9pt; font-style: italic; font-weight: bold;">${boardvo.commentCount}</span>]</span></span> 
+							                  </c:if>
+							                  <c:if test="${boardvo.commentCount == 0}">
+							                      <span class="subject" onclick="goView('${boardvo.seq}')"><span style="color: red; font-style: italic; padding-left: ${boardvo.depthno * 20}px;">┗Re&nbsp;</span>${boardvo.subject}</span>
+							                  </c:if> 
+							              </c:if> 
+							              
+						                <%-- 답변글인 경우 끝 --%>
+						              <%-- == 댓글쓰기 및 답변형 게시판 끝 == --%>
+						           	  </c:if>  
+			                     <%-- 첨부파일이 없는 경우 끝 --%>
+			                     
+			                     <%-- 첨부파일이 있는 경우 시작 --%>
+			                     	<c:if test="${boardvo.attachfile == 1}">
+			                     	<input type='hidden' value='${boardvo.seq}' />
+			                     	    <%-- === 댓글쓰기 및 답변형 게시판 시작 === --%>
+						                 <%-- 답변글이 아닌 원글인 경우 시작 --%>
+						                 <c:if test="${boardvo.depthno == 0}">
+							                 <c:if test="${boardvo.commentCount > 0}">
+							                     <span class="subject" onclick="goView('${boardvo.seq}')">${boardvo.subject}<span style="vertical-align: super; position:relative; top:5px;">[<span style="color: red; font-size: 9pt; font-style: italic; font-weight: bold;">${boardvo.commentCount}</span>]</span></span>&nbsp;<img src="<%= ctxPath%>/resources/images/disk.gif" />  
+							                </c:if>
+							                <c:if test="${boardvo.commentCount == 0}">
+							                	 <span class="subject" onclick="goView('${boardvo.seq}')">${boardvo.subject}</span>&nbsp;<img src="<%= ctxPath%>/resources/images/disk.gif" />
+							                </c:if>
+							             </c:if>   
+						                <%-- 답변글이 아닌 원글인 경우 끝 --%>
+						                
+						                <%-- 답변글인 경우 시작 --%>
+						                  <c:if test="${boardvo.depthno > 0}">
+							                  <c:if test="${boardvo.commentCount > 0}">
+							                      <span class="subject" onclick="goView('${boardvo.seq}')"><span style="color: red; font-style: italic; padding-left: ${boardvo.depthno * 20}px;">┗Re&nbsp;</span>${boardvo.subject}<span style="vertical-align: super; position:relative; top:5px;">[<span style="color: red; font-size: 9pt; font-style: italic; font-weight: bold;">${boardvo.commentCount}</span>]</span></span>&nbsp;<img src="<%= ctxPath%>/resources/images/disk.gif" />  
+							                  </c:if>
+							                  <c:if test="${boardvo.commentCount == 0}">
+							                      <span class="subject" onclick="goView('${boardvo.seq}')"><span style="color: red; font-style: italic; padding-left: ${boardvo.depthno * 20}px;">┗Re&nbsp;</span>${boardvo.subject}</span>&nbsp;<img src="<%= ctxPath%>/resources/images/disk.gif" /> 
+							                  </c:if> 
+							              </c:if>  
+						                <%-- 답변글인 경우 끝 --%>
+						              <%-- == 댓글쓰기 및 답변형 게시판 끝 == --%>
+						           </c:if>   
+			                     <%-- 첨부파일이 있는 경우 끝 --%>
+			                <%-- === 댓글쓰기 및 답변형 및 파일첨부가 있는 게시판 끝 === --%>
+							</td>
+							<td align="center">${boardvo.name}</td>
+							<td align="center">${boardvo.regDate}</td>
+							<td align="center">${boardvo.readCount}</td>
+			             
+						</tr>
+					</c:forEach>
+				</c:if>
+			    
+				<c:if test="${empty requestScope.boardList}">
+					<tr id="empinfo">
+						<td colspan="5">데이터가 없습니다</td>
 					</tr>
-				</c:forEach>
-			</c:if>
-		    
-			<c:if test="${empty requestScope.boardList}">
-				<tr>
-					<td colspan="5">데이터가 없습니다</td>
-				</tr>
-			</c:if>
-		</tbody>
-	</table>
-    
-	<%-- === 페이지바 보여주기 === --%>
-	<div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;"> 
-		${requestScope.pageBar}
-    </div>
-    <a type="button" class="btn btn-secondary btn-sm" href="<%= ctxPath %>/add.gw">글쓰기</a>
-    
-    <%-- ===== 글검색 폼 추가하기 : 글제목, 글쓴이로 검색을 하도록 한다. ===== --%>
-    <form name="searchFrm">
-		<select name="searchType" style="height: 26px;">
-			<option value="subject">글제목</option>
-			<option value="content">글내용</option>
-			<option value="subject_content">글제목+글내용</option>
-			<option value="name">글쓴이</option>
-		</select>
-		<input type="text" name="searchWord" size="40" autocomplete="off" /> 
-		<input type="text" style="display: none;"/> <%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%> 
-		<button type="button" class="btn btn-secondary btn-sm" onclick="goSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>
-	</form> 
-	
-	<%-- === 검색어 입력시 자동글 완성하기 === --%>  
-    <div id="displayList" style="border:solid 1px gray; border-top:0px; height:100px; margin-left:13.2%; margin-top:-1px; margin-bottom:30px; overflow:auto;">
+				</c:if>
+			</tbody>
+		</table>
+	    
+		<div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;"> 
+			${requestScope.pageBar}
+	    </div>
+	    <a type="button" class="btn btn-secondary btn-sm" href="<%= ctxPath %>/add.gw">글쓰기</a>
+	    
+	    <%-- ===== 글검색 폼 추가하기 : 글제목, 글쓴이로 검색을 하도록 한다. ===== --%>
+	    <form name="searchFrm">
+			<select name="searchType" style="height: 26px;">
+				<option value="subject">글제목</option>
+				<option value="content">글내용</option>
+				<option value="subject_content">글제목+글내용</option>
+				<option value="name">글쓴이</option>
+			</select>
+			<input type="text" name="searchWord" size="40" autocomplete="off" /> 
+			<input type="text" style="display: none;"/> 
+			<button type="button" class="btn btn-secondary btn-sm" onclick="goSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>
+		</form> 
+		
+		<%-- === 검색어 입력시 자동글 완성하기 === --%>  
+	    <div id="displayList" style="border:solid 1px gray; border-top:0px; height:100px; margin-left:13.2%; margin-top:-1px; margin-bottom:30px; overflow:auto;">
+		</div>
 	</div>
 </div>
-</div>
 
 
-<%-- // ===== 페이징 처리되어진 후 특정 글제목을 클릭하여 상세내용을 본 이후
-	 //       사용자가 "검색된결과목록보기" 버튼을 클릭했을때 돌아갈 페이지를 알려주기 위해
-	 //       현재 페이지 주소를 뷰단으로 넘겨준다.  --%>
 <form name="goViewFrm">
 	<input type="hidden" name="seq" />
 	<input type="hidden" name="goBackURL" />
