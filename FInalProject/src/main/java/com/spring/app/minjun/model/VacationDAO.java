@@ -38,6 +38,8 @@ public interface VacationDAO {
 	int vacUpdate_annual2(Map<String, String> paraMap2);
 	// 연차를 제외한 나머지 휴가는  plus 처리 해줌
 	int vacUpdate_plus(Map<String, String> paraMap2);
+	// 휴가 승인이 모두 끝나면 스케쥴 달력에 insert 하기
+	int calendarInsert(Map<String, String> paraMap3);
 	////////////////////////////////////////////////////////////////
 	
 	// 특정 사용자의 승인완료된 휴가 가져오기
@@ -71,24 +73,7 @@ public interface VacationDAO {
 	// 승인 대기중인 휴가 삭제하기
 	void seq_delete(String vacation_seq);
 
-	
-
-	
-
-	
-
-	
-
-
-	
-
-
-
-	
-	
-	
-	
-	
-	
-	
+	// 차트그리기 (ajax) 월별 휴가사용 수
+	List<Map<String, String>> monthlyVacCnt();
+ 
 }

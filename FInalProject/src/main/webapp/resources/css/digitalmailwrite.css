@@ -1,0 +1,156 @@
+@charset "UTF-8";
+
+     .section-title span.left_span:after {
+         position: absolute;
+	     left: 0;
+	     top: -6px;
+	     height: 32px;
+	     width: 4px;
+	     background: rgb(3, 199, 90);
+	     content: "";
+     }
+	 .o_span{
+	     padding: 1px 5px;
+	     margin: 1px 5px;
+	     background-color: rgb(3, 199, 90);
+	     display: flex; 
+	     align-items: center;
+	     color: white !important;
+	 }
+     .x_span{
+      padding: 1px 5px;
+         margin: 1px 5px;
+         background-color: lightcoral;
+	  display: flex; 
+         align-items: center;
+         color: white !important;
+     }
+     
+     .removeEmail{
+         font-size: 10pt; 
+         margin: 0 auto; 
+         display: flex; 
+         align-items: center;"
+     }
+     
+     .x_icon{
+     	margin-left: 5px;
+     }
+     
+     /* 파일 필드 숨기기 */
+     .filebox input[type="file"] {  
+	  position: absolute;
+	  width: 1px;
+	  height: 1px;
+	  padding: 0;
+	  margin: -1px;
+	  overflow: hidden;
+	  clip:rect(0,0,0,0);
+	  border: 0;
+	}
+	
+
+	.uploadFile{
+	
+		display: flex; 
+		align-items: center;"
+	
+	}
+	
+	.removeFile{
+		font-size: 10pt; 
+		margin: 0 auto; 
+		display: flex; 
+		align-items: center;"
+	
+	}
+	
+	.btn_set{
+	
+		display: flex; 
+		align-items: center; 
+		border-bottom-width: 2px; 
+		padding: 15px; 
+		min-width: 200px; 
+		color: black; 
+		border-width: 0; 
+		cursor: pointer;
+	}
+	
+	.emailwrite{
+		background-color: #f4f5f6
+	}
+	.emailwritezon{
+		margin:0px auto; 
+		width:90%; 
+	}
+	
+	.section-title{
+		display: flex; 
+		align-items: center;
+		margin-top: 20px;
+		height: 30px; 
+	}
+	
+	.left_span{
+		font-weight: 600;
+		line-height: 21px;
+		text-transform: uppercase;
+		padding-left: 20px;
+		position: relative; 
+		font-size: 18px; 
+		width: 10%;"
+	}
+	
+	#check_span{
+		font-size: 10px;
+	}
+	
+	#check_set{
+		display: flex; 
+		align-items: center;
+		width: 8%;
+	}
+	
+	.email_input{
+		margin-left:18%; 
+		width: 95%
+	}
+	
+	.sminput{
+		width: 50%; 
+		display: flex; 
+		align-items: center; 
+		cursor: pointer; 
+		color: black;
+	}
+	
+	.dropzone{
+		margin-top: 25px;
+		min-height: 200px;
+		border: dashed 2px rgb(3, 199, 90);
+		box-sizing: border-box;
+		display: flex; 
+		align-items: center;
+		justify-content: center; 
+	}
+	
+	#dropzone_in{
+		display: flex; 
+		align-items: center; 
+		justify-content: center; 
+		width:95%; 
+		min-height: 200px;
+		max-height: 200px;
+		overflow-y: scroll;
+		font-size: 24px;
+		color: #a0c1e8;
+		font-weight: bold;
+		
+	}
+	
+	.file_len{
+		border: none;
+		color: white;
+		background-color: #a0c1e8 !important;
+	}

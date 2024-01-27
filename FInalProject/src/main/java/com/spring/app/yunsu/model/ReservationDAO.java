@@ -78,6 +78,9 @@ public interface ReservationDAO {
 	// 관리자 일때 승인 취소로 바꿔주기
 	int adminreservCancle(Map<String, String> paraMap);
 	
+	//회의실 차트
+	List<Map<String, String>> meetingroomchart();
+	
 	
 
 	

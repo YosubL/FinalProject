@@ -14,7 +14,6 @@ public class WorkVO {
 	
 	private String thisMonthVal;	  // 해당 월
 	
-	
 	public String getFk_employee_id() {
 		return fk_employee_id;
 	}
@@ -62,11 +61,6 @@ public class WorkVO {
 	public void setThisMonthVal(String thisMonthVal) {
 		this.thisMonthVal = thisMonthVal;
 	}
-	
-	
-	
-	
-
 	
 	
 }

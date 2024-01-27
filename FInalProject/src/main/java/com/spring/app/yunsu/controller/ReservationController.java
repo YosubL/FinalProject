@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -113,7 +114,7 @@ public class ReservationController {
 		EmployeesVO loginuser = (EmployeesVO) session.getAttribute("loginuser");
 		String employee_id = loginuser.getEmployee_id();
 		String email = loginuser.getEmail();
-
+		//System.out.println(employee_id);
 		if(pagination.getSearchWord() == null || "".equals(pagination.getSearchWord()) || pagination.getSearchWord().trim().isEmpty()) {
 			pagination.setSearchWord("");
 		}
@@ -153,7 +154,9 @@ public class ReservationController {
 		paraMap.put("enddate", enddate);
 		paraMap.put("employee_id", employee_id);
 		paraMap.put("email", email);
-
+		
+		//System.out.println("확인용"+paraMap.get("employee_id"));
+		//System.out.println("확인용"+paraMap.get("email"));
 		// 예약 내역 전체 개수 구하기
 		int listCnt = service.getResrvSearchCnt(paraMap);
 	//	System.out.println(listCnt);
@@ -167,6 +170,8 @@ public class ReservationController {
 		// 한 페이지에 표시할 이용자 예약 내역 글 목록
 		reservList = service.getResrvList(paraMap);
 		mav.addObject("reservList", reservList);
+		
+		
 		
 		pagination.setQueryString("&startdate="+startdate+"&enddate="+enddate);
 		
@@ -244,7 +249,7 @@ public class ReservationController {
 
 		// 예약 내역 전체 개수 구하기
 		int listCnt = service.getResrvAdminSearchCnt(paraMap);
-	//	System.out.println(listCnt);
+		//	System.out.println(listCnt);
 		
 		// startRno, endRno 구하기
 		// 구해 온 최대 글 개수를 파라미터로 넘긴다.
@@ -797,7 +802,40 @@ public class ReservationController {
 	} // end of public ModelAndView changeStatus(ModelAndView mav, HttpServletRequest request) throws Throwable 
 	
 	
-	
+	@GetMapping("/reservationChart.gw")
+	public ModelAndView reservationChart(HttpServletRequest request, ModelAndView mav) { 
+		
+				
+		mav.setViewName("reservation/admin/chart.tiles_ys");
+
+		return mav;
+	}
+	//차트 보여주는 페이지
+	@ResponseBody
+	@GetMapping("/meetingroomchart.gw")
+	public String meetingroomchart(HttpServletRequest request) { 
+		
+		List<Map<String,String>> list = service.meetingroomchart();
+		
+		JSONArray jsArr = new JSONArray();
+		
+			for(Map<String,String> paraMap : list) {
+				JSONObject jsObj = new JSONObject();
+				jsObj.put("MeetingRoom", paraMap.get("MeetingRoom"));
+				jsObj.put("nowMonth6", paraMap.get("nowMonth6"));
+				jsObj.put("nowMonth5", paraMap.get("nowMonth5"));
+				jsObj.put("nowMonth4", paraMap.get("nowMonth4"));
+				jsObj.put("nowMonth3", paraMap.get("nowMonth3"));
+				jsObj.put("nowMonth2", paraMap.get("nowMonth2"));
+				jsObj.put("nowMonth1", paraMap.get("nowMonth1"));
+				jsObj.put("nowMonth", paraMap.get("nowMonth"));
+				
+				jsArr.put(jsObj);
+			}
+		
+
+		return jsArr.toString();
+	}
 	
 	
 	

@@ -89,9 +89,9 @@ import com.spring.app.yosub.service.*;
 		   
 		   HttpSession session = request.getSession();
 		   EmployeesVO loginuser = (EmployeesVO) session.getAttribute("loginuser"); 
-		   System.out.println("fk_employee_id" + loginuser.getEmployee_id());
-		   System.out.println("fk_department_id" + loginuser.getFk_department_id());
-		   System.out.println("fk_email" + loginuser.getEmail());
+		   //System.out.println("fk_employee_id" + loginuser.getEmployee_id());
+		   //System.out.println("fk_department_id" + loginuser.getFk_department_id());
+		   //System.out.println("fk_email" + loginuser.getEmail());
 
 		   
 		   Map<String, Object> paraMap = new HashMap<>();

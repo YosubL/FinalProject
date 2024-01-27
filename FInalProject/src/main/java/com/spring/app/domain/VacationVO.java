@@ -14,7 +14,6 @@ public class VacationVO {
 	private String reward;					// 포상
 	private String fk_vacation_type;		// 휴가종류
 
-	
 	public String getFk_employee_id() {
 		return fk_employee_id;
 	}
@@ -86,10 +85,5 @@ public class VacationVO {
 	public void setFk_vacation_type(String fk_vacation_type) {
 		this.fk_vacation_type = fk_vacation_type;
 	}
-
-	
-	
-	
-	
 	
 }

@@ -8,13 +8,13 @@ import javax.annotation.Resource;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.spring.app.domain.DepartmentVO;
 import com.spring.app.domain.EmployeesVO;
-
 
 //==== #32. Repository(DAO) 선언 ====
 //@Component
 @Repository
-public class KimkmDAO_imple implements KimkmDAO {
+public class RegisterDAO_imple implements RegisterDAO {
 
 	@Resource
 	private SqlSessionTemplate sqlsession;
@@ -55,6 +55,13 @@ public class KimkmDAO_imple implements KimkmDAO {
 		Map<String, String> dept_team = sqlsession.selectOne("kimkm.selectDeptTeam", employee_id);
 		return dept_team;
 	}
+	
+	// 남은 휴가일수 알아오기
+	@Override
+	public Map<String, String> selectVacation(String employee_id) {
+		Map<String, String> vacation = sqlsession.selectOne("kimkm.selectVacation", employee_id);
+		return vacation;
+	}
 
 	
 	// 회원가입시 기본 정보 읽어오기
@@ -71,47 +78,4 @@ public class KimkmDAO_imple implements KimkmDAO {
 		return n;
 	}
 
-	// 급여계산 하기
-	@Override
-	public Map<String, String> selectSalary(String employee_id) {
-		Map<String, String> salary = sqlsession.selectOne("kimkm.selectSalary", employee_id);
-		return salary;
-	}
-
-	// 급여 조회하기
-	@Override
-	public List<Map<String, String>> monthSal(String employee_id) {
-		List<Map<String, String>> monthSalList = sqlsession.selectList("kimkm.monthSal", employee_id);
-		return monthSalList;
-	}
-
-	// 급여명세서 가져오기
-	@Override
-	public Map<String, String> salaryStatement(Map<String, String> paraMap) {
-		Map<String, String> salaryStatement = sqlsession.selectOne("kimkm.salaryStatement", paraMap);
-		return salaryStatement;
-	}
-
-	// salay 테이블에서 Excel 담을 값 가져오기
-	@Override
-	public List<Map<String, String>> salaryList(Map<String, Object> paraMap) {
-		List<Map<String, String>> salaryList = sqlsession.selectList("kimkm.salaryList", paraMap);
-		return salaryList;
-	}
-
-	@Override
-	public List<Map<String, String>> employeeList() {
-		List<Map<String, String>> employeeList = sqlsession.selectList("kimkm.employeeList");
-		return employeeList;
-	}
-
-	
-	
-
-	
-
-	
-
-	
-	
 }

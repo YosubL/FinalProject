@@ -17,8 +17,11 @@ public class Vacation_manageVO {
 	
 	////////////////////////////////////////////
 	private	String name; // JOIN 을 위해 tbl_employees 의 name 생성
+	private	String email; // JOIN 을 위해 tbl_employees 의 email 생성
 	
 	private String total_count; // 대기중인 문서의 갯수를 알아오는 용도
+	
+	private String fk_department_id;    // 부서번호
 	
 	private String vacation_return_date; 	// JOIN 을 위해 tbl_vacation_manage_return 테이블의 의 반려일자 생성
 	private String vacation_return_reason; 	// JOIN 을 위해 tbl_vacation_manage_return 테이블의 의 반려사유 생성
@@ -26,7 +29,7 @@ public class Vacation_manageVO {
 	
 	public String getVacation_seq() {
 		return vacation_seq;
-	}
+	} 
 
 	public void setVacation_seq(String vacation_seq) {
 		this.vacation_seq = vacation_seq;
@@ -134,6 +137,22 @@ public class Vacation_manageVO {
 
 	public void setVacation_manager_name(String vacation_manager_name) {
 		this.vacation_manager_name = vacation_manager_name;
+	}
+
+	public String getFk_department_id() {
+		return fk_department_id;
+	}
+
+	public void setFk_department_id(String fk_department_id) {
+		this.fk_department_id = fk_department_id;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	
 	

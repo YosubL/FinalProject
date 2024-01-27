@@ -117,6 +117,9 @@ public interface ApprovalService {
 	// 결재 처리하기
 	boolean updateApproval(ApprovalVO avo);
 
+	// JOIN 을 통해 가져올 로그인한 유저의 정보
+	EmployeesVO getLoginuser(String empno);
+	
 	// 공통결재라인(수신처) 가져오기
 	List<EmployeesVO> getRecipientList(String type_no);
 
@@ -127,7 +130,7 @@ public interface ApprovalService {
 	boolean delOfficialAprvLine(Map<String, String> paraMap);
 
 	// 공통결재라인 여부 사용으로 변경하기
-	boolean setUseOfficialLine(String draft_type_no);
+	int setUseOfficialLine(String draft_type_no);
 
 	// 공통결재라인 없는 양식 목록 불러오기
 	List<Map<String, String>> getNoOfficialAprvList();
@@ -145,12 +148,14 @@ public interface ApprovalService {
 	int delApprovalLine(SavedAprvLineVO sapVO);
 
 	// 환경설정-서명이미지 수정
-//	int updateSignature(Map<String, String> paraMap);
+	int updateSignature(Map<String, String> paraMap);
 	
 	// 기안 상신취소하기
 	boolean cancelDraft(DraftVO dvo);
 
 	// 첨부파일 삭제하기
 	boolean deleteFiles(Map<String, Object> paraMap);
+
+	
 
 }

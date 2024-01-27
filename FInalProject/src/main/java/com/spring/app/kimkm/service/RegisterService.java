@@ -1,13 +1,10 @@
 package com.spring.app.kimkm.service;
 
-import java.util.List;
 import java.util.Map;
-
-import org.springframework.ui.Model;
 
 import com.spring.app.domain.EmployeesVO;
 
-public interface KimkmService {
+public interface RegisterService {
 
 	// 회원가입
 	int add_register(EmployeesVO evo);
@@ -23,34 +20,15 @@ public interface KimkmService {
 
 	// 부서이름 팀명 알아오기
 	Map<String, String> selectDeptTeam(String employee_id);
+	
+	// 남은 휴가일수 알아오기
+	Map<String, String> selectVacation(String employee_id);
 
 	// 회원가입시 기본 정보 읽어오기
 	Map<String, String> selectRegister(String email);
 
 	// 비밀번호 변경하기
 	int pwdUpdateEnd(Map<String, String> paraMap);
-
-	// 급여계산 하기
-	Map<String, String> selectSalary(String employee_id);
-
-	// 급여테이블 조회하기
-	List<Map<String, String>> monthSal(String employee_id);
-
-	// 급여명세서 테이블 가져오기
-	Map<String, String> salaryStatement(Map<String, String> paraMap);
-
-	// salary 테이블에서 조건에 만족하는 급여들을 가져와서 Excel 파일로 만들기 
-	void salary_to_Excel(Map<String, Object> paraMap, Model model);
-
-	// 조직도 리스트 가져오기
-	List<Map<String, String>> employeeList();
-
-	
-
-	
-
-
-
 
 
 

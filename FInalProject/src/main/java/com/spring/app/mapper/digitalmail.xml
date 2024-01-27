@@ -1,0 +1,1238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="digitalmail">
+
+   <!-- 내가 받은 총 메일 건수(totalCount) 구하기  if(검색이 있을 때와 검색이 없을때 로 나뉜다.) --> 
+   <select id="getTotalCount" parameterType="HashMap" resultType="int">
+        SELECT count(*)
+        FROM 
+        (
+        SELECT rownum AS RNO
+            , V.receipt_mail_seq, V.send_email_seq, V.email_subject, V.name, V.job_name, V.send_time
+            , V.receipt_favorites, V.email_receipt_read_count, V.receipt_important , V.fk_sender_email
+            , V.sender_favorites ,V.email_total_read_count , V.filename , V.sender_important , V.category
+        FROM 
+        (
+        SELECT 
+            r.receipt_mail_seq, e.send_email_seq, e.email_subject, p.name, j.job_name, to_char(e.send_time, 'yyyy-mm-dd hh24:mi') as send_time
+            , r.receipt_favorites, r.email_receipt_read_count, r.receipt_important , e.fk_sender_email , e.sender_delete , j.fk_team_id , j.fk_department_id
+            , e.sender_favorites , e.email_total_read_count , e.filename , e.sender_important , e.category
+            FROM tbl_receipt_email r 
+            JOIN tbl_email e ON r.fk_send_email_seq = e.send_email_seq
+            JOIN tbl_employees p ON p.email = e.fk_sender_email
+            JOIN tbl_jobs j ON j.job_id = p.fk_job_id 
+        WHERE 
+        <choose>
+            <!-- 보낸 메일함  -->
+            <when test='type == "fk_sender_email"'>
+               e.sender_delete = 0 
+               and e.send_time <![CDATA[<]]> SYSDATE
+            and e.fk_sender_email = #{email}
+            <!-- 검색 페이징 -->
+            <choose>
+                <when test='searchType == "subject" and searchWord != ""'>
+                      AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                  </when>
+                  <when test='searchType == "content" and searchWord != ""'>
+                     AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                  </when>
+                  <when test='searchType == "subject_content" and searchWord != ""'>
+                     AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                  </when>
+                  <when test='searchType == "name" and searchWord != ""'>
+                     AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                  </when>
+                  <when test='searchType == "job" and searchWord != ""'>
+                      AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                  </when>
+            </choose>
+            <!-- 검색 페이징 -->
+         </when>
+         <!-- 보낸 메일함  -->
+         <!-- 휴지통 메일함  -->
+         <when test='type == "del"'> 
+            r.receipt_delete = 1 
+            and e.send_time <![CDATA[<]]> SYSDATE
+              and (r.fk_recipient_email = #{email} 
+               OR r.fk_reference_email = #{email} 
+               OR r.fk_hidden_reference_email = #{email})
+               <!-- 검색 페이징 -->
+            <choose>
+               <when test='searchType == "subject" and searchWord != ""'>
+                       AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+                   <when test='searchType == "content" and searchWord != ""'>
+                       AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+                   <when test='searchType == "subject_content" and searchWord != ""'>
+                       AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                   </when>
+                   <when test='searchType == "name" and searchWord != ""'>
+                       AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+                   <when test='searchType == "job" and searchWord != ""'>
+                       AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+            </choose>
+            <!-- 검색 페이징 -->   
+           </when>
+           <!-- 휴지통 메일함  -->
+           
+           <when test='type == "senddel"'> 
+            e.sender_delete = 1 
+              and e.fk_sender_email = #{email}
+              and e.send_time <![CDATA[<]]> SYSDATE
+               <!-- 검색 페이징 -->
+            <choose>
+               <when test='searchType == "subject" and searchWord != ""'>
+                       AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+                   <when test='searchType == "content" and searchWord != ""'>
+                       AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+                   <when test='searchType == "subject_content" and searchWord != ""'>
+                       AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                   </when>
+                   <when test='searchType == "name" and searchWord != ""'>
+                       AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+                   <when test='searchType == "job" and searchWord != ""'>
+                       AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+            </choose>
+            <!-- 검색 페이징 -->   
+           </when>
+                      <when test='type == "time"'> 
+              e.sender_delete = 0 
+              and e.fk_sender_email = #{email}
+              and e.send_time <![CDATA[>]]> SYSDATE
+               <!-- 검색 페이징 -->
+            <choose>
+               <when test='searchType == "subject" and searchWord != ""'>
+                       AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+                   <when test='searchType == "content" and searchWord != ""'>
+                       AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+                   <when test='searchType == "subject_content" and searchWord != ""'>
+                       AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                   </when>
+                   <when test='searchType == "name" and searchWord != ""'>
+                       AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+                   <when test='searchType == "job" and searchWord != ""'>
+                       AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+            </choose>
+            <!-- 검색 페이징 -->   
+           </when>
+           <!-- 그 이외 -->  
+          <when test='type != "fk_sender_email" or  type != "del"'> 
+              r.receipt_delete = 0
+              and e.send_time <![CDATA[<]]> SYSDATE 
+                and (r.fk_recipient_email = #{email} 
+            OR r.fk_reference_email = #{email} 
+            OR r.fk_hidden_reference_email = #{email})   
+              <choose>
+                 <!-- 중요 메일함 -->
+                 <when test='type == "impt"'>
+                   and r.receipt_important = 1
+                     <!-- 검색 페이징 -->
+                  <choose>
+                     <when test='searchType == "subject" and searchWord != ""'>
+                             AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "content" and searchWord != ""'>
+                             AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "subject_content" and searchWord != ""'>
+                             AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                         </when>
+                         <when test='searchType == "name" and searchWord != ""'>
+                             AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "job" and searchWord != ""'>
+                             AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                  </choose>
+                  <!-- 검색 페이징 -->   
+                </when>
+                
+                <when test='type == "sell"'>
+                   and NVL(e.category, 9999) != 9999
+                     <!-- 검색 페이징 -->
+                  <choose>
+                     <when test='searchType == "subject" and searchWord != ""'>
+                             AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "content" and searchWord != ""'>
+                             AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "subject_content" and searchWord != ""'>
+                             AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                         </when>
+                         <when test='searchType == "name" and searchWord != ""'>
+                             AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "job" and searchWord != ""'>
+                             AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                  </choose>
+                  <!-- 검색 페이징 -->   
+                </when>
+                
+                 <!-- 중요 메일함 -->
+                 <!-- 즐겨찾기 메일함 -->
+                 <when test='type == "fav"'>
+                   and r.receipt_favorites = 1
+                   <!-- 검색 페이징 -->
+                  <choose>
+                     <when test='searchType == "subject" and searchWord != ""'>
+                             AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "content" and searchWord != ""'>
+                             AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "subject_content" and searchWord != ""'>
+                             AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                         </when>
+                         <when test='searchType == "name" and searchWord != ""'>
+                             AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "job" and searchWord != ""'>
+                             AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                  </choose>
+                  <!-- 검색 페이징 -->   
+                </when> 
+                 <when test='type == "noread"'>
+                   and r.email_receipt_read_count = 0
+                   <!-- 검색 페이징 -->
+                  <choose>
+                     <when test='searchType == "subject" and searchWord != ""'>
+                             AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "content" and searchWord != ""'>
+                             AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "subject_content" and searchWord != ""'>
+                             AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                         </when>
+                         <when test='searchType == "name" and searchWord != ""'>
+                             AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "job" and searchWord != ""'>
+                             AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                  </choose>
+                  <!-- 검색 페이징 -->   
+                </when>
+                 <when test='type == "read"'>
+                   and r.email_receipt_read_count = 1  
+                                      <!-- 검색 페이징 -->
+                  <choose>
+                     <when test='searchType == "subject" and searchWord != ""'>
+                             AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "content" and searchWord != ""'>
+                             AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "subject_content" and searchWord != ""'>
+                             AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                         </when>
+                         <when test='searchType == "name" and searchWord != ""'>
+                             AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "job" and searchWord != ""'>
+                             AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                  </choose>
+                  <!-- 검색 페이징 -->   
+                </when> 
+                 
+             <when test='type == "me"'>
+                   and e.fk_sender_email = #{email}
+                                                   <!-- 검색 페이징 -->
+                  <choose>
+                     <when test='searchType == "subject" and searchWord != ""'>
+                             AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "content" and searchWord != ""'>
+                             AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "subject_content" and searchWord != ""'>
+                             AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                         </when>
+                         <when test='searchType == "name" and searchWord != ""'>
+                             AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "job" and searchWord != ""'>
+                             AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                  </choose>
+                  <!-- 검색 페이징 -->   
+                </when>  
+                
+             <when test='type == "team"'>
+                   and j.fk_team_id = #{fk_team_id} 
+                                                                <!-- 검색 페이징 -->
+                  <choose>
+                     <when test='searchType == "subject" and searchWord != ""'>
+                             AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "content" and searchWord != ""'>
+                             AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "subject_content" and searchWord != ""'>
+                             AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                         </when>
+                         <when test='searchType == "name" and searchWord != ""'>
+                             AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "job" and searchWord != ""'>
+                             AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                  </choose>
+                  <!-- 검색 페이징 -->   
+                </when> 
+                <when test='type == "dept"'>
+                   and j.fk_department_id = #{fk_dept_id} 
+                                                                                   <!-- 검색 페이징 -->
+               <choose>
+                     <when test='searchType == "subject" and searchWord != ""'>
+                             AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "content" and searchWord != ""'>
+                             AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "subject_content" and searchWord != ""'>
+                             AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                         </when>
+                         <when test='searchType == "name" and searchWord != ""'>
+                             AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "job" and searchWord != ""'>
+                             AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                  </choose>
+                  <!-- 검색 페이징 -->   
+                </when>    
+              </choose>
+           </when>
+             <otherwise></otherwise>
+         </choose>    
+        order by e.send_time desc
+        ) V
+    ) T
+   </select>
+   
+   <!-- 페이징 처리된 내가 받은 총 메일 보기  -->       
+    <select id="SelectMyEmail_withPaging" parameterType="HashMap" resultType="com.spring.app.digitalmail.domain.EmailVO">
+        SELECT
+            T.send_email_seq, T.receipt_mail_seq , T.email_subject, T.name, T.job_name, T.send_time
+            , T.receipt_favorites, T.email_receipt_read_count, T.receipt_important , T.fk_sender_email
+            , T.sender_favorites ,T.email_total_read_count , T.filename , T.sender_important ,T.category         
+        FROM 
+        (
+        SELECT rownum AS RNO
+            , V.receipt_mail_seq, V.send_email_seq, V.email_subject, V.name, V.job_name, V.send_time
+            , V.receipt_favorites, V.email_receipt_read_count, V.receipt_important , V.fk_sender_email
+            , V.sender_favorites ,V.email_total_read_count , V.filename , V.sender_important ,V.category
+        FROM 
+        (
+        SELECT 
+            r.receipt_mail_seq, e.send_email_seq, e.email_subject, p.name, j.job_name, to_char(e.send_time, 'yyyy-mm-dd hh24:mi') as send_time
+            , r.receipt_favorites, r.email_receipt_read_count, r.receipt_important , e.fk_sender_email , e.sender_delete , j.fk_team_id , j.fk_department_id
+            , e.sender_favorites , e.email_total_read_count , e.filename , e.sender_important ,e.category
+            FROM tbl_receipt_email r 
+            JOIN tbl_email e ON r.fk_send_email_seq = e.send_email_seq
+            JOIN tbl_employees p ON p.email = e.fk_sender_email
+            JOIN tbl_jobs j ON j.job_id = p.fk_job_id 
+        WHERE 
+        <choose>
+            <!-- 보낸 메일함  -->
+            <when test='type == "fk_sender_email"'>
+               e.sender_delete = 0 
+            and e.fk_sender_email = #{email}
+            and e.send_time <![CDATA[<]]> SYSDATE
+            <!-- 검색 페이징 -->
+            <choose>
+                <when test='searchType == "subject" and searchWord != ""'>
+                      AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                  </when>
+                  <when test='searchType == "content" and searchWord != ""'>
+                     AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                  </when>
+                  <when test='searchType == "subject_content" and searchWord != ""'>
+                     AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                  </when>
+                  <when test='searchType == "name" and searchWord != ""'>
+                     AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                  </when>
+                  <when test='searchType == "job" and searchWord != ""'>
+                      AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                  </when>
+            </choose>
+            <!-- 검색 페이징 -->
+         </when>
+         <!-- 보낸 메일함  -->
+          <when test='type == "senddel"'> 
+            e.sender_delete = 1 
+              and e.fk_sender_email = #{email}
+              and e.send_time <![CDATA[<]]> SYSDATE
+               <!-- 검색 페이징 -->
+            <choose>
+               <when test='searchType == "subject" and searchWord != ""'>
+                       AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+                   <when test='searchType == "content" and searchWord != ""'>
+                       AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+                   <when test='searchType == "subject_content" and searchWord != ""'>
+                       AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                   </when>
+                   <when test='searchType == "name" and searchWord != ""'>
+                       AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+                   <when test='searchType == "job" and searchWord != ""'>
+                       AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+            </choose>
+            <!-- 검색 페이징 -->   
+           </when>
+         
+         <!-- 휴지통 메일함  -->
+         <when test='type == "del"'> 
+            r.receipt_delete = 1 
+            and e.send_time <![CDATA[<]]> SYSDATE
+              and (r.fk_recipient_email = #{email} 
+               OR r.fk_reference_email = #{email} 
+               OR r.fk_hidden_reference_email = #{email})
+               <!-- 검색 페이징 -->
+            <choose>
+               <when test='searchType == "subject" and searchWord != ""'>
+                       AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+                   <when test='searchType == "content" and searchWord != ""'>
+                       AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+                   <when test='searchType == "subject_content" and searchWord != ""'>
+                       AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                   </when>
+                   <when test='searchType == "name" and searchWord != ""'>
+                       AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+                   <when test='searchType == "job" and searchWord != ""'>
+                       AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+            </choose>
+            <!-- 검색 페이징 -->   
+           </when>
+           <!-- 휴지통 메일함  -->
+           
+                      <when test='type == "time"'> 
+              e.sender_delete = 0 
+              and e.fk_sender_email = #{email}
+              and e.send_time <![CDATA[>]]> SYSDATE
+               <!-- 검색 페이징 -->
+            <choose>
+               <when test='searchType == "subject" and searchWord != ""'>
+                       AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+                   <when test='searchType == "content" and searchWord != ""'>
+                       AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+                   <when test='searchType == "subject_content" and searchWord != ""'>
+                       AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                   </when>
+                   <when test='searchType == "name" and searchWord != ""'>
+                       AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+                   <when test='searchType == "job" and searchWord != ""'>
+                       AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                   </when>
+            </choose>
+            <!-- 검색 페이징 -->   
+           </when>
+           <!-- 그 이외 -->  
+          <when test='type != "fk_sender_email" or  type != "del"'> 
+              r.receipt_delete = 0 
+              and e.send_time <![CDATA[<]]> SYSDATE
+                and (r.fk_recipient_email = #{email} 
+            OR r.fk_reference_email = #{email} 
+            OR r.fk_hidden_reference_email = #{email})   
+              <choose>
+                 <!-- 중요 메일함 -->
+                 <when test='type == "impt"'>
+                   and r.receipt_important = 1
+                     <!-- 검색 페이징 -->
+                  <choose>
+                     <when test='searchType == "subject" and searchWord != ""'>
+                             AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "content" and searchWord != ""'>
+                             AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "subject_content" and searchWord != ""'>
+                             AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                         </when>
+                         <when test='searchType == "name" and searchWord != ""'>
+                             AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "job" and searchWord != ""'>
+                             AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                  </choose>
+                  <!-- 검색 페이징 -->   
+                </when>
+                 <!-- 중요 메일함 -->
+                 <when test='type == "sell"'>
+                   AND NVL(e.category, 9999) != 9999
+                     <!-- 검색 페이징 -->
+                  <choose>
+                     <when test='searchType == "subject" and searchWord != ""'>
+                             AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "content" and searchWord != ""'>
+                             AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "subject_content" and searchWord != ""'>
+                             AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                         </when>
+                         <when test='searchType == "name" and searchWord != ""'>
+                             AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "job" and searchWord != ""'>
+                             AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                  </choose>
+                  <!-- 검색 페이징 -->   
+                </when>
+                 
+                 
+                 
+                 
+                 <!-- 즐겨찾기 메일함 -->
+                 <when test='type == "fav"'>
+                   and r.receipt_favorites = 1
+                   <!-- 검색 페이징 -->
+                  <choose>
+                     <when test='searchType == "subject" and searchWord != ""'>
+                             AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "content" and searchWord != ""'>
+                             AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "subject_content" and searchWord != ""'>
+                             AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                         </when>
+                         <when test='searchType == "name" and searchWord != ""'>
+                             AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "job" and searchWord != ""'>
+                             AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                  </choose>
+                  <!-- 검색 페이징 -->   
+                </when> 
+                 <when test='type == "noread"'>
+                   and r.email_receipt_read_count = 0
+                   <!-- 검색 페이징 -->
+                  <choose>
+                     <when test='searchType == "subject" and searchWord != ""'>
+                             AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "content" and searchWord != ""'>
+                             AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "subject_content" and searchWord != ""'>
+                             AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                         </when>
+                         <when test='searchType == "name" and searchWord != ""'>
+                             AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "job" and searchWord != ""'>
+                             AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                  </choose>
+                  <!-- 검색 페이징 -->   
+                </when>
+                 <when test='type == "read"'>
+                   and r.email_receipt_read_count = 1  
+                                      <!-- 검색 페이징 -->
+                  <choose>
+                     <when test='searchType == "subject" and searchWord != ""'>
+                             AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "content" and searchWord != ""'>
+                             AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "subject_content" and searchWord != ""'>
+                             AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                         </when>
+                         <when test='searchType == "name" and searchWord != ""'>
+                             AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "job" and searchWord != ""'>
+                             AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                  </choose>
+                  <!-- 검색 페이징 -->   
+                </when> 
+                 
+             <when test='type == "me"'>
+                   and e.fk_sender_email = #{email}
+                                                   <!-- 검색 페이징 -->
+                  <choose>
+                     <when test='searchType == "subject" and searchWord != ""'>
+                             AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "content" and searchWord != ""'>
+                             AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "subject_content" and searchWord != ""'>
+                             AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                         </when>
+                         <when test='searchType == "name" and searchWord != ""'>
+                             AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "job" and searchWord != ""'>
+                             AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                  </choose>
+                  <!-- 검색 페이징 -->   
+                </when>  
+                
+             <when test='type == "team"'>
+                   and j.fk_team_id = #{fk_team_id} 
+                                                                <!-- 검색 페이징 -->
+                  <choose>
+                     <when test='searchType == "subject" and searchWord != ""'>
+                             AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "content" and searchWord != ""'>
+                             AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "subject_content" and searchWord != ""'>
+                             AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                         </when>
+                         <when test='searchType == "name" and searchWord != ""'>
+                             AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "job" and searchWord != ""'>
+                             AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                  </choose>
+                  <!-- 검색 페이징 -->   
+                </when> 
+                <when test='type == "dept"'>
+                   and j.fk_department_id = #{fk_dept_id} 
+                                                                                   <!-- 검색 페이징 -->
+               <choose>
+                     <when test='searchType == "subject" and searchWord != ""'>
+                             AND lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "content" and searchWord != ""'>
+                             AND lower(e.email_contents) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "subject_content" and searchWord != ""'>
+                             AND (lower(e.email_subject) LIKE '%' || lower(#{searchWord}) || '%' OR lower(content) LIKE '%' || lower(#{searchWord}) || '%') 
+                         </when>
+                         <when test='searchType == "name" and searchWord != ""'>
+                             AND lower(p.name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                         <when test='searchType == "job" and searchWord != ""'>
+                             AND lower(j.job_name) LIKE '%' || lower(#{searchWord}) || '%'
+                         </when>
+                  </choose>
+                  <!-- 검색 페이징 -->   
+                </when>    
+              </choose>
+           </when>
+             <otherwise></otherwise>
+         </choose>    
+        order by e.send_time desc
+       ) V
+      ) T
+      WHERE RNO BETWEEN #{startRno} AND #{endRno}
+   </select>
+   
+   <!-- === 검색어 입력시 자동글 완성하기  ===  -->
+   <select id="emailWordSearchShow" parameterType="HashMap" resultType="String"> 
+       <choose>
+         <when test='searchType == "subject"'>
+            select e.email_subject
+         </when>
+         <when test='searchType == "name"'>
+            select distinct p.name 
+         </when>
+            <when test='searchType == "job"'>
+            select distinct j.job_name  
+         </when>
+         <otherwise></otherwise>
+      </choose> 
+       from tbl_receipt_email r
+      join tbl_email e 
+      on r.fk_send_email_seq = e.send_email_seq
+      join tbl_employees p 
+      on p.email = e.fk_sender_email
+      join tbl_jobs j 
+      on j.job_id = p.fk_job_id 
+       WHERE 
+       <choose>
+         <when test='searchType == "subject" and searchWord != ""'>
+            lower(e.email_subject) like '%'||lower(#{searchWord})||'%' 
+         </when>
+         <when test='searchType == "name" and searchWord != ""'>
+              lower(p.name) like '%'||lower(#{searchWord})||'%'
+         </when>
+         <otherwise>
+            lower(j.job_name) like '%'||lower(#{searchWord})||'%'
+         </otherwise>
+      </choose>
+      AND (
+              r.fk_recipient_email = #{myEmail} 
+            OR r.fk_reference_email = #{myEmail}  
+            OR r.fk_hidden_reference_email = #{myEmail}
+       )
+      AND r.receipt_delete = 0
+      <choose>
+         <when test='searchType == "subject"'>
+            order by e.send_time desc
+         </when>
+         <when test='searchType == "name"'>
+            order by p.name  asc
+         </when>
+         <when test='searchType == "job"'>
+            order by j.job_name asc
+         </when>
+      </choose> 
+   </select>
+   
+   <!-- E메일리스트 가져오기 -->
+   <select id="getEmailList" resultType="String"> 
+         select '"'||t.team_name||' '||j.job_name||' '||e.name||'<![CDATA[<]]>'||e.email||'<![CDATA[>]]>'||'"' as empinfo , t.team_name, d.department_name
+         from tbl_employees e
+         left join tbl_jobs j
+         on e.FK_JOB_ID = j.job_id
+         left join tbl_department d
+         on e.FK_DEPARTMENT_ID = d.DEPARTMENT_ID
+         left join tbl_team t
+         on e.fk_team_id = t.team_id
+         where e.employee_id != 7777
+   </select>
+   
+   <select id="getEmailseq" resultType="String">
+      select emailseq.nextval AS emailseq 
+      from dual               
+   </select>
+   
+   <select id="getEmailStopseq" resultType="String">
+      select emailstop_seq.nextval as send_emailstop_seq 
+      from dual               
+   </select>
+   
+   
+   <!-- 임시저장 이메일 입력 -->
+   <insert id="emailaddStop" parameterType="HashMap">
+      insert into tbl_emailstop(send_emailstop_seq, fk_sender_email, fk_recipient_email, email_subject , email_contents
+                      , important, individual , stoptime ,  fk_reference_email, fk_hidden_reference_email
+                      , category)
+               values(#{send_emailstop_seq}, #{fk_sender_email} ,#{receieve_Email},#{subject},#{contents}, #{impt}, #{individualval}, default,
+      <choose>
+          <when test="receieveplus_Email == ''">
+              null,
+          </when>
+          <otherwise>
+             #{receieveplus_Email},
+          </otherwise>
+       </choose>
+      
+      <choose>
+          <when test="receievehidden_Email== ''">
+              null,
+          </when>
+          <otherwise>
+             #{receievehidden_Email},
+          </otherwise>
+       </choose>
+        
+       <choose>
+          <when test="categoryno == ''">
+              null
+          </when>
+          <otherwise>
+              #{categoryno}
+          </otherwise>
+       </choose>
+      )
+   </insert>
+   
+      
+   <!-- 중심 이메일 입력 -->
+   <insert id="emailsucadd" parameterType="HashMap">
+      insert into tbl_email(send_email_seq, fk_sender_email, fk_recipient_email, email_subject , email_contents
+                      , sender_important, individual , fk_reference_email, fk_hidden_reference_email
+                      , send_time , category  
+                           , fileName, orgFilename , fileSize, MAIL_PWD)
+               values(#{email_seq}, #{fk_sender_email} ,#{receieve_Email},#{subject},#{contents}, #{impt}, #{individualval},
+      
+      <choose>
+          <when test="receieveplus_Email == ''">
+              null,
+          </when>
+          <otherwise>
+             #{receieveplus_Email},
+          </otherwise>
+       </choose>
+      
+      <choose>
+          <when test="receievehidden_Email== ''">
+              null,
+          </when>
+          <otherwise>
+             #{receievehidden_Email},
+          </otherwise>
+       </choose>
+      
+      <choose>
+          <when test="send_time == ''">
+              sysdate,
+          </when>
+          <otherwise>
+              to_date('${send_time}','yyyy-mm-dd hh24:mi'),
+          </otherwise>
+       </choose>
+              
+       <choose>
+          <when test="categoryno == ''">
+              null,
+          </when>
+          <otherwise>
+              #{categoryno},
+          </otherwise>
+       </choose>
+              
+       <choose>
+          <when test="originalFilename == ''">
+              null,
+          </when>
+          <otherwise>
+              #{originalFilename},
+          </otherwise>
+       </choose>
+       
+       <choose>
+          <when test="newFileName == ''">
+              null,
+          </when>
+          <otherwise>
+              #{newFileName},
+          </otherwise>
+       </choose>
+       
+       <choose>
+          <when test="fileSize == ''">
+              null,
+          </when>
+          <otherwise>
+              #{fileSize},
+          </otherwise>
+       </choose>
+       
+       <choose>
+          <when test="email_pwd == ''">
+              null
+          </when>
+          <otherwise>
+              #{email_pwd}
+          </otherwise>
+       </choose>
+      
+      )
+   </insert>
+   
+   <!-- 개별 메일함에 넣어주기 -->
+   <insert id="addEmailsplit" parameterType="HashMap">
+      insert into tbl_receipt_email(
+          receipt_mail_seq, fk_send_email_seq, fk_sender_email,
+          ${emailType}, receipt_important
+      )
+      values (
+          receipt_email_seq.nextval, #{email_seq}, #{fk_sender_email},
+          #{email_split}, #{impt}
+      )
+   </insert>
+   
+   <!-- 비밀번호가 있을경우 알아오기 -->
+   <select id="getEmailPwd" resultType="String" parameterType="String"> 
+      select mail_pwd
+      from tbl_email
+      where send_email_seq=#{send_email_seq}
+   </select>
+   
+   <!-- 메일 하나 가져오기 -->
+   <select id="SelectEmail" parameterType="HashMap" resultType="com.spring.app.digitalmail.domain.EmailVO"> 
+      select * 
+      from tbl_email
+      where send_email_seq = #{send_email_seq}
+   </select>
+   
+      <!-- 메일 하나 가져오기 -->
+   <select id="SelectSendEmail" parameterType="HashMap" resultType="com.spring.app.digitalmail.domain.EmailVO"> 
+      select * 
+      from tbl_email
+      where send_email_seq = #{send_email_seq}
+   </select>
+   
+   <!-- email_totalcnt_update 하기 -->
+    <update id="email_totalcnt_update" parameterType="String">
+       UPDATE tbl_email
+         SET email_total_read_count = email_total_read_count + 1
+         WHERE send_email_seq = #{send_email_seq}
+   </update>
+   
+   <!-- 메일 하나 가져오기 -->
+   <select id="getseqfav" parameterType="HashMap" resultType="com.spring.app.digitalmail.domain.EmailVO"> 
+      select receipt_favorites , receipt_mail_seq , receipt_important , email_receipt_read_count
+      from tbl_receipt_email
+      where fk_send_email_seq = #{send_email_seq}
+      AND (
+              fk_recipient_email = #{MyEmail} 
+            OR fk_reference_email = #{MyEmail}  
+            OR fk_hidden_reference_email = #{MyEmail}
+		)
+   </select>
+   
+   <!-- 임시저장된 리스트 갯수 채번 --> 
+   <select id="addstopCount" parameterType="HashMap" resultType="int">
+      select count(*) 
+      from tbl_emailstop
+      where fk_sender_email = #{email}
+   </select>
+   
+   <!-- 페이징 처리된 내가 받은 총 메일 보기  -->       
+   <select id="SelectMyStopEmail_withPaging" parameterType="HashMap" resultType="com.spring.app.digitalmail.domain.EmailStopVO">
+       SELECT T.send_emailstop_seq, T.fk_sender_email, T.fk_recipient_email, T.fk_reference_email,
+              T.fk_hidden_reference_email, T.email_subject, T.email_contents, T.important, T.category, T.individual, T.stoptime
+       FROM (
+           SELECT rownum AS RNO, V.*
+           FROM (
+               SELECT *
+               FROM TBL_EMAILSTOP
+               WHERE FK_SENDER_EMAIL = #{email}
+               ORDER BY send_emailstop_seq DESC
+           ) V
+       ) T
+       WHERE RNO BETWEEN #{startRno} AND #{endRno}
+   </select>
+   
+   <!-- 임시저장 메일 하나 가져오기 -->
+   <select id="SelectstopEmail" parameterType="HashMap" resultType="com.spring.app.digitalmail.domain.EmailStopVO"> 
+      select * 
+      from tbl_emailstop
+      where send_emailstop_seq = #{send_emailstop_seq}
+   </select>
+   
+   <!--
+   <select id="getreceieveList" resultType="String"> 
+   select '"'||t.team_name||' '||j.job_name||' '||e.name||'<![CDATA[<]]>'||e.email||'<![CDATA[>]]>'||'"' as empinfo , t.team_name, d.department_name
+         from tbl_employees e
+         left join tbl_jobs j
+         on e.FK_JOB_ID = j.job_id
+         left join tbl_department d
+         on e.FK_DEPARTMENT_ID = d.DEPARTMENT_ID
+         left join tbl_team t
+         on e.fk_team_id = t.team_id
+         where e.employee_id != 7777
+        and e.email IN (#{receieve_Email})
+   </select>
+   -->
+   <!-- E메일리스트 가져오기 -->
+   <select id="recipientEmailList" resultType="String" parameterType="HashMap"> 
+         select '"'||t.team_name||' '||j.job_name||' '||e.name||'<![CDATA[<]]>'||e.email||'<![CDATA[>]]>'||'"' as empinfo , t.team_name, d.department_name
+         from tbl_employees e
+         left join tbl_jobs j
+         on e.FK_JOB_ID = j.job_id
+         left join tbl_department d
+         on e.FK_DEPARTMENT_ID = d.DEPARTMENT_ID
+         left join tbl_team t
+         on e.fk_team_id = t.team_id
+         where e.employee_id != 7777
+         and e.email IN 
+         <if test="recipient_arr != null">
+            <foreach collection="recipient_arr" index="i" open="(" separator="," close=")">
+               '${recipient_arr[i]}'
+         </foreach>
+      </if>
+   </select>
+   
+   <select id="referenceEmailList" resultType="String" parameterType="HashMap">  
+      select '"'||t.team_name||' '||j.job_name||' '||e.name||'<![CDATA[<]]>'||e.email||'<![CDATA[>]]>'||'"' as empinfo , t.team_name, d.department_name
+         from tbl_employees e
+         left join tbl_jobs j
+         on e.FK_JOB_ID = j.job_id
+         left join tbl_department d
+         on e.FK_DEPARTMENT_ID = d.DEPARTMENT_ID
+         left join tbl_team t
+         on e.fk_team_id = t.team_id
+         where e.employee_id != 7777
+         and e.email IN 
+         <if test="reference_arr != null">
+            <foreach collection="reference_arr" index="i" open="(" separator="," close=")">
+               '${reference_arr[i]}'
+         </foreach>
+      </if>
+   </select>
+   
+   <select id="hidden_referenceEmailList" resultType="String" parameterType="HashMap"> 
+         select '"'||t.team_name||' '||j.job_name||' '||e.name||'<![CDATA[<]]>'||e.email||'<![CDATA[>]]>'||'"' as empinfo , t.team_name, d.department_name
+         from tbl_employees e
+         left join tbl_jobs j
+         on e.FK_JOB_ID = j.job_id
+         left join tbl_department d
+         on e.FK_DEPARTMENT_ID = d.DEPARTMENT_ID
+         left join tbl_team t
+         on e.fk_team_id = t.team_id
+         where e.employee_id != 7777
+         and e.email IN 
+         <if test="hidden_reference_arr != null">
+            <foreach collection="hidden_reference_arr" index="i" open="(" separator="," close=")">
+               '${hidden_reference_arr[i]}'
+         </foreach>
+      </if>
+   </select>
+   
+   <delete id="stopemaildel" parameterType="HashMap">
+      delete from tbl_emailstop
+       WHERE SEND_EMAILSTOP_SEQ = ${send_emailstop_seq}
+   </delete>
+   
+   
+   <!-- 임시저장 이메일 입력 -->
+   <update id="emailaddupdate" parameterType="HashMap">
+       update tbl_emailstop
+       set
+           fk_sender_email = #{fk_sender_email},
+           fk_recipient_email = #{receieve_Email},
+           email_subject = #{subject},
+           email_contents = #{contents},
+           important = #{impt},
+           individual = #{individualval},
+           stoptime = sysdate,
+           fk_reference_email =
+               <choose>
+                   <when test="receieveplus_Email == ''">null</when>
+                   <otherwise>#{receieveplus_Email}</otherwise>
+               </choose>,
+           fk_hidden_reference_email =
+               <choose>
+                   <when test="receievehidden_Email == ''">null</when>
+                   <otherwise>#{receievehidden_Email}</otherwise>
+               </choose>,
+           category =
+               <choose>
+                   <when test="categoryno == ''">null</when>
+                   <otherwise>#{categoryno}</otherwise>
+               </choose>
+          where send_emailstop_seq = #{upsend_emailstop_seq}
+   </update>
+   
+<!-- receipt_favorites 값 가져오기 -->
+   <select id="select_receipt_favorites" parameterType="String" resultType="String">
+      select receipt_favorites
+      from tbl_receipt_email
+      where receipt_mail_seq = #{receipt_mail_seq}
+   </select>
+   
+   <!-- receipt_favorites 값 가져오기 -->
+   <select id="select_send_favorites" parameterType="String" resultType="String">
+      select sender_favorites
+      from tbl_email
+      where send_email_seq = #{receipt_mail_seq}
+   </select>
+   
+   <!-- receipt_favorites 값 가져오기 -->
+   <select id="select_send_important" parameterType="String" resultType="String">
+      select sender_important
+      from tbl_email
+      where send_email_seq = #{receipt_mail_seq}
+   </select>
+   
+   
+   <!-- email_receipt_read_count update 하기 -->
+   <update id="receipt_favorites_update" parameterType="HashMap">
+       update tbl_receipt_email set receipt_favorites =
+           <choose>
+               <when test='receipt_favorites == "0"'>
+                   1
+               </when>
+               <when test='receipt_favorites == "1"'>
+                   0
+               </when>
+              
+           </choose>
+       where receipt_mail_seq = #{receipt_mail_seq}
+   </update>
+   
+   <!-- email_receipt_read_count update 하기 -->
+   <update id="send_favorites_update" parameterType="HashMap">
+       update tbl_email set sender_favorites =
+           <choose>
+               <when test='receipt_favorites == "0"'>
+                   1
+               </when>
+               <when test='receipt_favorites == "1"'>
+                   0
+               </when>
+           </choose>
+       where send_email_seq = #{receipt_mail_seq}
+   </update>
+   
+   <!-- email_receipt_read_count update 하기 -->
+   <update id="send_important_update" parameterType="HashMap">
+       update tbl_email set sender_important =
+           <choose>
+               <when test='receipt_important == "0"'>
+                   1
+               </when>
+               <when test='receipt_important == "1"'>
+                   0
+               </when>
+           </choose>
+       where send_email_seq = #{receipt_mail_seq}
+   </update>
+   
+   <!-- email_receipt_read_count update 하기 -->
+   <update id="email_receipt_read_count_update" parameterType="String">
+       update tbl_receipt_email set email_receipt_read_count = 1
+       where receipt_mail_seq = #{receipt_mail_seq}
+   </update>
+   
+   <!-- email_receipt_read_count 값 가져오기 -->
+   <select id="select_email_receipt_read_count" parameterType="String" resultType="String">
+      select email_receipt_read_count
+      from tbl_receipt_email
+      where receipt_mail_seq = #{receipt_mail_seq}
+   </select>
+   
+   <!-- receipt_important 값 가져오기 -->
+   <select id="select_receipt_important" parameterType="String" resultType="String">
+      select receipt_important
+      from tbl_receipt_email
+      where receipt_mail_seq = #{receipt_mail_seq}
+   </select>
+   
+   <!-- receipt_important update 하기 -->
+   <update id="receipt_important_update" parameterType="HashMap">
+       update tbl_receipt_email set receipt_important =
+           <choose>
+               <when test='receipt_important == "0"'>
+                   1
+               </when>
+               <when test='receipt_important == "1"'>
+                   0
+               </when>
+              
+           </choose>
+       where receipt_mail_seq = #{receipt_mail_seq}
+   </update>
+   
+      <select id="getsenderEmail" resultType="String" parameterType="String"> 
+         select '"'||t.team_name||' '||j.job_name||' '||e.name||'<![CDATA[<]]>'||e.email||'<![CDATA[>]]>'||'"' as empinfo , t.team_name, d.department_name
+         from tbl_employees e
+         left join tbl_jobs j
+         on e.FK_JOB_ID = j.job_id
+         left join tbl_department d
+         on e.FK_DEPARTMENT_ID = d.DEPARTMENT_ID
+         left join tbl_team t
+         on e.fk_team_id = t.team_id
+         where e.employee_id != 7777
+         and e.email = '${sender}'
+   </select>
+   
+   <select id="getSubjectandcontent" resultType="com.spring.app.digitalmail.domain.EmailVO" parameterType="String"> 
+      select *
+      from tbl_email
+      where send_email_seq = ${send_email_seq}
+   </select>
+   
+
+   <update id="email_del" parameterType="HashMap">
+       update ${deltable} set ${delname} = 1 + (#{cnt})
+       where ${seqtype} in
+       <if test="receipt_mail_seq_arr != null">
+            <foreach collection="receipt_mail_seq_arr" index="i" open="(" separator="," close=")">
+               '${receipt_mail_seq_arr[i]}'
+         </foreach>
+      </if>
+   </update>
+   
+      <!-- 임시저장 이메일 입력 -->
+   <update id="total_email_receipt_read_count_update" parameterType="HashMap">
+       update tbl_receipt_email set email_receipt_read_count = ${readcnt}
+       where receipt_mail_seq in
+       <if test="receipt_mail_seq_arr != null">
+            <foreach collection="receipt_mail_seq_arr" index="i" open="(" separator="," close=")">
+               '${receipt_mail_seq_arr[i]}'
+         </foreach>
+      </if>
+   </update>
+   
+      <!-- receipt_important update 하기 -->
+   <update id="onedel" parameterType="String">
+       update tbl_receipt_email set receipt_delete = 1
+       where receipt_mail_seq = #{receipt_mail_seq}
+   </update>
+   
+   <!-- receipt_important update 하기 -->
+   <update id="onesenddel" parameterType="String">
+       update tbl_email set sender_delete = 1
+       where send_email_seq = #{receipt_mail_seq}
+   </update>
+   
+   <delete id="emailstop_del" parameterType="HashMap">
+      delete from tbl_emailstop
+      <if test="receipt_mail_seq_arr != null">
+        WHERE send_emailSTOP_seq IN
+           <foreach collection="receipt_mail_seq_arr" index="i" open="(" separator="," close=")">
+               '${receipt_mail_seq_arr[i]}'
+           </foreach>
+       </if>      
+   </delete>
+   
+   <delete id="timedel" parameterType="String">
+      delete from tbl_receipt_email
+      where fk_send_email_seq IN ${send_email_seq}
+   </delete>
+   
+   <delete id="timedelete" parameterType="String">
+      delete from tbl_email
+      where send_email_seq IN ${send_email_seq}
+   </delete>
+   
+   <select id="senderdelcheck" resultType="com.spring.app.digitalmail.domain.EmailVO"> 
+   	   select *
+	   from tbl_email
+       where sender_delete = 2 
+   </select>
+   
+   
+   <select id="reallcheck" resultType="String" parameterType="String"> 
+   	   select count(*)
+	   from tbl_receipt_email
+	   where fk_send_email_seq = ${seq}
+   </select>
+   
+   <select id="redelcheck" resultType="String" parameterType="String"> 
+   	   select count(*)
+	   from tbl_receipt_email
+	   where fk_send_email_seq = ${seq}
+	   and receipt_delete = 2
+   </select>
+   
+   
+   
+   
+</mapper>

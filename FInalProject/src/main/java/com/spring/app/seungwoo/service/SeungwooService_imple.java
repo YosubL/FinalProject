@@ -225,7 +225,7 @@ public class SeungwooService_imple implements SeungwooService {
         Map.put("to", phone); // 수신번호
         Map.put("from", "01031417056"); // 발신번호
         Map.put("type", "SMS"); // Message type ( SMS(단문), LMS(장문), MMS, ATA )
-        Map.put("text", name +"님  코퍼레이션&nbsp;" + deptname + "에서  입사메일을  전송하였습니다. 확인 부탁드립니다!");   
+        Map.put("text", name +"님 코퍼레이션 GW " + deptname + "에서 입사메일을 전송하였습니다. 확인해주시기 바랍니다.");   
         Map.put("app_version", "JAVA SDK v2.2"); // application name and version
         try {
         	JSONObject jsonObj = (JSONObject) coolsms.send(Map);
@@ -271,13 +271,7 @@ public class SeungwooService_imple implements SeungwooService {
 		return del;
 	}
 	
-	// 전자메일 시작
-	@Override
-	public ModelAndView digitalmail(ModelAndView mav) {
-		mav.setViewName("digitalmail/digitalmail.tiles_MTS");
-					
-		return mav;
-	}
+
 	
 
 

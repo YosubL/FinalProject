@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<!-- ==== #29. mapper 기본설정 ==== -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!-- ==== #29. 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
 <mapper namespace="work">
 
 	<!-- 특정 사원의 근무내역 가져오기 -->
@@ -17,6 +14,7 @@
 		order by work_date asc
 	</select>
 	
+	<!-- 자신의 근무내역 뿌려주는 ajax -->
 	<select id="workList" parameterType="HashMap" resultType="com.spring.app.domain.WorkVO">
 		SELECT rownum AS RNO, fk_employee_id
 		     , work_date
@@ -48,6 +46,15 @@
 		and work_date = #{work_date}
 	</select>
 	
+	<!-- 퇴근 버튼 클릭시 근무테이블에 update 하기 / 연장근무인 경우-->
+	<update id="goToWorkUpdateWithExtended" parameterType="HashMap">
+		update tbl_work
+		set work_end_time = #{work_end_time},
+		extended_end_time = #{extended_end_time}
+		where fk_employee_id = #{fk_employee_id}
+		AND work_start_time = #{todayStartTime}
+		AND work_date = #{work_date}
+	</update>
 	<!-- 퇴근 버튼 클릭시 근무테이블에 update 하기 -->
 	<update id="goToWorkUpdate" parameterType="HashMap">
 		update tbl_work
@@ -74,8 +81,59 @@
 			 , NVL(work_request_place, '-') AS work_request_place
 			 , NVL(work_request_reason, '-') AS work_request_reason
 			 , TO_CHAR(work_request_date, 'yyyy-mm-dd') AS work_request_date
-		from tbl_work_request
+			 , TO_CHAR(work_confirm_reg_date, 'yyyy-mm-dd') AS work_confirm_reg_date
+			 , work_request_confirm
+			 , name
+		from tbl_work_request R
+		JOIN tbl_employees E
+		ON R.fk_employee_id = E.employee_id
 		where fk_employee_id = #{employee_id}
+		order by work_request_confirm asc, work_request_start_date desc
+	</select>
+	
+	<!-- 내 부서원들의 승인된 근무신청 가져오기 (관리자용) -->
+	<select id="myDeptApprovedList" parameterType="String" resultType="com.spring.app.domain.Work_requestVO">
+		select fk_employee_id
+			 , work_request_seq
+			 , work_request_type
+			 , TO_CHAR(work_request_start_date, 'yyyy-mm-dd') AS work_request_start_date
+			 , TO_CHAR(work_request_start_time, 'hh24:mi:ss') AS work_request_start_time
+			 , TO_CHAR(work_request_end_time, 'hh24:mi:ss') AS work_request_end_time
+			 , NVL(work_request_place, '-') AS work_request_place
+			 , NVL(work_request_reason, '-') AS work_request_reason
+			 , TO_CHAR(work_request_date, 'yyyy-mm-dd') AS work_request_date
+			 , TO_CHAR(work_confirm_reg_date, 'yyyy-mm-dd') AS work_confirm_reg_date
+			 , name
+		from tbl_work_request R
+		JOIN tbl_employees E
+		ON R.fk_employee_id = E.employee_id
+		JOIN tbl_department D
+		ON E.fk_department_id = D.department_id
+		where fk_department_id = ${department_id}
+		and work_request_confirm = 1
+		order by work_request_start_date
+	</select>
+	
+	<!-- 내 부서원들의 반려된 근무신청 가져오기 (관리자용) -->
+	<select id="myDeptReturnList" parameterType="String" resultType="com.spring.app.domain.Work_requestVO">
+		select fk_employee_id
+			 , work_request_seq
+			 , work_request_type
+			 , TO_CHAR(work_request_start_date, 'yyyy-mm-dd') AS work_request_start_date
+			 , TO_CHAR(work_request_start_time, 'hh24:mi:ss') AS work_request_start_time
+			 , TO_CHAR(work_request_end_time, 'hh24:mi:ss') AS work_request_end_time
+			 , NVL(work_request_place, '-') AS work_request_place
+			 , NVL(work_request_reason, '-') AS work_request_reason
+			 , TO_CHAR(work_request_date, 'yyyy-mm-dd') AS work_request_date
+			 , TO_CHAR(work_confirm_reg_date, 'yyyy-mm-dd') AS work_confirm_reg_date
+			 , name
+		from tbl_work_request R
+		JOIN tbl_employees E
+		ON R.fk_employee_id = E.employee_id
+		JOIN tbl_department D
+		ON E.fk_department_id = D.department_id
+		where fk_department_id = ${department_id}
+		and work_request_confirm = 2
 		order by work_request_start_date
 	</select>
 	
@@ -85,19 +143,188 @@
 		where work_request_seq = ${work_request_seq}
 	</delete>
 	
-	
-	<!--  -->
+	<!-- 자신의 부서번호에 따른 이름, 직급명 가져오기 -->
 	<resultMap type="HashMap" id="myDeptEmp_Map">
 		<result property="name" 		column="name" 	  		javaType="String" />
 		<result property="job_name" 	column="job_name" 		javaType="String" />
 		<result property="employee_id" 	column="employee_id" 	javaType="String" />
+		<result property="work_start_time" 	column="work_start_time" javaType="String" />
 	</resultMap>
 	<select id="myDeptEmp" parameterType="String" resultMap="myDeptEmp_Map">
-		select name, job_name, employee_id
+		SELECT DISTINCT E.name, J.job_name, E.employee_id, W.work_start_time, E.gradelevel
+		FROM tbl_employees E
+		JOIN tbl_jobs J ON E.fk_job_id = J.job_id
+		LEFT JOIN tbl_work W ON E.employee_id = W.fk_employee_id
+		WHERE E.fk_department_id = #{selectVal}
+		AND (W.work_date = TO_CHAR(SYSDATE, 'YYYY-MM-DD') OR W.work_date IS NULL)
+		order by E.gradelevel desc
+	</select>
+	
+	<!-- employee_id 에 따른 근무내역 가져오기 -->
+	<resultMap type="HashMap" id="empWorkList_Map">
+		<result property="work_date" 			column="work_date" 	  		javaType="String" />
+		<result property="work_start_time" 		column="work_start_time" 	javaType="String" />
+		<result property="work_end_time" 		column="work_end_time" 		javaType="String" />
+		<result property="extended_end_time" 	column="extended_end_time" 	javaType="String" />
+		<result property="timeDiff" 			column="timeDiff" 			javaType="String" />
+	</resultMap>
+	<select id="empWorkList" parameterType="HashMap" resultMap="empWorkList_Map">
+		select work_date, work_start_time
+			 , NVL(work_end_time, '-') AS work_end_time
+			 , NVL(extended_end_time, '-') AS extended_end_time
+			 , NVL(trunc((((to_date(work_end_time, 'hh24:mi:ss') - to_date(work_start_time, 'hh24:mi:ss'))*24)*60)/60), 0)|| '시간 ' ||  
+		       NVL(round(mod((((to_date(work_end_time, 'hh24:mi:ss') - to_date(work_start_time, 'hh24:mi:ss'))*24)*60), 60)), 0) || '분' as timeDiff
+		from tbl_work
+		where fk_employee_id = #{employee_id}
+		and substr(work_date,1,7) = #{thisMonth}
+	</select>
+	
+	<!-- // 로그인 한 사원의 부서명 가져오기 -->
+	<select id="getMyDeptName" parameterType="String" resultType="String">
+		select department_name
 		from tbl_employees E
 		JOIN tbl_jobs J
 		ON E.fk_job_id = J.job_id
+		JOIN tbl_department D
+		ON J.fk_department_id = D.department_id
 		where E.fk_department_id = #{fk_department_id}
+		and employee_id = #{employee_id}
+	</select>
+	
+	<!-- select option 에 필요한 department_id 가져오기  -->
+	<resultMap type="HashMap" id="getAllDeptIdList_Map">
+		<result property="department_id" 	column="department_id" 	 javaType="String" />
+		<result property="department_name" 	column="department_name" javaType="String" />
+	</resultMap>
+	<select id="getAllDeptIdList" resultMap="getAllDeptIdList_Map">
+		select department_id, department_name
+		from tbl_department
+		order by department_name asc
+	</select>
+	
+	<!-- 해당 부서 직급, 이름 가져오기 -->
+	<resultMap type="HashMap" id="deptSelectList_Map">
+		<result property="name" 			column="name" 	  		 javaType="String" />
+		<result property="job_name" 		column="job_name" 		 javaType="String" />
+		<result property="employee_id" 		column="employee_id" 	 javaType="String" />
+		<result property="work_start_time" 	column="work_start_time" javaType="String" />
+	</resultMap>
+	<select id="deptSelectList" parameterType="HashMap" resultMap="deptSelectList_Map">
+		SELECT DISTINCT E.name, J.job_name, E.employee_id, W.work_start_time, E.gradelevel
+		FROM tbl_employees E
+		JOIN tbl_jobs J ON E.fk_job_id = J.job_id
+		LEFT JOIN tbl_work W ON E.employee_id = W.fk_employee_id
+		WHERE E.fk_department_id = #{selectVal}
+		AND (W.work_date = TO_CHAR(SYSDATE, 'YYYY-MM-DD') OR W.work_date IS NULL)
+		order by E.gradelevel desc
+	</select>
+	
+	<!-- 해당 부서명 가져오기 -->
+	<select id="getSelectDeptName" parameterType="HashMap" resultType="String">
+		select department_name
+		from tbl_department
+		where department_id = #{IdSelectVal}
+	</select>
+	
+	<!-- 내 부서원들의 신청한 근무 중 대기중인 근무신청 가져오기 -->
+	<resultMap type="HashMap" id="myDeptRequestList_Map">
+		<result property="fk_employee_id" 			column="fk_employee_id" 	  	 javaType="String" />
+		<result property="work_request_seq" 		column="work_request_seq" 	  	 javaType="String" />
+		<result property="work_request_type" 		column="work_request_type" 	  	 javaType="String" />
+		<result property="work_request_start_date" 	column="work_request_start_date" javaType="String" />
+		<result property="work_request_start_time" 	column="work_request_start_time" javaType="String" />
+		<result property="work_request_end_time" 	column="work_request_end_time" 	 javaType="String" />
+		<result property="work_request_place" 		column="work_request_place" 	 javaType="String" />
+		<result property="work_request_reason" 		column="work_request_reason" 	 javaType="String" />
+		<result property="work_request_date" 		column="work_request_date" 	  	 javaType="String" />
+		<result property="name" 					column="name" 	  	 			 javaType="String" />
+	</resultMap>
+	<select id="myDeptRequestList" parameterType="HashMap" resultMap="myDeptRequestList_Map">
+		select fk_employee_id
+			 , work_request_seq
+			 , work_request_type
+			 , TO_CHAR(work_request_start_date, 'yyyy-mm-dd') AS work_request_start_date
+			 , TO_CHAR(work_request_start_time, 'hh24:mi:ss') AS work_request_start_time
+			 , TO_CHAR(work_request_end_time, 'hh24:mi:ss') AS work_request_end_time
+			 , NVL(work_request_place, '-') AS work_request_place
+			 , NVL(work_request_reason, '-') AS work_request_reason
+			 , TO_CHAR(work_request_date, 'yyyy-mm-dd') AS work_request_date
+			 , name
+		from tbl_work_request R
+		JOIN tbl_employees E
+		ON R.fk_employee_id = E.employee_id
+		where fk_department_id = #{department_id}
+		and work_request_confirm = 0
+		order by work_request_start_date
+	</select>
+	
+	<!-- 특정 사원의 이번주 누적근무시간 가져오기 -->
+	<resultMap type="HashMap" id="myWorkRecord_Map">
+		<result property="time"   column="time"   javaType="String" />
+		<result property="minute" column="minute" javaType="String" />
+	</resultMap>
+	<select id="myWorkRecord" parameterType="String" resultMap="myWorkRecord_Map">
+		SELECT SUM(H) + TRUNC(SUM(T) / 60) AS time,
+		       TRUNC(((SUM(T) / 60) - TRUNC(SUM(T) / 60)) * 60) AS minute
+		FROM (
+		    SELECT rownum AS RNO,
+		           fk_employee_id,
+		           work_date,
+		           work_start_time,
+		           NVL(work_end_time, '-') AS work_end_time,
+		           NVL(TRUNC((((TO_DATE(work_end_time, 'hh24:mi:ss') - TO_DATE(work_start_time, 'hh24:mi:ss')) * 24) * 60) / 60), 0) AS H,
+		           NVL(ROUND(MOD((((TO_DATE(work_end_time, 'hh24:mi:ss') - TO_DATE(work_start_time, 'hh24:mi:ss')) * 24) * 60), 60)), 0) AS T 
+		    FROM tbl_work
+		    WHERE fk_employee_id = #{employee_id}
+		          AND work_date BETWEEN (SELECT TRUNC(SYSDATE, 'iw') FROM dual) AND (SELECT TRUNC(SYSDATE, 'iw') + 5 FROM dual)
+		    ORDER BY work_date
+		) A
+	</select>
+	
+	<!-- 근무신청 승인하기 -->
+	<update id="approveWork" parameterType="String">
+		update tbl_work_request
+		set work_request_confirm = 1
+		where work_request_seq = #{requestApproveSeq}
+	</update>
+	
+	<!-- 근무신청 반려하기 -->
+	<update id="requestReturn" parameterType="String">
+		update tbl_work_request
+		set work_request_confirm = 2
+		where work_request_seq = #{requestApproveSeq}
+	</update>
+	
+	<!-- 로그인 한 사원의 오늘 출근시간 가져오기 -->
+	<select id="myTodayStartTime" parameterType="String" resultType="String">
+		select work_start_time
+		from tbl_work
+		where fk_employee_id = #{employee_id}
+		and work_date = to_char(sysdate, 'yyyy-mm-dd')
+	</select>
+	
+	<!-- 오늘날짜의 퇴근시간 가져오기 -->
+	<select id="todayEndTime" parameterType="String" resultType="String">
+		select work_end_time
+		from tbl_work
+		where fk_employee_id = #{fk_employee_id}
+		and work_date = to_char(sysdate, 'yyyy-mm-dd')
+	</select>
+	
+	<!-- 출근한 날짜를 가져와 출근한 시간 가져오기 -->
+	<resultMap type="HashMap" id="getMyWorkTime_Map">
+		<result property="work_start_time"   column="work_start_time"   javaType="String" />
+		<result property="work_end_time" 	 column="work_end_time" 	javaType="String" />
+		<result property="timeDiff" 	 	 column="timeDiff" 			javaType="String" />
+	</resultMap>
+	<select id="getMyWorkTime" parameterType="HashMap" resultMap="getMyWorkTime_Map">
+		select work_start_time, work_end_time,
+		       LPAD(FLOOR((to_date(work_end_time, 'hh24:mi:ss') - to_date(work_start_time, 'hh24:mi:ss')) * 24), 2, '0') || ':'
+		    || LPAD(FLOOR(MOD((to_date(work_end_time, 'hh24:mi:ss') - to_date(work_start_time, 'hh24:mi:ss')) * 24 * 60, 60)), 2, '0') || ':'
+		    || LPAD(FLOOR(MOD((to_date(work_end_time, 'hh24:mi:ss') - to_date(work_start_time, 'hh24:mi:ss')) * 24 * 60 * 60, 60)), 2, '0') AS timeDiff
+		from tbl_work
+		where fk_employee_id = #{employee_id}
+		and work_date = #{myWorkDate}
 	</select>
 
 </mapper>

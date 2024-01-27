@@ -38,17 +38,7 @@ import com.spring.app.seungwoo.service.*;
 	    return mav;
     
     }// end of public ModelAndView home(ModelAndView mav)
-    
-    @GetMapping(value="/digitalmail.gw", produces="text/plain;charset=UTF-8")
-    
-    public ModelAndView digitalmail(ModelAndView mav) {
-	    
-    	mav = service.digitalmail(mav);
-	   
-	    return mav;
-    
-    }// end of public ModelAndView home(ModelAndView mav)
-    
+        
     // === 부서에 해당하는 팀 찾기 === //
     @ResponseBody
     @GetMapping(value="/FinalProject/searchteam.gw", produces="text/plain;charset=UTF-8")
@@ -396,7 +386,6 @@ import com.spring.app.seungwoo.service.*;
 	    boolean delsuc = false;
 	    
 	    if(del == gradelevel_arr.length) {
-    		
 	    	delsuc = true;
     	}
     	else {

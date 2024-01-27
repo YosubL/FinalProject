@@ -109,13 +109,15 @@
 	    <result property="phone" 				column="phone" 				javaType="String"/>
 	    <result property="postcode" 			column="postcode" 			javaType="String"/>
 	    <result property="address" 				column="address" 			javaType="String"/>
-	    <result property="jubun" 				column="jubun" 				javaType="String"/>
+	    <result property="birthday" 			column="birthday" 			javaType="String"/>
+	    <result property="gender" 				column="gender" 			javaType="String"/>
 	    <result property="hire_date" 			column="hire_date" 			javaType="String"/>
 	    <result property="salary" 				column="salary" 			javaType="String"/>
 	    <result property="commission_pct" 		column="commission_pct" 	javaType="String"/>
 	    <result property="fk_department_id" 	column="fk_department_id" 	javaType="String"/>
 	    <result property="fk_team_id" 			column="fk_team_id" 		javaType="String"/>
 	    <result property="manager_id" 			column="manager_id" 		javaType="String"/>
+	    <result property="team_name" 			column="team_name" 			javaType="String"/>
 	    <result property="t_manager_id" 		column="t_manager_id" 		javaType="String"/>
 	    <result property="status" 				column="status" 			javaType="String"/>
 	    <result property="idle" 				column="idle" 				javaType="String"/>
@@ -134,12 +136,22 @@
 	    <result property="manager_email" 		column="manager_email" 		javaType="String"/>
 	    <result property="manager_phone" 		column="manager_phone" 		javaType="String"/>
 	    <result property="manager_job_name" 	column="manager_job_name" 	javaType="String"/>
+	    <result property="annual" 				column="annual" 			javaType="String"/>
+	    <result property="family_care" 			column="family_care" 		javaType="String"/>
+	    <result property="reserve_forces" 		column="reserve_forces" 	javaType="String"/>
+    	<result property="infertility_treatment" column="infertility_treatment" javaType="String"/>
+	    <result property="childbirth" 			column="childbirth" 		javaType="String"/>
+	    <result property="marriage" 			column="marriage" 			javaType="String"/>
+	    <result property="reward" 				column="reward" 			javaType="String"/>
+	    
 	</resultMap>
    
 	 <select id="oneMember" parameterType="String" resultMap="oneMemberMap">
-		SELECT E.employee_id, E.name, E.email, E.phone, E.postcode, E.address || ' ' ||E.detailaddress ||' ' || E.extraaddress AS address, E.jubun, E.hire_date, E.salary, E.commission_pct, E.fk_department_id, E.fk_team_id, D.manager_id, T.t_manager_id, 
-		            E.status, E.idle, E.gradelevel, E.photo, E.bank_name, E.bank_code, D.department_name, J.Job_name, J.basic_salary, E1.name, E1.email, E1.phone, J1.job_name, E2.name, E2.email, E2.phone, J2.job_name 
-		FROM tbl_employees E
+		SELECT E.employee_id, E.name, E.email, E.phone, E.postcode, E.address || ' ' ||E.detailaddress ||' ' || E.extraaddress AS address, to_char(to_date(substr(E.jubun, 1, 6), 'YYMMDD'), 'YY-MM-DD') AS birthday, func_gender(E.jubun) as gender, E.hire_date, E.salary, E.commission_pct, E.fk_department_id, E.fk_team_id, D.manager_id, T.t_manager_id, 
+		           team_name, E.status, E.idle, E.gradelevel, E.photo, E.bank_name, E.bank_code, D.department_name, J.Job_name, J.basic_salary, E1.name, E1.email, E1.phone, J1.job_name, E2.name, E2.email, E2.phone, J2.job_name,
+                    annual, family_care, reserve_forces, infertility_treatment, childbirth, marriage, reward
+        FROM tbl_employees E
+        LEFT JOIN tbl_vacation V ON E.employee_id = V.fk_employee_id
 		LEFT JOIN tbl_department D ON E.FK_DEPARTMENT_ID = D.DEPARTMENT_ID
 		LEFT JOIN tbl_jobs J ON E.FK_JOB_ID = J.JOB_ID
 		LEFT JOIN tbl_team T ON J.FK_TEAM_ID = T.TEAM_ID
@@ -249,11 +261,18 @@
 	    values(JOB_ID_seq.nextval, #{department_id}, #{department_name}||'1팀 사원', 12600000, 1, #{department_id}+1)
 	</insert>
 
-	<!--  해당사원의 부서번호를 신규부서번호로 변경하기     -->
+	<!--  해당사원의 부서번호를 신규부서 관련번호로 변경하기     -->
 	<update id="update_employees_department_id" parameterType="HashMap">
-	     update tbl_employees set fk_department_id = #{department_id}
+	     update tbl_employees set fk_department_id = #{department_id} , fk_job_id = #{job_id} , GRADELEVEL = 5
 	     where employee_id = #{manager_id}
 	</update>
+	<!-- 부서번호에 부서장 잡아이디  조회하기 -->
+	<select id="employees_department_job" resultType="String" parameterType="HashMap">    
+		select job_id
+		from tbl_jobs
+		where fk_department_id = #{department_id} and gradelevel = 5
+	</select>
+	
 	
 		
 	<!-- 결재대기문서 게시글 수 조회 -->
@@ -272,9 +291,8 @@
 	<select id="scheduleselect" resultType="com.spring.app.domain.Calendar_schedule_VO" parameterType="HashMap">
 		select scheduleno, startdate, enddate, subject, color, place, joinuser, content, fk_smcatgono, fk_lgcatgono, fk_department_id, fk_employee_id 
 		from tbl_calendar_schedule
-		where fk_employee_id = #{fk_employee_id} OR
-		fk_department_id = #{fk_department_id} OR
-		fk_lgcatgono = 2 AND
+		where (fk_employee_id = #{fk_employee_id} OR
+		fk_department_id = #{fk_department_id}) AND
 		(sysdate between startdate and enddate) OR
 		(fk_lgcatgono != 2 AND lower(joinuser) like '%'|| lower(#{fk_email}) ||'%')
 		order by scheduleno asc
@@ -314,9 +332,16 @@
 	    values(#{team_id}, #{team_name}, #{t_manager_id}, #{department_id})
 	</insert>
 	
+	<!-- 부서번호에 따른 팀 최대값 조회하기 -->
+	<select id="employees_team_job" resultType="String" parameterType="HashMap">    
+		select job_id
+		from tbl_jobs
+		where fk_department_id = #{department_id} and fk_team_id = #{team_id} and gradelevel = 3
+	</select>
+	
 	<!--  해당사원의 팀번호를 신규부서번호로 변경하기     -->
 	<update id="update_employees_team_id" parameterType="HashMap">
-	     update tbl_employees set fk_team_id = #{team_id}
+	     update tbl_employees set fk_team_id = #{team_id} , fk_job_id = #{job_id} , GRADELEVEL = 3
 	     where employee_id = #{t_manager_id}
 	</update>
    
@@ -331,11 +356,124 @@
 	    values(JOB_ID_seq.nextval, #{department_id}, #{team_name}||'사원', 12600000, 1, #{team_id})
 	</insert>
 
+
+	<resultMap type="HashMap" id="get_department_info_Map">
+		<result property="name" 		column="name"  			javaType="String"/>
+		<result property="job_name" 	column="job_name"  		javaType="String"/>
+		<result property="employee_id" 	column="employee_id"  	javaType="String"/>
+		<result property="gradelevel" 	column="gradelevel"  	javaType="String"/>
+		<result property="phone" 		column="phone"  		javaType="String"/>
+	</resultMap>
 	<!--  부서정보 가져오기 등록하기  -->
-	<select id="get_department_info" parameterType="String" resultType="com.spring.app.domain.DepartmentVO">
-	    select department_id, department_name, manager_id
-		from tbl_department
-		where FK_DEPARTMENT_ID = #{department_id}
+	<select id="get_department_info" parameterType="String" resultMap="get_department_info_Map">
+	    select name, job_name, employee_id, E.gradelevel, phone
+		from tbl_employees E
+		JOIN tbl_jobs J
+		ON E.fk_job_id = J.job_id
+		where E.fk_department_id = #{department_id}
+		  and E.gradelevel > 1
+        order by 4 desc, 2 asc
 	</select>
+	
+	<resultMap type="HashMap" id="get_team_info_Map">
+		<result property="name" 		column="name"  			javaType="String"/>
+		<result property="job_name" 	column="job_name"  		javaType="String"/>
+		<result property="employee_id" 	column="employee_id"  	javaType="String"/>
+		<result property="gradelevel" 	column="gradelevel"  	javaType="String"/>
+		<result property="phone" 		column="phone"  		javaType="String"/>
+	</resultMap>
+	<!--  팀정보 가져오기 등록하기  -->
+	<select id="get_team_info" parameterType="String" resultMap="get_team_info_Map">
+	    select name, job_name, employee_id, E.gradelevel, phone
+		from tbl_employees E
+		JOIN tbl_jobs J
+		ON E.fk_job_id = J.job_id
+		where E.fk_team_id = #{team_id}
+        order by 4 desc
+	</select>
+
+	<!-- 부서삭제하기  -->
+	<delete id="department_del" parameterType="String">
+	   DELETE FROM tbl_department WHERE department_id = #{department_id}
+	</delete>  
+
+
+	<!-- 부서삭제하기  -->
+	<delete id="team_del" parameterType="String">
+	   DELETE FROM tbl_team WHERE team_id = #{team_id}
+	</delete>  
+
+
+	<select id="SelectMyEmail_withPaging" parameterType="HashMap" resultType="com.spring.app.digitalmail.domain.EmailVO">
+	        SELECT 
+		    T.send_email_seq, T.email_subject, T.name, T.job_name, T.send_time
+    		, T.receipt_favorites, T.email_receipt_read_count
+		FROM 
+		(
+		SELECT rownum AS RNO
+			, V.send_email_seq, V.email_subject, V.name, V.job_name, V.send_time
+			, V.receipt_favorites, V.email_receipt_read_count
+		FROM 
+		(
+		SELECT 
+			e.send_email_seq, e.email_subject, p.name, j.job_name, to_char(e.send_time, 'yyyy-mm-dd hh24:mi') as send_time
+		    , r.receipt_favorites, r.email_receipt_read_count
+		    FROM tbl_receipt_email r
+			JOIN tbl_email e ON r.fk_send_email_seq = e.send_email_seq
+			JOIN tbl_employees p ON p.email = e.fk_sender_email
+			JOIN tbl_jobs j ON j.job_id = p.fk_job_id 
+	        WHERE 
+	            (r.fk_recipient_email = #{email} 
+	            OR r.fk_reference_email = #{email} 
+	            OR r.fk_hidden_reference_email = #{email})
+	            AND r.receipt_delete = 0
+	        	order by r.fk_send_email_seq desc
+	    ) V
+		) T
+		WHERE RNO BETWEEN 1 AND 5
+	</select>
+
+	<resultMap type="HashMap" id="team_id_select_by_department_Map">
+		<result property="team_id" 		column="team_id"  		javaType="String"/>
+		<result property="team_name" 	column="team_name"  	javaType="String"/>
+		<result property="t_manager_id" column="t_manager_id"  	javaType="String"/>
+		<result property="name" 		column="name"  			javaType="String"/>
+	</resultMap>
+
+	<!--  팀정보 가져오기 등록하기  -->
+	<select id="team_id_select_by_department" parameterType="String" resultMap="team_id_select_by_department_Map">
+         select T.team_id, team_name, T.t_manager_id, E.name
+         from tbl_team T
+         join tbl_employees E on T.t_manager_id = E.employee_id
+         where T.fk_department_id = #{department_id}
+	</select>
+
+
+	<resultMap type="HashMap" id="job_id_select_by_department_Map">
+		<result property="job_id" 		column="job_id"  		javaType="String"/>
+		<result property="job_name" 	column="job_name"  	javaType="String"/>
+		<result property="fk_team_id" column="fk_team_id"  	javaType="String"/>
+		<result property="gradelevel" column="gradelevel"  	javaType="String"/>
+		
+	</resultMap>
+	<!--  팀 직책 가져오기  -->
+	<select id="job_id_select_by_department" parameterType="String" resultMap="job_id_select_by_department_Map">
+        select job_id, job_name, fk_team_id, gradelevel
+		from tbl_jobs
+		where fk_department_id = #{department_id}
+	</select>
+
+
+	<!-- 회원정보 수정하기  -->
+	<update id="infoEditEnd" parameterType="com.spring.app.domain.EmployeesVO">
+		update tbl_employees set fk_department_id = #{fk_department_id} , fk_job_id = #{fk_job_id}, fk_team_id = #{fk_team_id} , gradelevel = #{gradelevel}
+	    where employee_id = #{employee_id}
+	</update>
+	
+
+
+
+
+
 
 </mapper>

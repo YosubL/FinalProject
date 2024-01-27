@@ -12,6 +12,9 @@ public class Work_requestVO {
 	private String work_request_place;		// 장소
 	private String work_request_reason;	  	// 사유
 	private String work_request_date;	  	// 신청일자
+	private String work_request_confirm;    // 결재상태 0=대기 / 1=승인 / 2=반려
+	private String work_confirm_reg_date;   // 결재일자
+	private String name; 					// 근태관리에 필요한 신청사원의 이름
 	
 	public String getFk_employee_id() {
 		return fk_employee_id;
@@ -76,5 +79,25 @@ public class Work_requestVO {
 		this.work_request_date = work_request_date;
 	}
 	
+	public String getWork_request_confirm() {
+		return work_request_confirm;
+	}
+	public void setWork_request_confirm(String work_request_confirm) {
+		this.work_request_confirm = work_request_confirm;
+	}
+	
+	public String getWork_confirm_reg_date() {
+		return work_confirm_reg_date;
+	}
+	public void setWork_confirm_reg_date(String work_confirm_reg_date) {
+		this.work_confirm_reg_date = work_confirm_reg_date;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 	
 }

@@ -3,6 +3,8 @@ package com.spring.app.yosub.model;
 import java.util.List;
 import java.util.Map;
 
+import com.spring.app.domain.EmployeesVO;
+
 public interface EmpDAO {
 
 	//employees 테이블의 근무중 사원 부서번호 가져오기
@@ -45,6 +47,18 @@ public interface EmpDAO {
 
 	// 해당부서의 부서 정보 조회하기
 	List<Map<String, String>> get_department_info(String department_id);
+	// 해당 팀의 팀 정보 조회하기
+	List<Map<String, String>> get_team_info(String team_id);
+	// 부서 삭제하기
+	int department_del(String department_id);
+	// 부서번호에 따른 팀 가져오기
+	List<Map<String, String>> team_id_select_by_department(String department_id);
+	// 팀 삭제하기
+	int team_del(String team_id);
+	// 해당 부서의 직책정보 조회하기
+	List<Map<String, String>> job_id_select_by_department(String department_id);
+	// 회원정보 업데이트
+	int infoEditEnd(EmployeesVO evo);
 
 
 

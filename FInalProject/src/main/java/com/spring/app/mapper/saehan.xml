@@ -29,25 +29,24 @@
 		</choose>
 	</select>
 	
-	
 	<!-- 페이징 처리한 글목록 가져오기(검색이 있든지, 검색이 없든지 모두 다 포함 한 것) -->
 	<select id="boardListSearch_withPaging" parameterType="HashMap" resultType="com.spring.app.domain.BoardVO"> 
-		SELECT seq, fk_email, name, subject, readCount, regDate, commentCount
-       , groupno, fk_seq, depthno, fileName
+		SELECT rno, seq, fk_email, name, subject, readCount, regDate, commentCount
+       , groupno, fk_seq, depthno, attachfile
 			FROM 
 			(
 			    SELECT rownum AS RNO
 			         , seq
 			         , fk_email, name, subject, readCount, regDate, commentCount
 			         , groupno, fk_seq, depthno 
-			         , fileName
+			         , Attachfile
 			    FROM 
 			    (
 			        SELECT seq, fk_email, name, subject
 			             , readCount, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') AS regDate 
 			             , commentCount
 			             , groupno, fk_seq, depthno
-			             , fileName 
+			             , Attachfile
 			         FROM tbl_freeboard
 			         WHERE status = 1
 		     <choose>
@@ -111,32 +110,34 @@
 	    from tbl_freeboard
 	</select>
 	
-	<!-- 글쓰기(파일첨부가 없는 글쓰기) -->
-	<insert id="add" parameterType="com.spring.app.domain.BoardVO">
+	
+	<!-- 자유게시판 글쓰기(파일첨부가 없는 글쓰기) -->
+	<insert id="add_nofile" parameterType="com.spring.app.domain.BoardVO">
 		<!-- 원글쓰기인 경우 -->
 	    <if test='fk_seq.equals("")'>
-	    	insert into tbl_freeboard(seq, fk_email, name, subject, content, pw, readCount, regDate, status, groupno, fk_seq, depthno)
-	        values(freeboard_Seq.nextval, #{fk_email}, #{name}, #{subject}, #{content}, #{pw}, default, default, default, #{groupno}, default, default) 
+	    	insert into tbl_freeboard(seq, fk_email, name, subject, content, pw, readCount, regDate, status, groupno, fk_seq, depthno, Attachfile)
+	        values(freeboard_Seq.nextval, #{fk_email}, #{name}, #{subject}, #{content}, #{pw}, default, default, default, #{groupno}, default, default,default ) 
 	    </if>
 	    
 	    <!-- 답변글쓰기인 경우 -->
 	    <if test='!fk_seq.equals("")'>
-	        insert into tbl_freeboard(seq, fk_email, name, subject, content, pw, readCount, regDate, status, groupno, fk_seq, depthno)
-	        values(freeboard_Seq.nextval, #{fk_email}, #{name}, #{subject}, #{content}, #{pw}, default, default, default, #{groupno}, #{fk_seq}, #{depthno}+1) 
+	        insert into tbl_freeboard(seq, fk_email, name, subject, content, pw, readCount, regDate, status, groupno, fk_seq, depthno, Attachfile)
+	        values(freeboard_Seq.nextval, #{fk_email}, #{name}, #{subject}, #{content}, #{pw}, default, default, default, #{groupno}, #{fk_seq}, #{depthno}+1,default) 
 	    </if> 
 	</insert>
-	
-	<!-- 글쓰기(파일첨부가 있는 글쓰기) -->
-	<insert id="add_withFile" parameterType="com.spring.app.domain.BoardVO" >
+
+
+	<!-- 자유게시판 글쓰기(파일첨부가 있는 글쓰기) -->
+	<insert id="addEnd" parameterType="com.spring.app.domain.BoardVO" >
 	    <!-- 원글쓰기인 경우 -->
 	    <if test='fk_seq.equals("")'>
-	    	insert into tbl_freeboard(seq, fk_email, name, subject, content, pw, readCount, regDate, status, groupno, fk_seq, depthno, fileName, orgFilename, fileSize)
-	        values(freeboard_Seq.nextval, #{fk_email}, #{name}, #{subject}, #{content}, #{pw}, default, default, default, #{groupno}, default, default, #{fileName}, #{orgFilename}, #{fileSize}) 
+	    	insert into tbl_freeboard(seq, fk_email, name, subject, content, pw, readCount, regDate, status, groupno, fk_seq, depthno, Attachfile)
+	        values(freeboard_Seq.nextval, #{fk_email}, #{name}, #{subject}, #{content}, #{pw}, default, default, default, #{groupno}, default, default, 1) 
 	    </if>
 	    <!--  답변글쓰기인 경우  -->
         <if test='!fk_seq.equals("")'> 
-        	insert into tbl_freeboard(seq, fk_email, name, subject, content, pw, readCount, regDate, status, groupno, fk_seq, depthno, fileName, orgFilename, fileSize) 
-        	values(freeboard_Seq.nextval, #{fk_email}, #{name}, #{subject}, #{content}, #{pw}, default, default, default, #{groupno}, #{fk_seq}, #{depthno}+1, #{fileName}, #{orgFilename}, #{fileSize}) 
+        	insert into tbl_freeboard(seq, fk_email, name, subject, content, pw, readCount, regDate, status, groupno, fk_seq, depthno, Attachfile) 
+        	values(freeboard_Seq.nextval, #{fk_email}, #{name}, #{subject}, #{content}, #{pw}, default, default, default, #{groupno}, #{fk_seq}, #{depthno}+1, 1) 
         </if>
 	</insert>
 	
@@ -146,7 +147,7 @@
 	        previousseq, previoussubject, seq, fk_email, name,
 	        subject, content, readCount, regDate, pw,
 	        nextseq, nextsubject, groupno, fk_seq, depthno,
-	        fileName, orgFilename, fileSize
+	        Attachfile
 	    FROM
 	    (
 	        SELECT
@@ -157,14 +158,14 @@
 	            lead(seq, 1) over(order by RNO asc) AS nextseq,
 	            lead(subject, 1) over(order by RNO asc) AS nextsubject,
 	            groupno, fk_seq, depthno,
-	            fileName, orgFilename, fileSize
+	            Attachfile
 	        FROM
 	        (
 	            SELECT
 	                rownum AS RNO, seq, fk_email, name, subject,
 	                content, readCount, regDate, pw,
 	                groupno, fk_seq, depthno,
-	                fileName, orgFilename, fileSize
+	                Attachfile
 	            FROM
 	            (
 	                SELECT
@@ -172,7 +173,7 @@
 	                    content, readCount,
 	                    to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') AS regDate, pw,
 	                    groupno, fk_seq, depthno,
-	                    fileName, orgFilename, fileSize
+	                    Attachfile
 	                FROM tbl_freeboard
 	                WHERE status = 1
 	                <choose>
@@ -198,35 +199,25 @@
 	        ) T1
 	    ) T2
 	    WHERE T2.seq = #{seq}
+	
 	</select>
 	
-
-	<!-- === 첨부파일 없는 1개글 수정하기 === -->
-	<update id="edit" parameterType="com.spring.app.domain.BoardVO">
-	    update tbl_freeboard set subject = #{subject}
-	                           , content = #{content}
-
-	    where seq = #{seq}
-	</update>
+	<!--  자유게시판 첨부파일 등록하기  -->
+	<insert id="insertFiles" parameterType="java.util.List">
+		insert into TBL_FREEBOARD_FILE (fileno, fk_seq, orgFilename, FileName, FileSize) SELECT TBL_FREEBOARD_FILE_SEQ.NEXTVAL AS fileno, A.* FROM (
+		<foreach collection="list" item="file" separator="union all"> SELECT #{file.fk_seq} AS fk_seq, #{file.orgFilename} AS orgFilename, #{file.fileName} AS FILENAME, #{file.fileSize} AS FILESIZE FROM DUAL </foreach>
+		) A
+	</insert>
+	
+	<!--  자유게시판 글번호 얻어오기   -->
+	<select id="getfreeboardSeq" resultType="String"> select max(seq) from tbl_freeboard </select>
 	
 	<!-- === 자유게시판 수정할떄 첨부파일 삭제하기 === -->
 	<update id="delete_file" parameterType="com.spring.app.domain.BoardVO">
 	    update tbl_freeboard set filename = null
-	                           , orgFilename = null
-	                           , fileSize = null
+
 	    where seq = #{seq}
 	</update>
-	
-	<!-- === 첨부파일 있는 1개글 수정하기 === -->
-	<update id="edit_withFile" parameterType="com.spring.app.domain.BoardVO">
-	    update tbl_freeboard set subject = #{subject}
-	                           , content = #{content}
-	                           , filename = #{fileName}
-	                           , orgFilename = #{orgFilename}
-   							   , fileSize = #{fileSize}
-	    where seq = #{seq}
-	</update>
-	
 	
 	<!-- === 글조회수 1증가 하기 === -->
 	<update id="increase_readCount" parameterType="String">
@@ -239,13 +230,63 @@
 	    delete from tbl_freeboard
 	    where seq = #{seq}
 	</delete>
+	
+	<!-- === 파일테이블 첨부파일 행 삭제하기 === -->
+	<delete id="del_attach" parameterType="HashMap">
+	    delete from TBL_FREEBOARD_FILE
+	    where fileno = #{fileno}
+	</delete>
+	
+	<!-- 자유게시판 파일 하나만 가져오기 = -->
+	<select id="getEach_view_files" parameterType="HashMap" resultType="com.spring.app.domain.BoardFileVO">
+		select fileno, fk_seq, orgFilename, FileName, FileSize
+		from TBL_FREEBOARD_FILE
+		where fileno = #{fileno}
+	</select>
+	
+	<!-- 자유게시판 파일 목록 가져오기 -->
+	<select id="getView_files" parameterType="HashMap" resultType="com.spring.app.domain.BoardFileVO">
+		select fileno, fk_seq, orgFilename, FileName, FileSize
+		from TBL_FREEBOARD_FILE
+		where fk_seq = #{seq}
+	</select>
 
+	<!--  글 수정하기   -->
+	<update id="freeboard_edit" parameterType="com.spring.app.domain.BoardVO"> 
+		update TBL_FREEBOARD set subject = #{subject}, content = #{content} 
+		where seq = #{seq} 
+	</update>
+
+	
+	<!-- 수정에서 첨부파일 하나 삭제하기 -->
+	<delete id="file_delete" parameterType="String">
+	    delete from TBL_FREEBOARD_FILE
+	    where fileno = #{fileno}
+	</delete>
+	
+	
+	<!--  파일 삭제하면 글테이블의 filename 유무 0으로 만들기  (1은 파일 존재 , 0은 파일존재 하지 않음)   -->
+	<update id="freeboard_filename_clear" parameterType="HashMap"> 
+		update TBL_FREEBOARD set attachfile = 0
+		where seq = #{fk_seq} 
+	</update>
+	
+	
+	
+	<!--  파일 삭제하면 글테이블의 filename 유무 1으로 만들기  (1은 파일 존재 , 0은 파일존재 하지 않음)   -->
+	<update id="freeboard_filename_add" parameterType="HashMap"> 
+		update TBL_FREEBOARD set attachfile = 1
+		where seq = #{fk_seq} 
+	</update>
+	
+	
 	<!-- === 원글 글번호(parentSeq)에 해당하는 댓글의 totalPage 수 알아오기 === -->
 	<select id="getCommentTotalPage" parameterType="HashMap" resultType="int">
 		select ceil(count(*)/#{sizePerPage})
 		from tbl_free_comment
 		where parentseq = #{parentSeq}
 	</select> 
+	
 	
 	<!-- === 원게시물에 딸린 댓글들을 페이징 처리해서 조회해오기 === -->
 	<select id="getCommentList_Paging" parameterType="HashMap" resultType="com.spring.app.domain.CommentVO"> 
@@ -345,6 +386,48 @@
 	    where seq = #{parentSeq}
 	</update>
 	
+	
+	<!-- === tbl_freeboard 테이블에 commentCount 컬럼이 1 감소(update)  === -->
+	<insert id="getlike_add" parameterType="com.spring.app.domain.FreeBoard_likesVO">
+	    insert into tbl_freeboard_likes(like_no, fk_email, fk_seq, name)
+	    values(tbl_freeboard_likes_seq.nextval, #{fk_email}, #{fk_seq}, #{name}) 
+	</insert>
+	
+	<!-- 자유게시판 파일 목록 가져오기 -->
+	<select id="getView_likes" parameterType="HashMap" resultType="com.spring.app.domain.FreeBoard_likesVO">
+		select like_no, fk_email, fk_seq, name
+		from tbl_freeboard_likes
+		where fk_seq = #{seq}
+	</select>
+	
+	<!-- 자유게시판 첨부파일 있는지 확인 -->
+	<select id="freeboard_update_attachfile" resultType="String" parameterType="String"> 
+		select count(*)
+		from tbl_freeboard_file
+		where FK_SEQ = #{fk_seq} 
+	</select>
+	
+	<!-- 자유게시판 좋아요 갯수 가져오기 -->
+	<select id="getlikeTotalCount" parameterType="String" resultType="int">
+		select count(*)
+		from tbl_freeboard_likes
+		where fk_seq = #{seq}
+	</select>
+	
+	<!-- ===좋아요 1개 삭제하기 === -->
+	<delete id="getlikedelete" parameterType="HashMap">
+	    delete from tbl_freeboard_likes
+	    where like_no = #{like_no}
+	</delete>
+
+	
+	<!-- ===좋아요한 유저의 좋아요 취소 하기 === -->
+	<delete id="getlike_del" parameterType="String">
+	    delete from tbl_freeboard_likes
+	    where fk_email  = #{fk_email}
+	</delete>
+	<!--  여기까지가 자유게시판 -->
+	
 	<!-- 총 공지사항 게시물 건수(NoticeTotalCount) 구하기 - 검색이 있을 때와 검색이 없을때 로 나뉜다. -->
 	<select id="getNoticeTotalCount" parameterType="HashMap" resultType="int">
 		select count(*)
@@ -373,67 +456,59 @@
 	
 	<!-- 페이징 처리한 공지사항 목록 가져오기(검색이 있든지, 검색이 없든지 모두 다 포함 한 것) -->
 	<select id="noticeListSearch_withPaging" parameterType="HashMap" resultType="com.spring.app.domain.NoticeboardVO"> 
-		WITH RankedNoticeboard AS (
-		    SELECT
-		        seq,fk_emp_id,name,subject,read_Count,
-		        to_char(reg_Date, 'yyyy-mm-dd hh24:mi:ss') AS reg_Date,file_Name,
-		     	ROWNUM AS RNO
-		    FROM
-		        tbl_noticeboard
-		    WHERE
-		        status = 1
-		    <choose>
-			    <when test='searchType == "subject" and searchWord != ""'>
-			       and lower(subject) like '%'||lower(#{searchWord})||'%' 
-			    </when>
-			    <when test='searchType == "content" and searchWord != ""'>
-			       and lower(content) like '%'||lower(#{searchWord})||'%' 
-			    </when>
-			    <when test='searchType == "subject_content" and searchWord != ""'>
-			       and (lower(subject) like '%'||lower(#{searchWord})||'%' or lower(content) like '%'||lower(#{searchWord})||'%')  
-			    </when>
-			    <when test='searchType == "name" and searchWord != ""'>
-			       and lower(name) like '%'||lower(#{searchWord})||'%' 
-			    </when>
-			    <otherwise>
-			    </otherwise>
-			 </choose>
-		    ORDER BY
-		        seq ASC
-		)
-		SELECT
-		    T.seq,T.fk_emp_id,T.name,T.subject,
-		    T.read_Count,T.reg_Date,T.file_Name,D.department_name
-		FROM
-		    RankedNoticeboard T
-		LEFT JOIN
-		    tbl_EMPLOYEES E ON T.fk_emp_id = E.EMPLOYEE_id
-		JOIN
-		    tbl_department D ON E.FK_DEPARTMENT_ID = D.DEPARTMENT_ID
-		WHERE
-		    T.RNO BETWEEN #{startRno} AND #{endRno}
-		order by seq asc
+	SELECT rno, seq, T.fk_emp_id, T.name, T.subject, T.read_Count, T.reg_Date, T.attachfile, D.department_name
+	FROM (
+	    SELECT rownum AS RNO, seq, fk_emp_id, name, subject, read_Count, TO_CHAR(reg_Date, 'yyyy-mm-dd hh24:mi:ss') AS reg_Date, Attachfile
+	    FROM (
+	        SELECT seq, fk_emp_id, name, subject, read_Count, reg_Date, Attachfile
+	        FROM tbl_noticeboard
+	        WHERE status = 1
+	        <choose>
+	            <when test='searchType == "subject" and searchWord != ""'>
+	                AND LOWER(subject) LIKE '%'||LOWER(#{searchWord})||'%'
+	            </when>
+	            <when test='searchType == "content" and searchWord != ""'>
+	                AND LOWER(content) LIKE '%'||LOWER(#{searchWord})||'%'
+	            </when>
+	            <when test='searchType == "subject_content" and searchWord != ""'>
+	                AND (LOWER(subject) LIKE '%'||LOWER(#{searchWord})||'%' OR LOWER(content) LIKE '%'||LOWER(#{searchWord})||'%')
+	            </when>
+	            <when test='searchType == "name" and searchWord != ""'>
+	                AND LOWER(name) LIKE '%'||LOWER(#{searchWord})||'%'
+	            </when>
+	            <otherwise>
+	            </otherwise>
+	        </choose>
+	        ORDER BY seq DESC
+	    ) V
+	) T
+	LEFT JOIN
+	    tbl_EMPLOYEES E ON T.fk_emp_id = E.EMPLOYEE_id
+	JOIN
+	    tbl_department D ON E.FK_DEPARTMENT_ID = D.DEPARTMENT_ID
+	WHERE RNO BETWEEN #{startRno} AND #{endRno}
+
 	</select>
 	
 	
-	<!-- 글쓰기(파일첨부가 없는 글쓰기) -->
+	<!-- 공지사항 글쓰기(파일첨부가 있는 글쓰기) -->
 	<insert id="notice_add" parameterType="com.spring.app.domain.NoticeboardVO">
-	    insert into tbl_noticeboard(seq, fk_emp_id, name, subject, content, pw, read_Count, reg_Date, status)
-	    values(noticeboard_Seq.nextval, #{fk_emp_id}, #{name}, #{subject}, #{content}, #{pw}, default, default, default) 
+	    insert into tbl_noticeboard(seq, fk_emp_id, name, subject, content, pw, read_Count, reg_Date, status, attachfile)
+	    values(noticeboard_Seq.nextval, #{fk_emp_id}, #{name}, #{subject}, #{content}, #{pw}, default, default, default, 1) 
 	</insert>
 	
-	<!-- 글쓰기(파일첨부가 있는 글쓰기) -->
-	<insert id="notice_add_withFile" parameterType="com.spring.app.domain.NoticeboardVO">
-		insert into tbl_noticeboard(seq, fk_emp_id, name, subject, content, pw, read_Count, reg_Date, status, file_Name, org_FileName, file_Size)
-	    values(noticeboard_Seq.nextval, #{fk_emp_id}, #{name}, #{subject}, #{content}, #{pw}, default, default, default,  #{file_Name}, #{org_Filename}, #{file_Size}) 
+	<!-- 공지사항 글쓰기(파일첨부가 없는 글쓰기) -->
+	<insert id="notice_add_noFile" parameterType="com.spring.app.domain.NoticeboardVO">
+		insert into tbl_noticeboard(seq, fk_emp_id, name, subject, content, pw, read_Count, reg_Date, status, attachfile)
+	    values(noticeboard_Seq.nextval, #{fk_emp_id}, #{name}, #{subject}, #{content}, #{pw}, default, default, default, default) 
 	</insert>
 	
-	<!-- 공지사항  조회수 증가는 없고 단순히 글 1개만 조회를 해주는 것 -->
+	<!-- 공지사항 상세페이지 보여주기 -->
 	<select id="getNotice_View" parameterType="HashMap" resultType="com.spring.app.domain.NoticeboardVO">
 		SELECT T2.previousseq, T2.previoussubject
 	     , T2.seq, T2.fk_emp_id, T2.name, T2.subject, T2.content, T2.read_Count, T2.reg_Date, T2.pw
 	     , T2.nextseq, T2.nextsubject
-	     , T2.file_Name, T2.org_Filename, T2.file_Size
+	     , T2.attachfile
 	     , D.department_name 
 		FROM 
 		(
@@ -442,17 +517,17 @@
 		         , seq, fk_emp_id, name, subject, content, read_Count, reg_Date, pw
 		         , lead(seq, 1) over(order by RNO asc) AS nextseq
 		         , lead(subject, 1) over(order by RNO asc) AS nextsubject
-		         , file_Name, org_Filename, file_Size
+		         , attachfile 
 		    FROM 
 		    (
 		        SELECT rownum AS RNO
 		             , seq, fk_emp_id, name, subject, content, read_Count, reg_Date, pw
-		             , file_Name, org_Filename, file_Size 
+		             , attachfile
 		        FROM 
 		        ( 
 		            SELECT seq, fk_emp_id, name, subject, content, read_Count
 		                 , to_char(reg_Date, 'yyyy-mm-dd hh24:mi:ss') AS reg_Date, pw
-		                 , file_Name, org_Filename, file_Size
+		                 , attachfile
 		            FROM tbl_noticeboard
 		            WHERE status = 1
 				<choose>
@@ -492,22 +567,7 @@
 	    where seq = #{seq}
 	</delete>
 	
-	<!-- === 공지사항 1개글 수정하기 === -->
-	<update id="notice_edit" parameterType="com.spring.app.domain.NoticeboardVO">
-	    update tbl_noticeboard set subject = #{subject}
-	                             , content = #{content}
-	    where seq = #{seq}
-	</update>
 	
-	<!-- === 첨부파일 있는 공지사항 1개글 수정하기 === -->
-	<update id="notice_edit_withFile" parameterType="com.spring.app.domain.NoticeboardVO">
-	    update tbl_noticeboard set subject = #{subject}
-	                             , content = #{content}
-	                             , file_name = #{file_Name}
-	                             , org_Filename = #{org_Filename}
-	                             , file_Size = #{file_Size}
-	    where seq = #{seq}
-	</update>
 	
 	<!-- 검색어 입력시 자동글 완성하기 -->
 	<select id="notice_wordSearchShow" parameterType="HashMap" resultType="String"> 
@@ -540,12 +600,291 @@
 		</choose> 
 	</select>
 	
+
+     <!--  공지사항 글번호 얻어오기   -->
+	<select id="getNoitceboardSeq" resultType="String"> select max(seq) from tbl_noticeboard </select>
+
+	<!--  공지사항 첨부파일 등록하기  -->
+	<insert id="notice_insertFiles" parameterType="java.util.List">
+	insert into TBL_noticeboard_FILE (fileno, fk_seq, orgFilename, FileName, FileSize) SELECT TBL_noticeboard_FILE_SEQ.NEXTVAL AS fileno, A.* FROM (
+	<foreach collection="list" item="file" separator="union all"> SELECT #{file.fk_seq} AS fk_seq, #{file.orgFilename} AS orgFilename, #{file.fileName} AS FILENAME, #{file.fileSize} AS FILESIZE FROM DUAL </foreach>
+	) A
+	</insert>
+	
 	<!-- === 공지사항 게시판 수정할떄 첨부파일 삭제하기 === -->
-	<update id="notice_delete_file" parameterType="com.spring.app.domain.NoticeboardVO">
-	    update tbl_noticeboard set file_name = null
-	                           	 , org_Filename = null
-	                             , file_Size = null
-	    where seq = #{seq}
+	<delete id="notice_delete_file" parameterType="com.spring.app.domain.NoticeboardFileVO">
+	     delete from TBL_NOTICEBOARD_FILE
+	     where fileno = #{fileno}
+	</delete>
+	
+	
+	
+	
+	<!-- 공지사항 파일 목록 가져오기 -->
+	<select id="getView_notice_files" parameterType="HashMap" resultType="com.spring.app.domain.NoticeboardFileVO">
+		select fileno, fk_seq, orgFilename, FileName, FileSize
+		from TBL_NOTICEBOARD_FILE
+		where fk_seq = #{seq}
+	</select>
+
+	<!-- === 공지사항 파일테이블 첨부파일 행 삭제하기 === -->
+	<delete id="notice_del_attach" parameterType="HashMap">
+	    delete from TBL_NOTICEBOARD_FILE
+	    where fileno = #{fileno}
+	</delete>
+	
+	
+	<!-- === 공지사항인데 첨부파일 없는 행 삭제하기 === -->
+	<delete id="notice_nofile_del" parameterType="HashMap">
+	    delete from TBL_NOTICEBOARD_FILE
+	    where fileno = #{fileno}
+	</delete>
+	
+	<!-- 공지사항의 첨부파일 하나만 가져오기 -->
+	<select id="getNotice_Each_view_files" parameterType="HashMap" resultType="com.spring.app.domain.NoticeboardFileVO">
+		select fileno, fk_seq, orgFilename, FileName, FileSize
+		from TBL_NOTICEBOARD_FILE
+		where fileno = #{fileno}	
+	</select>
+	
+	
+		<!--  글 수정하기   -->
+	<update id="noticeboard_edit" parameterType="com.spring.app.domain.NoticeboardVO"> 
+		update TBL_NOTICEBOARD set subject = #{subject}, content = #{content} 
+		where seq = #{seq} 
 	</update>
 	
+	<!-- 공지사항 첨부파일 있는지 확인 -->
+	<select id="noticeboard_update_attachfile" resultType="String" parameterType="String"> 
+		select count(*)
+		from tbl_noticeboard_file
+		where FK_SEQ = #{fk_seq} 
+	</select>
+	
+	
+	<!--  파일 삭제하면 글테이블의 filename 유무 0으로 만들기  (1은 파일 존재 , 0은 파일존재 하지 않음)   -->
+	<update id="noticeboard_filename_clear" parameterType="HashMap"> 
+		update tbl_noticeboard set attachfile = 0
+		where seq = #{fk_seq} 
+	</update>
+
+	<!--  파일 삭제하면 글테이블의 filename 유무 1으로 만들기  (1은 파일 존재 , 0은 파일존재 하지 않음)   -->
+	<update id="noticeboard_filename_add" parameterType="String"> 
+		update tbl_noticeboard set attachfile = 1
+		where seq = #{fk_seq} 
+	</update>
+	
+	<!-- 복지포인트 신청  -->
+	<insert id="receiptCelebrate" parameterType="com.spring.app.domain.CelebratePayVO"> 
+		INSERT INTO tbl_celebratepay (app_no, fk_employee_id, app_date, app_pay, celebrate_type, app_status) 
+		VALUES(seq_tbl_celebratepay.nextval, #{fk_employee_id}, to_char(sysdate,'yyyy-mm-dd'), #{app_pay}, #{celebrate_type}, default) 
+	</insert>
+
+	
+	<!-- 특정 사용자의 대기 신청 중인 복지포인트 가져오기 -->
+	<select id="CelebratePay_HoldList" resultType="com.spring.app.domain.CelebratePayVO">
+		select department_name ,app_no, fk_employee_id, TO_CHAR(app_date, 'YYYY-MM-DD') AS app_date, app_pay, celebrate_type, app_status,name,
+		CASE
+      	WHEN E.gradelevel = 1 THEN '사원'
+      	WHEN E.gradelevel = 3 THEN '팀장'
+     	WHEN E.gradelevel = 5 THEN '부서장'
+      	WHEN E.gradelevel = 10 THEN '사장'
+        ELSE '기타' END AS title
+		from tbl_celebratepay M
+		LEFT OUTER JOIN tbl_employees E
+		ON M.fk_employee_id = E.employee_id
+		JOIN tbl_department D ON E.FK_DEPARTMENT_ID = D.DEPARTMENT_ID
+		where app_status = 0 and fk_employee_id = #{employee_id}
+		ORDER BY app_no DESC
+	</select>
+	
+	<resultMap type="HashMap" id="deptNameList_Map2">
+       <result property="department_id"     column="department_id"      javaType="String" />
+       <result property="department_name"   column="department_name"    javaType="String" />
+    </resultMap>
+   
+    <!-- 특정 사용자의 복지포인트 신청 승인 완료 목록 가져오기 -->
+	<select id="CelebratePay_completeList" resultType="com.spring.app.domain.CelebratePayVO">
+		select department_name, app_no, fk_employee_id, TO_CHAR(app_date, 'YYYY-MM-DD') AS app_date, app_pay, celebrate_type, app_status,name,
+		CASE
+      	WHEN E.gradelevel = 1 THEN '사원'
+      	WHEN E.gradelevel = 3 THEN '팀장'
+     	WHEN E.gradelevel = 5 THEN '부서장'
+      	WHEN E.gradelevel = 10 THEN '사장'
+        ELSE '기타' END AS title
+		from tbl_celebratepay M
+		LEFT OUTER JOIN tbl_employees E
+		ON M.fk_employee_id = E.employee_id
+		JOIN tbl_department D ON E.FK_DEPARTMENT_ID = D.DEPARTMENT_ID
+		where app_status = 1 and fk_employee_id = #{employee_id}
+		ORDER BY app_no DESC
+	</select>
+    
+    <!-- 특정 사용자의 반려된 복지포인트 목록 가져오기 -->
+	<select id="CelebratePay_rejectList" resultType="com.spring.app.domain.CelebratePayVO">
+		select department_name, app_no, fk_employee_id, TO_CHAR(app_date, 'YYYY-MM-DD') AS app_date, app_pay, celebrate_type, app_status,name,
+		CASE
+      	WHEN E.gradelevel = 1 THEN '사원'
+      	WHEN E.gradelevel = 3 THEN '팀장'
+     	WHEN E.gradelevel = 5 THEN '부서장'
+      	WHEN E.gradelevel = 10 THEN '사장'
+        ELSE '기타' END AS title
+		from tbl_celebratepay M
+		LEFT OUTER JOIN tbl_employees E
+		ON M.fk_employee_id = E.employee_id
+		JOIN tbl_department D ON E.FK_DEPARTMENT_ID = D.DEPARTMENT_ID
+		where app_status = 2 and fk_employee_id = #{employee_id}
+		ORDER BY app_no DESC
+	</select>
+    
+    <!-- 승인 대기중인 복지포인트 목록 삭제하기 -->
+	<delete id="celebrate_delete" parameterType="String">
+		delete from tbl_celebratepay 
+		where app_no = #{app_no}
+	</delete>
+    
+     <!-- 부서이름 가져오기 -->
+    <select id="deptName" resultMap="deptNameList_Map2">
+	    select distinct nvl(D.department_name, '부서 없음') AS department_name
+	    	 , department_id
+		from tbl_employees E
+        join tbl_department D
+        ON E.fk_department_id = D.department_id
+        order by 1
+	</select>
+    
+    <!-- 관리자 직원관리 - 모든 복지포인트 결제 대기 신청 현황 -->
+    <select id="CelebrateStatus" parameterType="String" resultType="com.spring.app.domain.CelebratePayVO"> 
+		SELECT department_name, name, app_no, fk_employee_id, TO_CHAR(app_date, 'YYYY-MM-DD') AS app_date, app_pay, celebrate_type, app_status  
+		,case when substr(jubun, 7, 1) in('1','3') then '남' else '여' end AS GENDER,
+		CASE
+      	WHEN E.gradelevel = 1 THEN '사원'
+      	WHEN E.gradelevel = 3 THEN '팀장'
+     	WHEN E.gradelevel = 5 THEN '부서장'
+      	WHEN E.gradelevel = 10 THEN '사장'
+        ELSE '기타' END AS title
+		FROM tbl_celebratepay C 
+		LEFT OUTER JOIN TBL_EMPLOYEES E ON C.fk_employee_id = E.employee_id
+		JOIN tbl_department D ON E.FK_DEPARTMENT_ID = D.DEPARTMENT_ID
+		WHERE app_status = '0'
+        AND 1=1
+        <if test="deptName != ''">
+        AND nvl(E.fk_department_id, -9999) IN #{deptName}
+        </if>
+        <choose>
+            <when test="title != ''">
+                AND (
+                    (E.gradelevel = 1 AND #{title} = '사원')
+                    OR (E.gradelevel = 3 AND #{title} = '팀장')
+                    OR (E.gradelevel = 5 AND #{title} = '부서장')
+                    OR (E.gradelevel = 10 AND #{title} = '사장')
+                    OR (#{title} = '기타')
+                )
+            </when>
+        </choose>
+        <if test="gender != ''">
+            AND (
+                (substr(E.jubun, 7, 1) IN ('1','3') AND #{gender} = '남')
+             OR (substr(E.jubun, 7, 1) IN ('2','4') AND #{gender} = '여')
+            )
+        </if>
+        <if test="app_date != ''">
+        	AND TO_CHAR(app_date, 'YYYY-MM-DD') = #{app_date}
+    	</if>
+    	<if test="name != ''">
+        	AND lower(name) like '%'||lower(#{name})||'%' 
+    	</if>
+		ORDER BY app_no DESC 
+	</select>
+    
+    <!--  승인 결재시 복지포인트 업데이트 하기 -->
+	<update id="CelebrateStatus_Update" parameterType="String">
+		update tbl_celebratepay 
+		set app_status = 1
+		where app_no = #{app_no}
+	</update>
+    
+	<!--  반려 결재시 복지포인트 업데이트 하기 -->
+	<update id="CelebrateStatus_reject" parameterType="String">
+		update tbl_celebratepay 
+		set app_status = 2
+		where app_no = #{app_no}
+	</update>
+	
+	<!--  관리자 직원관리 - 모든 복지포인트 결제 완료 현황  -->
+	<select id="getCelebrateComplete" parameterType="HashMap" resultType="com.spring.app.domain.CelebratePayVO"> 
+		SELECT
+	        department_name,
+	        name,
+	        app_no,
+	        fk_employee_id,
+	        TO_CHAR(app_date, 'YYYY-MM-DD') AS app_date,
+	        app_pay,
+	        celebrate_type,
+	        app_status,
+	        CASE WHEN substr(jubun, 7, 1) IN ('1','3') THEN '남' ELSE '여' END AS GENDER,
+	        CASE
+	            WHEN E.gradelevel = 1 THEN '사원'
+	            WHEN E.gradelevel = 3 THEN '팀장'
+	            WHEN E.gradelevel = 5 THEN '부서장'
+	            WHEN E.gradelevel = 10 THEN '사장'
+	            ELSE '기타'
+	        END AS title
+	    FROM tbl_celebratepay C 
+	        LEFT OUTER JOIN TBL_EMPLOYEES E ON C.fk_employee_id = E.employee_id
+	        JOIN tbl_department D ON E.FK_DEPARTMENT_ID = D.DEPARTMENT_ID
+	    WHERE 
+	    	(
+	      	(app_status IN ('1', '2') AND #{app_status} IS NULL)
+	    	OR
+	   	    (app_status = #{app_status} AND #{app_status} IS NOT NULL)
+	    	)
+	        AND 1=1
+	        <if test="deptName != ''">
+	        AND nvl(E.fk_department_id, -9999) IN #{deptName}
+	        </if>
+	        <choose>
+	            <when test="title != ''">
+	                AND (
+	                    (E.gradelevel = 1 AND #{title} = '사원')
+	                    OR (E.gradelevel = 3 AND #{title} = '팀장')
+	                    OR (E.gradelevel = 5 AND #{title} = '부서장')
+	                    OR (E.gradelevel = 10 AND #{title} = '사장')
+	                    OR (#{title} = '기타')
+	                )
+	            </when>
+	        </choose>
+	        <if test="gender != ''">
+	            AND (
+	                (substr(E.jubun, 7, 1) IN ('1','3') AND #{gender} = '남')
+	             OR (substr(E.jubun, 7, 1) IN ('2','4') AND #{gender} = '여')
+	            )
+	        </if>
+	        <if test="app_date != ''">
+        		AND TO_CHAR(app_date, 'YYYY-MM-DD') = #{app_date}
+    		</if>
+    		<if test="name != ''">
+        		AND lower(name) like '%'||lower(#{name})||'%' 
+    		</if>
+	    ORDER BY app_no DESC 
+	</select>
+	
+	<!-- 관리자 직원 관리 - 모든 복지포인트 결제 취소 하기 -->
+	<update id="CelebrateStatus_close" parameterType="String">
+		update tbl_celebratepay 
+		set app_status = 0
+		where app_no = #{app_no}
+	</update>
+
+	<!--
+	<update id="PointInsert" parameterType="HashMap">
+		UPDATE TBL_EMPLOYEES b
+		SET point = (
+		    SELECT b.point + #{app_pay}
+		    FROM tbl_celebratepay a
+		    WHERE a.fk_employee_id = #{fk_employee_id}
+		    AND ROWNUM = 1
+		)
+		WHERE b.employee_id = #{fk_employee_id}
+	</update>-->
 </mapper>

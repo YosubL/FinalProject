@@ -212,7 +212,7 @@ public class ApprovalDAO_imple implements ApprovalDAO {
 	// 환경설정-결재라인 수정
 	@Override
 	public int editApprovalLine(SavedAprvLineVO sapVO) {
-		return sqlsession.insert("approval.editApprovalLine", sapVO);
+		return sqlsession.update("approval.editApprovalLine", sapVO);
 	}
 	
 	// 환경설정-결재라인 삭제
@@ -288,6 +288,12 @@ public class ApprovalDAO_imple implements ApprovalDAO {
 		return (int) approvalMap.get("o_updateCnt");
 	}
 	
+	// JOIN 을 통해 가져올 로그인한 유저의 정보
+	@Override
+	public EmployeesVO getLoginuser(String empno) {
+		return sqlsession.selectOne("approval.getLoginuser", empno);
+	}
+	
 	// 공통 결재라인 가져오기
 	@Override
 	public List<EmployeesVO> getRecipientList(String type_no) {
@@ -335,13 +341,13 @@ public class ApprovalDAO_imple implements ApprovalDAO {
 	public int saveOfficialApprovalLine(OfficialAprvLineVO oapVO) {
 		return sqlsession.update("approval.saveOfficialApprovalLine", oapVO);
 	}
-/*
+
 	// 환경설정-서명이미지 수정
 	@Override
 	public int updateSignature(Map<String, String> paraMap) {
 		return sqlsession.update("approval.updateSignature", paraMap);
 	}
-*/
+
 	// 임시저장 시퀀스 얻어오기
 	@Override
 	public String getTempDraftNo() {
@@ -455,5 +461,8 @@ public class ApprovalDAO_imple implements ApprovalDAO {
 	public int deleteOneDraft(String draft_no) {
 		return sqlsession.delete("approval.deleteOneDraft", draft_no);
 	}
+
+
+	
 
 }

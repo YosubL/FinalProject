@@ -1,0 +1,59 @@
+function golike(ctxPath) {
+    // URL에서 g_code 매개변수 가져오기
+    const urlParams = new URLSearchParams(window.location.search);
+    const g_code = urlParams.get('g_code');
+
+    if (g_code) {
+        // g_code 값을 배열에 추가
+        const g_code_arr = sessionStorage.getItem('g_code_arr') ? JSON.parse(sessionStorage.getItem('g_code_arr')) : [];
+        g_code_arr.push(g_code);
+
+        // 최대 3개 값만 유지
+        if (g_code_arr.length > 3) {
+            g_code_arr.shift();
+        }
+
+        // 배열을 세션 스토리지에 다시 저장
+        sessionStorage.setItem('g_code_arr', JSON.stringify(g_code_arr));
+        console.log('g_code_arr:', g_code_arr);
+
+        // 세션 스토리지에 있는 배열을 JSON 형태로 저장
+        const g_code_arr_json = JSON.stringify(g_code_arr);
+
+        // AJAX 요청을 통해 데이터를 서버로 보내기
+        $.ajax({
+            type: "get",  // POST 또는 GET 등의 HTTP 메서드 선택
+            url: `${ctxPath}/shop/likecart.bz`,  // 서버 측 엔드포인트 URL
+            data: { g_code_arr: g_code_arr_json },
+            success: function(response) {
+                // 서버로부터의 응답 처리
+                console.log(response);
+
+                // 팝업을 열기 (팝업 열기 코드를 이 위치로 이동)
+                openPopup(ctxPath);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                // 에러 처리
+                console.error("AJAX error:", textStatus, errorThrown);
+
+                // 팝업을 열기 (팝업 열기 코드를 이 위치로 이동)
+                openPopup(ctxPath);
+            }
+        });
+    } else {
+        // g_code가 없는 경우 처리
+    }
+}
+
+function openPopup(ctxPath) {
+    const url = `${ctxPath}/shop/likecart.bz`;
+
+    const width = 1200; // 가로 크기를 1200px로 설정
+    const height = 600; // 세로 크기를 600px로 설정
+
+    const left = Math.ceil((window.screen.width - width) / 2);
+    const top = Math.ceil((window.screen.height - height) / 2);
+
+    // 가로 1200px, 세로 600px 크기로 팝업 열기
+    window.open(url, "likecart", `left=${left}, top=${top}, width=${width}, height=${height}`);
+}

@@ -3,7 +3,7 @@ package com.spring.app.domain;
 import org.springframework.web.multipart.MultipartFile;
 
 public class BoardVO {
-
+	
 	private String seq;          // 글번호 
 	private String fk_email;     // 사용자ID
 	private String name;         // 글쓴이 

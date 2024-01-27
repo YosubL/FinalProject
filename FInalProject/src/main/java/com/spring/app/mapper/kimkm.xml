@@ -40,6 +40,7 @@
 							   , userid = #{userid}
 							   , register_status = 1
 							   , photo = #{photo}
+							   , signimg = #{signimg}
 	    where email = #{email}
 	</update>
 	
@@ -47,7 +48,7 @@
 	<!-- 회원가입시 휴가 테이블 insert 하기 -->
 	<insert id="insert_vacation" parameterType="String">
 		insert into tbl_vacation(fk_employee_id, annual, family_care, reserve_forces, infertility_treatment, childbirth, marriage, reward)
-		values(${employee_id}, 0, 0, 0, 0, 0, 0, 0)
+		values(${employee_id}, 5, 0, 0, 0, 0, 0, 0)
 	</insert>
 	
 	
@@ -98,117 +99,226 @@
 		ON fk_job_id = J.job_id
 	</select>
 	
-	
-	<!-- 급여 계산하기 -->
-	<select id="selectSalary" parameterType="String" resultType="HashMap">
-		SELECT BASICSAL, KSAL, YSAL, HSAL, BSAL
-		     , (KSAL+YSAL+HSAL+BSAL) AS SUM
-		     , BASICSAL-(KSAL+YSAL+HSAL+BSAL) AS TOTAL
-		FROM
-		(
-		    SELECT BASICSAL
-		         , trunc((BASICSAL*0.045)) AS KSAL
-		         , trunc(((BASICSAL*0.03459)*0.1227)) AS YSAL
-		         , trunc((BASICSAL*0.03459)) AS HSAL
-		         , trunc((BASICSAL*0.009)) AS BSAL
-		    FROM
-		    (    
-		        select trunc((salary/12)) AS BASICSAL
-		        from tbl_employees
-		        where employee_id = 27
-		    )
-		)   
+	<select id="selectVacation" parameterType="String" resultType="HashMap">
+		select annual, family_care, reserve_forces, infertility_treatment, childbirth, marriage, reward
+        from tbl_vacation
+        where fk_employee_id = #{employee_id}
 	</select>
 	
 	
 	<!-- 급여테이블 조회하기 -->
-	<resultMap type="HashMap" id="monthSal_Map">
-    	<result property="year_month" 		 column="year_month"    	javaType="String" />
-    	<result property="fk_employee_id" 		 column="fk_employee_id"    	javaType="String" />
-    	<result property="last_day_of_month" column="last_day_of_month" javaType="String" />
-	    <result property="salary"     		 column="salary"     		javaType="String" />
-	    <result property="m_sum"  	 		 column="m_sum"  	  		javaType="String" />
-	    <result property="total"  		     column="total"  	  		javaType="String" />
-	</resultMap> 
-	<select id="monthSal" parameterType="String" resultMap="monthSal_Map">
-		SELECT year_month, fk_employee_id, last_day_of_month, salary
-		     , (KSAL+YSAL+HSAL+BSAL) AS M_SUM
-		     , salary-(KSAL+YSAL+HSAL+BSAL) AS TOTAL
-		FROM
-		(
-		select year_month, fk_employee_id
-		     , to_char(last_day(To_Date(year_month, 'yyyy-mm')), 'yyyy-mm-dd') AS LAST_DAY_OF_MONTH 
-		     , salary
-		     , trunc((salary*0.045)) AS KSAL
-		     , trunc(((salary*0.03459)*0.1227)) AS YSAL
-		     , trunc((salary*0.03459)) AS HSAL
-		     , trunc((salary*0.009)) AS BSAL
-		from tbl_salary
-		where fk_employee_id = #{employee_id}
-		)
+   <resultMap type="HashMap" id="monthSal_Map">
+       <result property="year_month"        column="year_month"       javaType="String" />
+       <result property="fk_employee_id"     column="fk_employee_id"    javaType="String" />
+       <result property="last_day_of_month" column="last_day_of_month" javaType="String" />
+       <result property="next_month"        column="next_month"       javaType="String" />
+       <result property="p_sum"            column="p_sum"           javaType="String" />
+       <result property="m_sum"             column="m_sum"             javaType="String" />
+       <result property="total"             column="total"             javaType="String" />
+   </resultMap>
+   <select id="monthSal" parameterType="String" resultMap="monthSal_Map">
+      SELECT year_month, fk_employee_id, last_day_of_month, next_month, P_SUM
+          , M_SUM, P_SUM-M_SUM+MEAL_ALLOWANCE AS TOTAL
+      FROM
+      (
+         SELECT rownum AS RNO, year_month, fk_employee_id, last_day_of_month, next_month, P_SUM, MEAL_ALLOWANCE
+             , NATIONAL_PENSION+LONG_TERM_CARE_PEE+HEALTH_INSURANCE+EMPLOYMENT_INSURANCE AS M_SUM
+         FROM
+         (
+            SELECT year_month, fk_employee_id, last_day_of_month, next_month, P_SUM
+                 , trunc((P_SUM*0.045)) AS NATIONAL_PENSION
+                 , trunc(((P_SUM*0.03459)*0.1227)) AS LONG_TERM_CARE_PEE
+                 , trunc((P_SUM*0.03459)) AS HEALTH_INSURANCE
+                 , trunc((P_SUM*0.009)) AS EMPLOYMENT_INSURANCE
+                 , MEAL_ALLOWANCE
+            FROM
+            (
+               SELECT year_month, fk_employee_id, last_day_of_month, next_month
+                   , (salary+BONUS+VACATION_BONUS+POSITION_ALLOWANCE+EXTRA_WORK_ALLOWANCE) AS P_SUM
+                   , MEAL_ALLOWANCE
+               FROM
+               (
+                  select year_month, fk_employee_id
+                  , to_char(last_day(To_Date(year_month, 'yyyy-mm')), 'yyyy-mm-dd') AS LAST_DAY_OF_MONTH
+                  , to_char(add_months(to_date(year_month, 'YYYY-MM'), +1), 'yyyy-mm') AS NEXT_MONTH
+                  , S.salary
+                  
+                  , case when substr(year_month, 6, 2) in('03', '06', '09', '12') 
+                         then S.salary/4 else 0 end AS BONUS
+                    , case when substr(year_month, 6, 2) in('01', '07') 
+                         then 300000 else 0 end AS VACATION_BONUS
+                  , case when gradelevel = 1 then 0 
+                         when gradelevel = 3 then 100000
+                         when gradelevel = 5 then 300000
+                         else 1000000 end AS POSITION_ALLOWANCE
+                  , case when gradelevel = 1 then extended_end_time * 10000
+                         when gradelevel = 3 then extended_end_time * 30000
+                         when gradelevel = 5 then extended_end_time * 50000
+                         else gradelevel * 100000 end AS EXTRA_WORK_ALLOWANCE
+                  , 200000 AS MEAL_ALLOWANCE      
+                  
+                  from tbl_salary S  
+                  JOIN tbl_employees E
+                  ON S.fk_employee_id = E.employee_id
+                  where fk_employee_id = #{employee_id}
+                  order by year_month desc
+               )
+            )
+         )
+      )
+      where rno between 1 and 12
+   </select>
+   
+   
+   <!-- 급여 명세서 요청하기 -->
+   <select id="salaryStatement" parameterType="HashMap" resultType="HashMap">
+      SELECT year_month, salary, name, job_name , NATIONAL_PENSION, LONG_TERM_CARE_PEE, HEALTH_INSURANCE, EMPLOYMENT_INSURANCE
+          , BONUS, VACATION_BONUS, POSITION_ALLOWANCE, EXTRA_WORK_ALLOWANCE, MEAL_ALLOWANCE
+          , M_SUM, P_SUM, P_SUM-M_SUM+MEAL_ALLOWANCE AS TOTAL
+      FROM
+      (
+         SELECT year_month, salary, name, job_name , NATIONAL_PENSION, LONG_TERM_CARE_PEE, HEALTH_INSURANCE, EMPLOYMENT_INSURANCE
+             , BONUS, VACATION_BONUS, POSITION_ALLOWANCE, EXTRA_WORK_ALLOWANCE, MEAL_ALLOWANCE
+             , NATIONAL_PENSION+LONG_TERM_CARE_PEE+HEALTH_INSURANCE+EMPLOYMENT_INSURANCE AS M_SUM, P_SUM
+         FROM
+         (
+            SELECT year_month, salary, name, job_name , BONUS, VACATION_BONUS, POSITION_ALLOWANCE, EXTRA_WORK_ALLOWANCE
+                , trunc((P_SUM*0.045)) AS NATIONAL_PENSION
+                , trunc(((P_SUM*0.03459)*0.1227)) AS LONG_TERM_CARE_PEE
+                , trunc((P_SUM*0.03459)) AS HEALTH_INSURANCE
+                , trunc((P_SUM*0.009)) AS EMPLOYMENT_INSURANCE
+                , MEAL_ALLOWANCE, P_SUM
+            FROM
+            (
+               SELECT year_month, salary, name, job_name, BONUS, POSITION_ALLOWANCE, EXTRA_WORK_ALLOWANCE
+                   , MEAL_ALLOWANCE, VACATION_BONUS
+                   , (salary+BONUS+VACATION_BONUS+POSITION_ALLOWANCE+EXTRA_WORK_ALLOWANCE) AS P_SUM
+               FROM
+               (
+                  select year_month, fk_employee_id, S.salary, fk_job_id, name
+                      , case when substr(year_month, 6, 2) in('03', '06', '09', '12') 
+                           then S.salary/4 else 0 end AS BONUS
+                      , case when substr(year_month, 6, 2) in('01', '07') 
+                               then 300000 else 0 end AS VACATION_BONUS
+                      , case when gradelevel = 1 then 0 
+                            when gradelevel = 3 then 100000
+                           when gradelevel = 5 then 300000
+                           else 1000000 end AS POSITION_ALLOWANCE
+                      , case when gradelevel = 1 then extended_end_time * 10000
+                           when gradelevel = 3 then extended_end_time * 30000
+                           when gradelevel = 5 then extended_end_time * 50000
+                           else gradelevel * 100000 end AS EXTRA_WORK_ALLOWANCE
+                      , 200000 AS MEAL_ALLOWANCE
+                  from tbl_salary S  
+                  JOIN tbl_employees E
+                  ON S.fk_employee_id = E.employee_id
+                  where year_month = #{year_month} and fk_employee_id = #{fk_employee_id}
+               ) T
+               JOIN tbl_jobs J
+               ON T.fk_job_id = J.job_id
+            )
+         )
+      )
+   </select>
+   
+   
+   <!-- 엑셀에 들어가는 급여 가져오기 -->
+   <resultMap type="HashMap" id="salaryList_Map">
+       <result property="year_month"           column="year_month"          javaType="String" />
+       <result property="salary"               column="salary"              javaType="String" />
+       <result property="name"               column="name"                 javaType="String" />
+       <result property="job_name"            column="job_name"               javaType="String" />
+       <result property="national_pension"      column="national_pension"      javaType="String" />
+       <result property="long_term_care_pee"    column="long_term_care_pee"    javaType="String" />
+       <result property="health_insurance"      column="health_insurance"      javaType="String" />
+       <result property="employment_insurance"  column="employment_insurance"  javaType="String" />
+       <result property="bonus"                 column="bonus"                javaType="String" />
+       <result property="vacation_bonus"           column="vacation_bonus"          javaType="String" />
+       <result property="position_allowance"      column="position_allowance"     javaType="String" />
+       <result property="extra_work_allowance"  column="extra_work_allowance"  javaType="String" />
+       <result property="meal_allowance"           column="meal_allowance"          javaType="String" />
+       <result property="m_sum"                 column="m_sum"                javaType="String" />
+       <result property="p_sum"                 column="p_sum"                javaType="String" />
+       <result property="total"                 column="total"                javaType="String" />
+   </resultMap>
+   <select id="salaryList" parameterType="HashMap" resultMap="salaryList_Map">
+      SELECT year_month, salary, name, job_name , NATIONAL_PENSION, LONG_TERM_CARE_PEE, HEALTH_INSURANCE, EMPLOYMENT_INSURANCE
+          , BONUS, VACATION_BONUS, POSITION_ALLOWANCE, EXTRA_WORK_ALLOWANCE, MEAL_ALLOWANCE
+          , M_SUM, P_SUM, P_SUM-M_SUM+MEAL_ALLOWANCE AS TOTAL
+      FROM
+      (
+         SELECT year_month, salary, name, job_name , NATIONAL_PENSION, LONG_TERM_CARE_PEE, HEALTH_INSURANCE, EMPLOYMENT_INSURANCE
+             , BONUS, VACATION_BONUS, POSITION_ALLOWANCE, EXTRA_WORK_ALLOWANCE, MEAL_ALLOWANCE
+             , NATIONAL_PENSION+LONG_TERM_CARE_PEE+HEALTH_INSURANCE+EMPLOYMENT_INSURANCE AS M_SUM, P_SUM
+         FROM
+         (
+            SELECT year_month, salary, name, job_name , BONUS, VACATION_BONUS, POSITION_ALLOWANCE, EXTRA_WORK_ALLOWANCE
+                , trunc((P_SUM*0.045)) AS NATIONAL_PENSION
+                , trunc(((P_SUM*0.03459)*0.1227)) AS LONG_TERM_CARE_PEE
+                , trunc((P_SUM*0.03459)) AS HEALTH_INSURANCE
+                , trunc((P_SUM*0.009)) AS EMPLOYMENT_INSURANCE
+                , MEAL_ALLOWANCE, P_SUM
+            FROM
+            (
+               SELECT year_month, salary, name, job_name, BONUS, POSITION_ALLOWANCE, EXTRA_WORK_ALLOWANCE
+                   , MEAL_ALLOWANCE, VACATION_BONUS
+                   , (salary+BONUS+VACATION_BONUS+POSITION_ALLOWANCE+EXTRA_WORK_ALLOWANCE) AS P_SUM
+               FROM
+               (
+                  select year_month, fk_employee_id, S.salary, fk_job_id, name
+                      , case when substr(year_month, 6, 2) in('03', '06', '09', '12') 
+                           then S.salary/4 else 0 end AS BONUS
+                      , case when substr(year_month, 6, 2) in('01', '07') 
+                               then 300000 else 0 end AS VACATION_BONUS
+                      , case when gradelevel = 1 then 0 
+                           when gradelevel = 3 then 100000
+                           when gradelevel = 5 then 300000
+                           else 1000000 end AS POSITION_ALLOWANCE
+                      , case when gradelevel = 1 then extended_end_time * 10000
+                           when gradelevel = 3 then extended_end_time * 30000
+                           when gradelevel = 5 then extended_end_time * 50000
+                           else gradelevel * 100000 end AS EXTRA_WORK_ALLOWANCE
+                      , 200000 AS MEAL_ALLOWANCE 
+                  from tbl_salary S  
+                  JOIN tbl_employees E
+                  ON S.fk_employee_id = E.employee_id
+                  where 1=1
+                  <if test="arr_year_month != null">
+                     AND year_month IN
+                     <foreach collection="arr_year_month" index="i" open="(" separator="," close=")">
+                        '${arr_year_month[i]}'
+                     </foreach>
+                  </if>
+                  order by year_month desc
+               ) T
+               JOIN tbl_jobs J
+               ON T.fk_job_id = J.job_id
+            )
+         )
+      )
+   </select>
+	
+	<select id="selectSignimg" resultType="String">
+		SELECT signimg
+        FROM
+        (
+	        select department_id, manager_id
+	        from tbl_department
+	        where department_id = 200
+        )D
+        JOIN tbl_employees E
+        ON D.manager_id = E.employee_id
 	</select>
 	
-	
-	<!-- 급여 명세서 요청하기 -->
-	<select id="salaryStatement" parameterType="String" resultType="HashMap">
-		SELECT year_month, S.salary, name, job_name, KSAL, YSAL, HSAL, BSAL
-		     , (KSAL+YSAL+HSAL+BSAL) AS SUM
-		     , S.salary+b-(KSAL+YSAL+HSAL+BSAL) AS TOTAL, b, S.salary+b AS a
-		FROM
-		(
-		select year_month, salary, fk_employee_id
-		     , trunc((salary*0.045)) AS KSAL
-		     , trunc(((salary*0.03459)*0.1227)) AS YSAL
-		     , trunc((salary*0.03459)) AS HSAL
-		     , trunc((salary*0.009)) AS BSAL
-		     , case when substr(year_month, 6, 2) in('03', '06', '09', '12') 
-		            then '500000' else '0' end AS b 
-		from tbl_salary
-		where year_month = #{year_month} and fk_employee_id = #{fk_employee_id}
-		) S JOIN tbl_employees E
-		ON S.fk_employee_id = E.employee_id
-		JOIN tbl_jobs J
-		ON E.fk_job_id = J.job_id
-	</select>
-	
-	
-	<!-- 급여명세서 테이블 가져오기 -->
-	<resultMap type="HashMap" id="salaryList_Map">
-    	<result property="year_month" column="year_month" javaType="String" />
-	    <result property="salary"     column="salary"     javaType="String" />
-	    <result property="name"     column="name"     javaType="String" />
-	    <result property="job_name"     column="job_name"     javaType="String" />
-	    <result property="ksal"     column="KSAL"     javaType="String" />
-	    <result property="ysal"     column="YSAL"     javaType="String" />
-	    <result property="hsal"     column="HSAL"     javaType="String" />
-	    <result property="bsal"     column="BSAL"     javaType="String" />
-	    <result property="m_sum"  	  column="m_sum"  	  javaType="String" />
-	    <result property="total"  	  column="total"  	  javaType="String" />
+	<!-- 조직도 부서아이디, 부서명 받아오기 -->
+	<resultMap type="HashMap" id="selectdept_Map">
+    	<result property="department_id" 	column="department_id" 	  javaType="String" />
+		<result property="department_name"  column="department_name"  javaType="String" />
 	</resultMap> 
-	<select id="salaryList" parameterType="HashMap" resultMap="salaryList_Map">
-		SELECT year_month, S.salary, name, job_name, KSAL, YSAL, HSAL, BSAL
-		     , (KSAL+YSAL+HSAL+BSAL) AS m_sum
-		     , S.salary-(KSAL+YSAL+HSAL+BSAL) AS TOTAL
-		FROM
-		(
-		select year_month, salary, fk_employee_id
-		     , trunc((salary*0.045)) AS KSAL
-		     , trunc(((salary*0.03459)*0.1227)) AS YSAL
-		     , trunc((salary*0.03459)) AS HSAL
-		     , trunc((salary*0.009)) AS BSAL
-		from tbl_salary
-		where 1=1
-		<if test="arr_year_month != null">
-	     AND year_month IN
-	        <foreach collection="arr_year_month" index="i" open="(" separator="," close=")">
-	            '${arr_year_month[i]}'
-	        </foreach>
-	    </if>
-	    order by year_month desc
-		) S JOIN tbl_employees E
-		ON S.fk_employee_id = E.employee_id
-		JOIN tbl_jobs J
-		ON E.fk_job_id = J.job_id
+	<select id="selectdept" parameterType="com.spring.app.domain.EmployeesVO" resultMap="selectdept_Map">
+		select department_id, department_name
+		from tbl_department
+		order by department_id asc
 	</select>
 	
 	
@@ -217,12 +327,13 @@
     	<result property="name" 		 column="name" 			javaType="String" />
 		<result property="job_name"      column="job_name"     	javaType="String" />
 	    <result property="photo"         column="photo"     	javaType="String" />
+	    <result property="department_id" column="department_id" javaType="String" />
 	    <result property="employee_id"   column="employee_id"   javaType="String" />
 	    <result property="manager_id"    column="manager_id"    javaType="String" />
 	    <result property="t_manager_id"  column="t_manager_id"  javaType="String" />
 	</resultMap> 
 	<select id="employeeList" resultMap="employeeList_Map">
-		select name, job_name, photo
+		select name, job_name, photo, department_id
 			 , employee_id, D.manager_id, T.t_manager_id
 		from tbl_employees E
 		JOIN tbl_team T
@@ -233,5 +344,135 @@
 		ON E.fk_job_id = J.job_id
 	</select>
 	
+	
+	<!-- 월급 테이블 insert 하기위한 값 가져오기 -->
+	<resultMap type="HashMap" id="emp_salary_List_Map">
+    	<result property="employee_id"  			column="employee_id" 			  javaType="String" />
+		<result property="salary"                   column="salary"     			  javaType="String" />
+	    <result property="total_extended_end_time"  column="total_extended_end_time"  javaType="String" />
+	    <result property="work_date"  				column="work_date"  			  javaType="String" />
+	</resultMap>
+	<select id="emp_salary_List" parameterType="String" resultMap="emp_salary_List_Map">
+		SELECT employee_id, salary, substr(total_extended_end_time, 1, 2) AS total_extended_end_time, #{lastMonth} AS work_date
+		FROM
+		(
+			select employee_id, trunc(salary/12) AS salary
+			from tbl_employees
+		)E
+		LEFT JOIN 
+		(
+			select to_char(
+							to_date('00:00:00', 'HH24:MI:SS') +
+								NUMTODSINTERVAL(sum(
+									to_number(
+										to_char(to_date(extended_end_time, 'HH24:MI:SS'), 'SSSSS')
+									)
+								), 'SECOND'
+							),
+						 'HH24:MI:SS'
+						) AS total_extended_end_time, fk_employee_id, substr(work_date, 1, 7) AS work_date
+			from tbl_work
+			where substr(work_date, 1, 7) = #{lastMonth}
+			GROUP BY fk_employee_id, substr(work_date, 1, 7)
+		) W
+		ON E.employee_id = W.fk_employee_id
+	</select>
+	
+	
+	<!-- 월급 테이블 insert 하기 -->
+	<insert id="insert_PayslipTemplate" parameterType="java.util.List">
+		INSERT ALL
+		<foreach collection="list" item="item">
+			INTO tbl_salary(year_month, fk_employee_id, salary, extended_end_time)
+			VALUES (#{item.work_date}, #{item.employee_id}, #{item.salary},
+				<if test="item.total_extended_end_time != null">
+					#{item.total_extended_end_time}
+				</if>
+				<if test="item.total_extended_end_time == null">
+					0
+				</if>)
+		</foreach>
+		SELECT * FROM DUAL
+	</insert>
+	
+	
+	<!-- 공지사항 글쓰기를 위한 급여명세서 발급자 정보 select 하기 -->
+	<select id="select_human_resources_manager" parameterType="String" resultType="HashMap">
+		SELECT employee_id, name
+		FROM
+		(
+		    select *
+		    from tbl_employees
+		) E JOIN tbl_department D
+		ON E.fk_department_id = D.department_id
+		JOIN tbl_jobs J
+		ON fk_job_id = J.job_id
+		WHERE job_name = #{manager}
+	</select>
+	
+	
+	<!-- 공지사항 insert 하기 -->
+	<insert id="insert_notice_board" parameterType="HashMap">
+		insert into tbl_noticeboard(seq, fk_emp_id, name, subject, content, pw, read_count, reg_date, status)
+		values(noticeboard_Seq.nextval, #{EMPLOYEE_ID}, #{NAME}, #{SUBJECT}, #{CONTENT}, #{PW}, default, default, default)
+	</insert>
+
+
+	<!-- receipt_favorites 값 가져오기 -->
+	<select id="select_receipt_favorites" parameterType="String" resultType="String">
+		select receipt_favorites
+		from tbl_receipt_email
+		where receipt_mail_seq = #{receipt_mail_seq}
+	</select>
+	
+	<!-- email_receipt_read_count update 하기 -->
+	<update id="receipt_favorites_update" parameterType="HashMap">
+	    update tbl_receipt_email set receipt_favorites =
+	        <choose>
+	            <when test='receipt_favorites == "0"'>
+	                1
+	            </when>
+	            <when test='receipt_favorites == "1"'>
+	                0
+	            </when>
+	           
+	        </choose>
+	    where receipt_mail_seq = #{receipt_mail_seq}
+	</update>
+	
+	<!-- email_receipt_read_count update 하기 -->
+	<update id="email_receipt_read_count_update" parameterType="String">
+	    update tbl_receipt_email set email_receipt_read_count = 1
+	    where receipt_mail_seq = #{receipt_mail_seq}
+	</update>
+	
+	<!-- email_receipt_read_count 값 가져오기 -->
+	<select id="select_email_receipt_read_count" parameterType="String" resultType="String">
+		select email_receipt_read_count
+		from tbl_receipt_email
+		where receipt_mail_seq = #{receipt_mail_seq}
+	</select>
+	
+	<!-- receipt_important 값 가져오기 -->
+	<select id="select_receipt_important" parameterType="String" resultType="String">
+		select receipt_important
+		from tbl_receipt_email
+		where receipt_mail_seq = #{receipt_mail_seq}
+	</select>
+	
+	<!-- receipt_important update 하기 -->
+	<update id="receipt_important_update" parameterType="HashMap">
+	    update tbl_receipt_email set receipt_important =
+	        <choose>
+	            <when test='receipt_important == "0"'>
+	                1
+	            </when>
+	            <when test='receipt_important == "1"'>
+	                0
+	            </when>
+	           
+	        </choose>
+	    where receipt_mail_seq = #{receipt_mail_seq}
+	</update>
 
 </mapper>
