@@ -274,7 +274,7 @@ function showPopup() {
         
          <li class="nav-item">
             <a href="<%= ctxPath %>/CelebratePay.gw">
-               <i class="fa-regular fa-thumbs-up"></i>
+               <i class="fa-solid fa-coins nav-icon"></i>
                 <span class="nav-link-text">복지포인트</span>
             </a>
       </li>
