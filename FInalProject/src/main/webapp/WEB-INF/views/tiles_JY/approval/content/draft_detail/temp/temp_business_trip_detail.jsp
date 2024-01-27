@@ -7,12 +7,16 @@
 <link rel = "stylesheet" href = "<%=ctxPath%>/resources/css/draft_detail_style.css">
 
 <script>
+
 //재상신 버튼 클릭시 - 문서 수정하기 페이지 요청
-const editDraft = () => {
-	location.href="<%=ctxPath%>/approval/edit.on?draft_no=${draftMap.dvo.draft_no}&fk_draft_type_no=${draftMap.dvo.fk_draft_type_no}";
-}
+function editDraft() {
+	
+	location.href="<%=ctxPath%>/approval/edit.gw?draft_no=${draftMap.dvo.draft_no}&fk_draft_type_no=${draftMap.dvo.fk_draft_type_no}";
+
+}// end of function editDraft()--------------
+
 //목록보기 버튼 클릭
-const showList = () => {
+function showList() {
 	
 	// approvalBackUrl 스토리지에서 꺼내기
 	const approvalBackUrl = sessionStorage.getItem("approvalBackUrl");
@@ -23,7 +27,9 @@ const showList = () => {
 	}
 	else
 		location.href="javascript:history.go(-1)";
-}
+	
+}// end of function showList()--------------
+
 </script>
 
 <div class="container">

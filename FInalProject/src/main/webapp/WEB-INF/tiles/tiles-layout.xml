@@ -99,6 +99,27 @@
       <put-attribute name="content" value="/WEB-INF/views/tiles_ys/{1}/content/{2}/{3}/{4}.jsp"/>
       <put-attribute name="side" value="/WEB-INF/views/tiles_ys/{1}/side.jsp"/>
    </definition>
+   
+   
+   <definition name="layout-tiles_digitalmail"  template="/WEB-INF/tiles/layout/layout-tiles_digitalmail.jsp"> 
+      <put-attribute name="header"  value="/WEB-INF/tiles/tile_digitalmail/digitalmailmailheader.jsp" />
+      <put-attribute name="sideinfo"  value="/WEB-INF/tiles/tile_digitalmail/digitalmailmailsidebar.jsp" />
+      <put-attribute name="content" value="" />
+   </definition>
+   
+   <definition name="*/*/*.tiles_digitalmail" extends="layout-tiles_digitalmail">
+      <put-attribute name="content" value="/WEB-INF/views/tile_digitalmail/{1}/{2}/{3}.jsp"/>
+   </definition>
+   
+   <definition name="*/*.tiles_digitalmail" extends="layout-tiles_digitalmail">
+      <put-attribute name="content" value="/WEB-INF/views/tile_digitalmail/{1}/{2}.jsp"/>
+   </definition>
+   
+   <definition name="*.tiles_digitalmail" extends="layout-tiles_digitalmail">
+      <put-attribute name="content" value="/WEB-INF/views/tile_digitalmail/{1}.jsp"/>
+   </definition>
+
+
 
 </tiles-definitions>
 

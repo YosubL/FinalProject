@@ -434,7 +434,7 @@ button.btn_normal{
 					<th><label class="mr-5 search_title" for="searchWord">검색어</label></th>
 					<td>
 						<input type="text" id="searchWord" name="searchWord" placeholder="예약자명 및 실사용자명을 입력하세요." style="width: 90%;">
-						<button class="btn bg-light mt-1" style="width: 9%; height: 44px;" onclick="goSearch();">검색</button>
+						<button class="btn mt-1" style="width: 9%; height: 44px; background-color:rgb(3,199,90); color:white;" onclick="goSearch();">검색</button>
 					</td>
 				</tr>
 				<tr style="vertical-align: middle;">

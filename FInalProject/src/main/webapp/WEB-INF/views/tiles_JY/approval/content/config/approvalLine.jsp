@@ -1,7 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <% String ctxPath=request.getContextPath(); %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <style>
+
 .accordion {
 	background-color: white;
 	color: #444;
@@ -28,7 +30,7 @@
 }
 
 #editBtn {
-	background-color: #E3F2FD;
+	background-color: ##E0F8EB;
 }
 
 #editBtn:hover {
@@ -36,7 +38,7 @@
 }
 
 #saveBtn {
-	background-color: #086BDE;
+	background-color: #03C75A;
 	color: white;
 }
 
@@ -49,10 +51,12 @@
 }
 
 </style>
+
 <script>
-$(()=>{
+
+$(document).ready(function() {
 	
-	$('a#approvalLine').css('color','#086BDE');
+	$('a#approvalLine').css('color','#03C75A');
 	$('.configMenu').show();
 	
 	$('.save').hide(); // 저장버튼 감추기
@@ -62,75 +66,75 @@ $(()=>{
 	var i;
 
 	for (i = 0; i < acc.length; i++) {
-	  acc[i].addEventListener("click", function() {
-	    this.classList.toggle("active");
-	    var panel = this.nextElementSibling;
-	    if (panel.style.display === "block") {
-	      panel.style.display = "none";
-	    } else {
-	      panel.style.display = "block";
-	    }
-	    getAprvLine(this.id);
-	  });
+		
+		acc[i].addEventListener("click", function() {
+			
+			this.classList.toggle("active");
+			
+			var panel = this.nextElementSibling;
+			
+			if (panel.style.display === "block") {
+				panel.style.display = "none";
+			} else {
+				panel.style.display = "block";
+			}
+	    	getAprvLine(this.id);
+		});
 	}
 	
-});
+});// end of $(document).ready(function){}----------------------
+
 
 /* 결재라인 불러오기 */
-const getAprvLine = (aprv_line_no) => {
+function getAprvLine(aprv_line_no) {
 	
     $.ajax({
-        url : "<%=ctxPath%>/approval/admin/getOneAprvLine.gw",
-        type:'GET',
-        data: {'aprv_line_no': aprv_line_no},
-        dataType:'json',
-        cache:false,
-        success : function(json){
+		url : "<%=ctxPath%>/approval/admin/getOneAprvLine.gw",
+		type:'GET',
+		data: {'aprv_line_no': aprv_line_no},
+		dataType:'json',
+		cache:false,
+		success : function(json){
 			const aprvTblBody = $("#body"+aprv_line_no);
 			aprvTblBody.empty();
         	
-			json.forEach((emp, index) => {
+			json.forEach(function(emp, index) {
 
 				var html = "<tr>"
-			 			+ "<td class='levelno'>" + (index+1) + "</td>"
-						+ "<td class='department'>" + emp.department_id + "</td>"
-						+ "<td class='position'>" + emp.gradelevel + "</td>"
-						+ "<input type='hidden' name='fk_approval_empno' value='" + emp.employee_id + "'></td>"
-						+ "<td class='name'>" + emp.name + "</td></tr>";
+			 			 + "<td class='levelno'>" + (index+1) + "</td>"
+						 + "<td class='department'>" + emp.department_name + "</td>"
+						 + "<td class='position'>" + emp.grade + "</td>"
+						 + "<input type='hidden' name='fk_approval_empno" + (index+1) + "' value='" + emp.emplyee_id + "'/></td>"
+						 + "<td class='name'>" + emp.name + "</td></tr>";
 					
 				aprvTblBody.append(html);
 			});
 		},
-        error: function(request, status, error){
-		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		error: function(request, status, error){
+			alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 		}
-    });
-}
+	});
+    
+}// end of function getAprvLine(aprv_line_no)------------------------------
+
 
 /* 결재라인 삭제하기 */
-const deleteAprvLine = (aprv_line_no) => {
-	swal({
-		  title: "이 결재라인을 삭제하시겠습니까?",
-		  icon: "warning",
-		  buttons: true,
-		  dangerMode: true,
-		})
-		.then((willDelete) => {
-		  if (willDelete) {
-		    // 삭제
-    		const frm = $("#aprvLineFrm"+aprv_line_no)[0];
-			frm.method = "post";
-			frm.action = "<%=ctxPath%>/approval/config/approvalLine/del.gw";
-			frm.submit();
-			
-		  } else {
-		    swal("삭제가 취소되었습니다.");
-		  }
-		});
-}
+function deleteAprvLine(aprv_line_no) {
+	if (confirm("이 결재라인을 삭제하시겠습니까?")) {
+		// 삭제한다
+		const frm = $("#aprvLineFrm"+aprv_line_no)[0];
+		frm.method = "post";
+		frm.action = "<%=ctxPath%>/approval/config/approvalLine/del.gw";
+		frm.submit();
+	} else {
+		alert("삭제가 취소되었습니다.");
+	}
+	
+}// end of function deleteAprvLine(aprv_line_no)---------------------------
+
 
 /* 결재라인 수정하기(결재자 새로 선택하기) */
-const selectApprovalLine = (aprv_line_no) => {
+function selectApprovalLine(aprv_line_no) {
 	
 	$('.save'+aprv_line_no).show(); // 저장버튼 표시하기
 	
@@ -144,44 +148,46 @@ const selectApprovalLine = (aprv_line_no) => {
 	const popupY= (window.screen.height / 2) - (popupHeight / 2);
 	
 	window.open('<%=ctxPath%>/approval/selectApprovalLine.gw?type=personal','결재라인 선택','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
-}
+	
+}// end of function selectApprovalLine(aprv_line_no)-----------------------
+
 
 /* 자식창에서 넘겨준 데이터를 받아 출력함 */
-const receiveMessage = async (e) =>
-{
-   	const jsonArr = e.data;
+function receiveMessage(e) {
+	const jsonArr = e.data;
    	
-    const no = sessionStorage.getItem("aprv_line_no")
+	const no = sessionStorage.getItem("aprv_line_no")
 	const body = $('#body'+no);
 
-    body.empty();
+	body.empty();
     
 	// 선택된 사원을 테이블에 표시함
 	jsonArr.forEach((emp, index) => {
 
 		var html = "<tr>"
-	 			+ "<td class='levelno'>" + emp.levelno + "</td>"
-				+ "<td class='department'>" + emp.department_id + "</td>"
-				+ "<td class='position'>" + emp.gradelevel + "</td>"
-				+ "<input type='hidden' name='fk_approval_empno" + (index+1) + "' value='" + emp.employee_id + "'></td>"
-				+ "<td class='name'>" + emp.name + "</td></tr>";
+				 + "<td class='levelno'>" + emp.levelno + "</td>"
+				 + "<td class='department'>" + emp.department + "</td>"
+				 + "<td class='position'>" + emp.position + "</td>"
+				 + "<input type='hidden' name='fk_approval_empno" + (index+1) + "' value='" + emp.empno + "'/></td>"
+				 + "<td class='name'>" + emp.name + "</td></tr>";
 		
 		body.append(html);
 		
 	});
 	
-}
+}// end of function receiveMessage(e)--------------------------
+
 window.addEventListener("message", receiveMessage, false);
 
 /* 결재라인 저장하기 */
-const saveAprvLine = (aprv_line_no) => {
+function saveAprvLine(aprv_line_no) {
 	
 	// 선택한 결재자가 있는지 검사
 	const body = $('#body'+ aprv_line_no);
 	
 	const length = body.find('tr').length;
 	if (length == 0){
-		swal("결재자가 선택되지 않았습니다.");
+		alert("결재자가 선택되지 않았습니다.");
 		return;
 	}
 	
@@ -191,7 +197,9 @@ const saveAprvLine = (aprv_line_no) => {
 	frm.submit();
 	
 	$('.save'+aprv_line_no).hide(); // 저장버튼 감추기
-}
+	
+}// end of function saveAprvLine(aprv_line_no)------------------
+
 </script>
 
 <div style='margin: 1% 0 5% 1%'>
@@ -212,7 +220,7 @@ const saveAprvLine = (aprv_line_no) => {
 		<div class='panel'>
 			<div class='approvalLine mb-4'>
 				<div class='my-4'>
-					<button type="button" class="btn btn-sm" id='editBtn' onclick='selectApprovalLine(${item.aprv_line_no})'>수정</button>
+					<button type="button" style='background-color: #E0F8EB' class="btn btn-sm" id='editBtn' onclick='selectApprovalLine(${item.aprv_line_no})'>수정</button>
 					<button type="button" class="btn btn-sm btn-dark" id='deleteBtn' onclick='deleteAprvLine(${item.aprv_line_no})'>삭제</button>
 					<span class='save save${item.aprv_line_no}' style="margin-left: 150px;">결재라인 수정 후 반드시 저장버튼을 클릭해주세요.</span>
 					<button type="button" class="btn btn-sm ml-2 save save${item.aprv_line_no}" id='saveBtn' onclick='saveAprvLine(${item.aprv_line_no})'>저장</button>
@@ -221,6 +229,8 @@ const saveAprvLine = (aprv_line_no) => {
 			</div>
 			<form id="aprvLineFrm${item.aprv_line_no}">
 			<input type='hidden' name='aprv_line_no' value='${item.aprv_line_no}'/>
+			<input type='hidden' name='aprv_line_name' value='${item.aprv_line_name}'/>
+			<input type='hidden' name='fk_empno' value='${sessionScope.loginuser.employee_id}'/>
 				<table class="table">
 					<thead>
 						<tr>

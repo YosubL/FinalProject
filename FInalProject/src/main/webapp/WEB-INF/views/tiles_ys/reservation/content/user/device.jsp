@@ -52,7 +52,7 @@
 		let dateOffset = new Date(now.getTime() - offset);	
 		var today_date = dateOffset.toISOString().substring(0, 10);
 	    $("input#reservStartDate").val(today_date);
-
+		
 	    // insertReservation 에 넣어줄 변수인 클릭한 날짜 잡아오기
 	   	var selectDate =  $("input#reservStartDate").val();
 	    

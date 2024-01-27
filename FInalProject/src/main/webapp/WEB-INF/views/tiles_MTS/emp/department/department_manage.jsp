@@ -118,6 +118,9 @@
 	 // 부서 생성시 필요한 부서번호 조회
 	 department_id_max()
 	 
+	 // 부서 이름 뿌리기
+	 populateDepartmentsDropdown();
+	 
 	 // 부서장 가능자 조회하기 
 	 $.ajax({
 		 url:"<%= ctxPath%>/emp/manager_id.gw",
@@ -165,8 +168,6 @@
 		 }
 	 });
 
-
-
 	 // 신규부서 등록하기
 	 $("button#deptset").click(function(){
 		 
@@ -195,6 +196,8 @@
 				    	  
 				    	  select_department(); // 모든부서 출력해주기
 				    	  select_team();		// 모든 팀 출력해주기
+				    	  $("#departmentModal").modal("hide"); // 모달 끄기     
+
 				      }
 				 },
 				 error: function(request, status, error){
@@ -232,6 +235,7 @@
 				    	  
 				    	  select_department(); // 모든부서 출력해주기
 				    	  select_team(); // 모든팀 출력해주기
+				    	  $("#teamModal").modal("hide"); // 모달 끄기     
 				      }
 				 },
 				 error: function(request, status, error){
@@ -245,7 +249,7 @@
 		$(document).on("click", "table#depttbl tr.deptinfo", function (e) {
       		
 			const department_id = $(this).find("td.department_id").text(); // Retrieve department_id from the clicked row
-	        // alert("부서번호: " + department_id);
+	         alert("부서번호: " + department_id);
 			
 	        $.ajax({
 	            url: "<%= ctxPath %>/emp/get_department_info.gw",
@@ -253,17 +257,19 @@
 	            dataType: "json",
 	            success: function (json) {
 	                console.log(JSON.stringify(json));
-
-	                // 부서 정보에서 부서장을 확인합니다.
-	                const departmentManager = json.department_manager_name;
-
-	                // 부서장이 '공석'인지 확인합니다.
-	                if (departmentManager !== "공석") {
-	                    // 부서장이 '공석'이 아니면 변경에 실패하도록 처리합니다.
-	                    alert("부서장이 이미 지정되어 있습니다. 부서장을 변경할 수 없습니다.");
-	                    return; // 부서장 변경 중단
-	                }
-				      
+	            	html = "";
+	    			if(json.length > 0) {
+	    				$.each(json, function(index, item) {
+	    					html += "<tr class='deptSelectEmpList'>"+
+	    								"<td>"+item.job_name+"</td>"+
+	    								"<td>"+item.name+"</td>"+
+	    								"<td>"+item.phone+"</td>"+
+	    							"</tr>"		
+	    				}); // end of $.each(json, function(index, item)
+	    			}
+	    			$("tbody#deptEmpList").html(html);
+	    			
+	    	        $("#deptInfoModal").modal("show"); // 모달 띄우기     
 				 },
 				 error: function(request, status, error){
 					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -274,28 +280,128 @@
  		}); // end of $(document).on("click", "table#depttbl tr.deptinfo", function (e) {
  			
  			
- 		 // 특정 회원을 클릭하면 회원의 상세정보
+ 		 // 특정 회원을 클릭하면 회원의 팀 상세정보
 		$(document).on("click", "table#teamtbl tr.teaminfo", function (e) {
       
-			const team_id = $(this).find("td.team_id").text(); // Retrieve department_id from the clicked row
-	        // alert("팀번호: " + team_id);
+			const team_id = $(this).find("input:hidden[name='team_id']").val(); // Retrieve department_id from the clicked row
+	         alert("팀번호: " + team_id);
 			
-	        $("#teamIdDisplay").text(team_id); // 모달 내에 팀번호 표시
-	        $("#teamInfoModal").modal("show"); // 모달 띄우기
+			 $.ajax({
+		            url: "<%= ctxPath %>/emp/get_team_info.gw",
+		            data: { "team_id": team_id },
+		            dataType: "json",
+		            success: function (json) {
+		                console.log(JSON.stringify(json));
+		            	html = "";
+		    			if(json.length > 0) {
+		    				$.each(json, function(index, item) {
+		    					html += "<tr class='teamSelectEmpList'>"+
+		    								"<td>"+item.job_name+"</td>"+
+		    								"<td>"+item.name+"</td>"+
+		    								"<td>"+item.phone+"</td>"+
+		    							"</tr>"		
+		    				}); // end of $.each(json, function(index, item)
+		    			}
+		    			$("tbody#teamEmpList").html(html);
+		    			
+		    	        $("#teamInfoModal").modal("show"); // 모달 띄우기     
+					 },
+					 error: function(request, status, error){
+						alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+					 }
+				 });
 	        
  		}); // end of $(document).on("click", "table#depttbl tr.deptinfo", function (e) {
  			
- 			
- 		 $('#teamModal').on('shown.bs.modal', function (e) {
- 		    populateDepartmentsDropdown();
- 		});
  	 
- 		$("select[name='department_id']").change(function () {
+ 		$("select[name='dept_id']").change(function () {
  		    const selectedDepartmentId = $(this).val();
- 		    alert(selectedDepartmentId);
+ 		    // alert(selectedDepartmentId);
  		    team_id_max(selectedDepartmentId);
  		});
+ 		$("select[name='del_dept_id']").change(function () {
+ 		    const selectedDepartmentId = $(this).val();
+ 		    // alert(selectedDepartmentId);
+ 		    team_id_select(selectedDepartmentId);
+ 		});
  			
+ 		
+ 		  $("#deptdel").click(function(){
+ 		        const department_id = $("form[name='del_department_frm'] select[name='dept_id']").val();
+
+ 		        if(department_id === "") {
+ 		            alert("삭제할 부서를 선택해주세요.");
+ 		            return;
+ 		        }
+
+ 		        else if(confirm("부서번호 "+ department_id +"번 부서를 정말로 삭제하시겠습니까?")) {
+ 				     $.ajax({
+ 						     url:"<%= ctxPath%>/emp/department_del.gw",
+ 						     data:{"department_id":department_id},
+ 						     dataType:"json",
+ 						     success:function(json){
+ 						          console.log(JSON.stringify(json));
+ 						         /*
+ 						            {"n":1} 또는 {"n":0}
+ 						         */
+ 						         if(json.n == 0) {
+ 						    	     alert("삭제하시려는 부서번호 "+ department_id +"에 근무하는 사원이 존재하므로 부서번호 삭제가 불가합니다");
+ 						         }
+ 						      
+ 						         if(json.n == 1) {
+ 						    	     department_id_max();  // 신규부서번호 입력해주기
+ 						    	     select_department(); // 모든부서 출력해주기
+ 							    	 select_team(); // 모든팀 출력해주기
+ 							   	 	 populateDepartmentsDropdown(); // 부서 이름 뿌리기
+ 	 						        $("#departmentDelModal").modal("hide"); // 모달 띄우기
+
+ 						         }
+ 						     },
+ 							 error: function(request, status, error){
+ 								alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+ 							 }
+
+ 					 });	   
+ 			     }
+ 		    });
+ 		  
+ 		 $("#teamdel").click(function(){
+		        const team_id = $("form[name='del_team_frm'] select[name='del_team_id']").val();
+				alert(team_id);
+		        if(team_id === "") {
+		            alert("삭제할 팀을 선택해주세요.");
+		            return;
+		        }
+
+		        else if(confirm("팀 "+ team_id +"번 팀을 정말로 삭제하시겠습니까?")) {
+				     $.ajax({
+						     url:"<%= ctxPath%>/emp/team_del.gw",
+						     data:{"team_id":team_id},
+						     dataType:"json",
+						     success:function(json){
+						          console.log(JSON.stringify(json));
+						         /*
+						            {"n":1} 또는 {"n":0}
+						         */
+						         if(json.n == 0) {
+						    	     alert("삭제하시려는 부서번호 "+ team_del +"에 근무하는 사원이 존재하므로 부서번호 삭제가 불가합니다");
+						         }
+						      
+						         if(json.n == 1) {
+						    	     department_id_max();  // 신규부서번호 입력해주기
+						    	     select_department(); // 모든부서 출력해주기
+							    	 select_team(); // 모든팀 출력해주기
+							    	 $("#teamDelModal").modal("hide"); // 모달 띄우기
+						         }
+						         
+						     },
+							 error: function(request, status, error){
+									alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+								 }
+
+					 });	   
+			     }
+		    });
  }) //  $(document).ready(function(){
 	 
 //Function Declaration
@@ -328,7 +434,6 @@
 		 dataType:"json",
 		 success:function(json){
 		      //console.log(JSON.stringify(json));
-		      
 		      
 		      let v_html = "";
 
@@ -376,7 +481,7 @@
 		    	  $.each(json, function(index, item){
 		    		  
 		    		  t_html += "<tr class='teaminfo'>";
-		    		  t_html +=    "<td width='10%' class='team_id'>"+ item.department_name +"</td>"; 
+		    		  t_html +=    "<td class='team_id'> <input name='team_id' type='hidden' value="+item.team_id+">"+ item.department_name +"</td>"; 
 			          t_html +=    "<td width='10%'>"+ item.team_name +"</td>";
 			          t_html +=    "<td width='10%'>"+ item.t_manager_name +"</td>"; 
 			          t_html +=    "<td width='20%'>"+ item.t_manager_phone +"</td>";
@@ -402,7 +507,7 @@
  
  function populateDepartmentsDropdown() {
 	    $.ajax({
-	        url: "<%= ctxPath%>/emp/select_department.gw", // Change this URL to the endpoint that fetches departments
+	        url: "<%= ctxPath%>/emp/select_department.gw", 
 	        dataType: "json",
 	        success: function (json) {
 	        	//console.log(JSON.stringify(json));
@@ -415,7 +520,8 @@
 	                });
 	            }
 
-	            $("select[name='department_id']").html(dropdownOptions);
+	            $("select[name='dept_id']").html(dropdownOptions);
+	            $("select[name='del_dept_id']").html(dropdownOptions);
 	        },
 	        error: function (request, status, error) {
 	            alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
@@ -423,7 +529,7 @@
 	    });
 	}
  function team_id_max(departmentId) {
-	    // Fetch maximum team ID for the selected department
+	    // 부서에 따른 최대 팀 값 아오기
 	    $.ajax({
 	        url: "<%= ctxPath%>/emp/team_id_max_by_department.gw",
 	        data: { "department_id": departmentId },
@@ -447,6 +553,35 @@
 	        }
 	    });
  	}
+ 
+ function team_id_select(department_id) {
+	    // 부서에 따른 팀 값 아오기
+	    $.ajax({
+	        url: "<%= ctxPath%>/emp/team_id_select_by_department.gw",
+	        data: { "department_id": department_id },
+	        dataType: "json",
+	        success: function (json) {
+	            console.log(JSON.stringify(json));
+	            //[{"team_id":"101","team_name":"개발1팀","t_manager_id":"9901","name":"김진영"},{"team_id":"102","team_name":"개발2팀","t_manager_id":"9902","name":"이경영"},{"team_id":"103","team_name":"개발3팀","t_manager_id":"9903","name":"홍길동"}]
+	            
+	            let dropdownOptions = "<option value=''>팀 선택</option>";
+
+	            if (json.length > 0) {
+	                $.each(json, function (index, item) {
+	                    dropdownOptions += "<option value="+item.team_id+">"+item.team_name+"</option>";
+	                });
+	            }
+
+	            $("select[name='del_team_id']").html(dropdownOptions);
+	            
+	        },
+	        error: function (request, status, error) {
+	            alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
+	        }
+	    });
+	}
+ 
+ 
  
 </script>
 <div style="display: flex; justify-content: space-between; width: 90%; margin-left:5%;">
@@ -528,18 +663,13 @@
               
                 <form name="add_department_frm">
 				   <table class="table">
-				  
-				      
+				  		
 				      <tr>
-				          <th>부서번호</th>
-				          <td><input type="text" name="department_id" /></td>
-				      </tr>
-				      <tr>
-				          <th>부서명</th>
+				          <th><input type="hidden" name="department_id" />부서명</th>
 				          <td><input type="text" name="department_name" /></td>
 				      </tr>
 				      <tr>
-				          <th>부서장 대상자</th>
+				          <th>부서장</th>
 				          <td><select name="manager_id"></select></td>
 				      </tr>
 				      
@@ -571,22 +701,14 @@
             <!-- Modal Body -->
             <div class="modal-body">
               
-                <form name="add_department_frm">
+                <form name="del_department_frm">
 				   <table class="table">
 				  
-				      
-				      <tr>
-				          <th>부서번호</th>
-				          <td><select name="department_id"> </select></td>
-				      </tr>
 				      <tr>
 				          <th>부서명</th>
-				          <td><input type="text" name="department_name" /></td>
+				          <td><select name="dept_id"> </select></td>
 				      </tr>
-				      <tr>
-				          <th>부서장 대상자</th>
-				          <td><select name="manager_id"></select></td>
-				      </tr>
+				      
 				      
 				   </table>
 				</form>
@@ -595,7 +717,7 @@
             
             <!-- Modal Footer -->
             <div class="modal-footer">
-                <button type="button" id="deptset" class="btn btn-success mr-3">등록</button>
+                <button type="button" id="deptdel" class="btn btn-success mr-3">삭제</button>
                 <button type="button" class="btn btn-danger btn_reset" data-dismiss="modal">취소</button>
             </div>
         </div>
@@ -619,7 +741,7 @@
 				   <table class="table">
 				      <tr>
 				          <th>부서번호</th>
-				          <td><select name="department_id"></select></td>
+				          <td><select name="dept_id"></select></td>
 				      </tr>				  
 				      <tr>
 				          <th>팀 번호</th>
@@ -647,6 +769,79 @@
 </div>
 
 
+
+<!-- 부서 관리 폼 모달 -->
+<div class="modal" id="teamDelModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">팀 삭제</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="modal-body">
+              
+                <form name="del_team_frm">
+				   <table class="table">
+				  
+				      <tr>
+				          <th>부서명</th>
+				          <td><select name="del_dept_id"> </select></td>
+				      </tr>
+				      <tr>
+				          <th>팀 명</th>
+				          <td><select name="del_team_id"> </select></td>
+				      </tr>
+				      
+				   </table>
+				</form>
+			
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" id="teamdel" class="btn btn-success mr-3">삭제</button>
+                <button type="button" class="btn btn-danger btn_reset" data-dismiss="modal">취소</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 모달 창 -->
+<div class="modal fade" id="deptInfoModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+    
+      <!-- 모달 헤더 -->
+      <div class="modal-header">
+        <h4 class="modal-title">부서 상세 정보</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      
+	      <div style="width: 95%; margin: auto;">
+	      	<div class="mb-2" style="display: flex;">
+	      		<span style="font-size: 15pt; font-weight: bold;" id="myDeptName"></span>
+	      		
+	      	</div>
+	    	<table class="table table-hover shadow">
+	    		<thead><tr style="background-color: #ccff99;">
+	    			<th style="width: 20%;">직급</th>
+	    			<th style="width: 20%;">성함</th>
+	    			<th style="width: 20%;">연락처</th>
+	    		</thead>
+	    		<tbody id="deptEmpList">
+	    		</tbody>
+	    	</table>
+	      </div>
+      
+    </div>
+  </div>
+</div>
+
+
+
 <!-- 모달 창 -->
 <div class="modal fade" id="teamInfoModal">
   <div class="modal-dialog">
@@ -658,10 +853,21 @@
         <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
       
-      <!-- 모달 본문 -->
-      <div class="modal-body">
-        <p>팀번호: <span id="teamIdDisplay"></span></p>
-      </div>
+	      <div style="width: 95%; margin: auto;">
+	      	<div class="mb-2" style="display: flex;">
+	      		<span style="font-size: 15pt; font-weight: bold;" id="myTeamName"></span>
+	      		
+	      	</div>
+	    	<table class="table table-hover shadow">
+	    		<thead><tr style="background-color: #ccff99;">
+	    			<th style="width: 20%;">직급</th>
+	    			<th style="width: 20%;">성함</th>
+	    			<th style="width: 20%;">연락처</th>
+	    		</thead>
+	    		<tbody id="teamEmpList">
+	    		</tbody>
+	    	</table>
+	      </div>
       
     </div>
   </div>

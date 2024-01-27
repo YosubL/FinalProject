@@ -92,6 +92,12 @@
 
 <script>   
 document.addEventListener('DOMContentLoaded', function () {
+    const sidebar = document.querySelector('.sidebar');
+    const toggleBtn = document.querySelector('.toggle-btn');
+
+    // 페이지 로딩 시 사이드바를 숨김
+    sidebar.classList.add('hidden');
+
     const subMenus = document.querySelectorAll('.nav-down > a');
     subMenus.forEach(function (subMenu) {
         subMenu.addEventListener('click', function (event) {
@@ -106,9 +112,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    const sidebar = document.querySelector('.sidebar');
-    const toggleBtn = document.querySelector('.toggle-btn');
-    
     toggleBtn.addEventListener('click', function() {
         sidebar.classList.toggle('hidden');
     });
@@ -119,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function () {
             sidebar.classList.add('hidden');
         }
     });
-});
+}); //마지막으로 레알 고침
 
 function showPopup() {
     var chatWindowName = "chatRoom";
@@ -169,12 +172,7 @@ function showPopup() {
                             <span class="nav-link-text">부서관리</span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a href="<%= ctxPath %>/viewOrgChart.gw">
-                            <i class="fa-solid fa-chart-column nav-icon"></i>
-                            <span class="nav-link-text">통합관리그래프</span>
-                        </a>
-                    </li>
+                    
                     <li class="nav-item">
                         <a href="<%= ctxPath %>/workflow_b.gw">
                             <i class="fa-solid fa-person-circle-plus nav-icon"></i>
@@ -194,13 +192,13 @@ function showPopup() {
         </li>
         <li class="nav-item">
             <a href="<%= ctxPath %>/chart.gw">
-                <i class="fa-solid fa-id-card nav-icon nav-icon"></i>
+                <i class="fa-solid fa-sitemap nav-icon"></i>
                 <span class="nav-link-text">조직도</span>
             </a>
         </li>
         <li class="nav-item">
-            <a href="<%= ctxPath %>/email.gw">
-                <i class="fa-solid fa-id-card nav-icon nav-icon"></i>
+            <a href="<%= ctxPath %>/digitalmail.gw">
+                <i class="fa-solid fa-envelope nav-icon"></i>
                 <span class="nav-link-text">웹메일</span>
             </a>
         </li>

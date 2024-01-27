@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
-   
+
 <style type="text/css">
    a {
       margin-right: 10px;
@@ -32,16 +32,15 @@
    div.listContainer {
       font-size: small;
       margin-bottom: 5%;
-   }
-   
-   /* 테이블 스타일 변경 */
-	div.listContainer{
-	    width: 100%;
-	    border-collapse: collapse;
-	    margin-bottom: 30px;
-	    border-radius: 8px;
-	    overflow: hidden;
-	    box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.1);
+      width: 93%; 
+      margin: 0 auto; 
+      padding: 20px; 
+      border-radius: 10px;
+	  border-collapse: collapse;
+	  margin-bottom: 30px;
+      border-radius: 8px;
+	  overflow: hidden;
+	  box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.1);
 	}
 	
 	/* 버튼 스타일링 */
@@ -121,11 +120,15 @@
 	    overflow-y: auto; /* 세로 스크롤 적용 */
 	    overflow-x: hidden; /* 가로 스크롤 비활성화 */
 	}
-	
+	div#container {width: 75%; margin:0 auto; margin-top:100px;}
+	nav.navbar {margin-left: 2%; margin-right: 5%; width: 80%; background-size: cover; background-position: center; background-repeat: no-repeat; height: 70px}
+	.table_tr {background-color: #ccff99;}
+	table.table ml-5 {width: 90%;}
+	input#frm_vacation_reason {border: solid 1px gray;}
+	input[name='frm_vacation_reason'] {border: solid 1px gray;}
 </style>
 
 <script type="text/javascript">
-<%-- --%>
    	$(document).ready(function(){
       	
    		// 해당 행을 클릭하면 모달창을 띄움
@@ -189,8 +192,6 @@
 	   		$("input:hidden[name='manager_id']").val(manager);
 	   		$("input:hidden[name='employee_id']").val(fk_employee_id);
 	   		
-	   		
-	   		
     	  	$('div#openModal').modal('show', vacation_seq); // 모달창에 태워서 보낼 해당 항목의 seq
     	  	
     	 	// 휴가신청시 띄울 달력 
@@ -211,19 +212,13 @@
     	  	
     	 	// 승인 버튼 클릭시 tbl_vacation 테이블에 update
     		$("input#return_insert").click(function(){
-    			
     		    const frm = document.modal_frm; 
-				
 				frm.method = "post";
 				frm.action = "<%= ctxPath %>/vac_insert_insert.gw";
 				frm.submit();	
-    		    
     		});
-    	  	
       	}); // end of $(document).on("click", "table#emptbl tr#empinfo", function (e) -----------------
       
-     	
-      	
 	 	// return_reset 버튼 클릭 시 모달 닫기
    		$("input#return_reset").click(function(){
    		    closeModal();
@@ -236,25 +231,18 @@
    		
    		// 휴지통 클릭시 삭제하기
    		$("i#deleteIcon").click(function() {
-   			
    			var vac_approved = confirm("휴가 철회 하시겠습니까?");
-			
 			if(vac_approved) {
-				
 				// 승인 대기중인 휴가 삭제하기
 		   		const seq_frm = $("input:hidden[id='seq_frm']").val();
 		   		$("input:hidden[name='vacation_seq']").val(seq_frm);
 		   		
 				const frm = document.seq_delete; 
-				
 				frm.method = "post";
 				frm.action = "<%= ctxPath %>/seq_delete.gw";
 				frm.submit();
 			}
    		}); 
-   		
-   		
-      	
    	});// end of $(document).ready(function(){})--------
    
     // Function Decalation
@@ -263,10 +251,9 @@
 	}
 </script>
 
-<div id="container" style="width: 75%; margin:0 auto; margin-top:100px;">
-
+<div id="container">
    <%-- 상단 메뉴바 시작 --%>
-   <nav class="navbar navbar-expand-lg mt-5 mb-4" style=" margin-left: 2%; margin-right: 5%; width: 80%; background-size: cover; background-position: center; background-repeat: no-repeat; height: 70px">
+   <nav class="navbar navbar-expand-lg mt-5 mb-4">
 		<div class="collapse navbar-collapse">
 			<ul class="navbar-nav" id="Navbar">
 				<li class="nav-item">
@@ -293,13 +280,13 @@
    <%-- 상단 메뉴바 [끝] --%>
    
    <%-- 승인대기중인휴가 [시작] --%>
-   <div class='listContainer border mb-5' style='width: 93%; margin: 0 auto; padding: 20px; border-radius: 10px;'>
+   <div class='listContainer border mb-5'>
    	
       <h5 class='mb-3 ml-5' style="font-weight: bold;">승인 대기중인 휴가</h5>
 	  <div class='maxHight'>
-      <table class="table ml-5" style="width: 90%;">
+      <table class="table ml-5">
          <thead>
-            <tr class='row' class="table_tr" style="background-color: #ccff99;">
+            <tr class='row table_tr'>
                	<th class='col col-1'>no</th>
 	        	<th class='col col-1'>이름</th>
 	            <th class='col col-2'>신청휴가종류</th>
@@ -376,13 +363,13 @@
       <%-- 승인대기중인휴가 [끝] --%>
    
    <%-- 승인된휴가 [시작] --%>
-   <div class='listContainer border' style='width: 93%; margin: 0 auto; padding: 20px; border-radius: 10px;'>
+   <div class='listContainer border'>
    	
       <h5 class='mb-3 ml-5' style="font-weight: bold;" >승인 완료된 휴가</h5>
 	  <div class='maxHight'>
-      <table class="table ml-5" style="width: 90%;">
+      <table class="table ml-5">
          <thead>
-            <tr class='row' class="table_tr" style="background-color: #ccff99;">
+            <tr class='row table_tr'>
                	<th class='col col-1'>no</th>
 	        	<th class='col col-1'>이름</th>
 	            <th class='col col-2'>신청휴가종류</th>
@@ -390,7 +377,7 @@
 	            <th class='col'>신청일</th>
 	            <th class='col'>시작일</th>
 	            <th class='col'>종료일</th>
-	            <th class='col col-1'>결재상태</th>
+	            <th class='col'>결재상태</th>
             </tr>
          </thead>
          
@@ -424,17 +411,18 @@
 						</c:when>
 					</c:choose>
 			            <td class='col'>${List.vacation_reason}</td>
+			            <td class='col'>${List.vacation_reg_date}</td>
 			            <td class='col'>${List.vacation_start_date}</td>
 			            <td class='col'>${List.vacation_end_date}</td>
 			            <c:choose>
 			            	<c:when test="${List.vacation_confirm == '1'}">
-			            		<td class='col col-1'>대기</td>
+			            		<td class='col'>대기</td>
 			            	</c:when>
 			            	<c:when test="${List.vacation_confirm == '2'}">
-			            		<td class='col col-1'>승인</td>
+			            		<td class='col'>승인</td>
 			            	</c:when>
 			            	<c:when test="${List.vacation_confirm == '3'}">
-			            		<td class='col col-1'>반려</td>
+			            		<td class='col'>반려</td>
 			            	</c:when>
 			            </c:choose>
 			        </tr>
@@ -453,12 +441,12 @@
       
       
       <%-- 반려휴가 [시작] --%>
-      <div class='listContainer border mt-5 mb-5' style='width: 93%; margin: 0 auto; padding: 20px; border-radius: 10px;'>
+      <div class='listContainer border mt-5 mb-5'>
       <h5 class='mb-5 ml-5' style="font-weight: bold;">반려된 휴가</h5>
       <div class='maxHight'>
-      <table class="table ml-5" id="emptbl" style="width: 90%;">
+      <table class="table ml-5" id="emptbl">
          <thead>
-            <tr class='row' class="table_tr" style="background-color: #ccff99;">
+            <tr class='row table_tr'>
             	<th class='col col-1'>no</th>
 	        	<th class='col col-1'>이름</th>
 	            <th class='col col-2'>신청휴가종류</th>
@@ -503,22 +491,20 @@
 			            	<input type="button" value="상세보기" id="openModal"/>
 			           	</td>
 			            <td class='col'>
-			            <input type="hidden" name="send_seq" value="${ReturnList.vacation_seq}"/>
-			            <input type="hidden" name="send_name" value="${ReturnList.name}"/>
-			            <input type="hidden" name="send_fk_employee_id" value="${ReturnList.fk_employee_id}"/>
-			            <input type="hidden" name="send_start_date" value="${ReturnList.vacation_start_date}"/>
-			            <input type="hidden" name="send_end_date" value="${ReturnList.vacation_end_date}"/>
-			            <input type="hidden" name="send_reg_date" value="${ReturnList.vacation_reg_date}"/>
-			            <input type="hidden" name="send_return_date" value="${ReturnList.vacation_return_date}"/>
-			            <input type="hidden" name="send_confirm" value="${ReturnList.vacation_confirm}"/>
-			            <input type="hidden" name="send_type" value="${ReturnList.vacation_type}"/>
-			            <input type="hidden" name="send_manager_name" value="${ReturnList.vacation_manager_name}"/>
-			            <input type="hidden" name="send_manager" value="${ReturnList.vacation_manager}"/>
-			            <input type="hidden" name="send_return_reason" value="${ReturnList.vacation_return_reason}"/>
-			            
+				            <input type="hidden" name="send_seq" value="${ReturnList.vacation_seq}"/>
+				            <input type="hidden" name="send_name" value="${ReturnList.name}"/>
+				            <input type="hidden" name="send_fk_employee_id" value="${ReturnList.fk_employee_id}"/>
+				            <input type="hidden" name="send_start_date" value="${ReturnList.vacation_start_date}"/>
+				            <input type="hidden" name="send_end_date" value="${ReturnList.vacation_end_date}"/>
+				            <input type="hidden" name="send_reg_date" value="${ReturnList.vacation_reg_date}"/>
+				            <input type="hidden" name="send_return_date" value="${ReturnList.vacation_return_date}"/>
+				            <input type="hidden" name="send_confirm" value="${ReturnList.vacation_confirm}"/>
+				            <input type="hidden" name="send_type" value="${ReturnList.vacation_type}"/>
+				            <input type="hidden" name="send_manager_name" value="${ReturnList.vacation_manager_name}"/>
+				            <input type="hidden" name="send_manager" value="${ReturnList.vacation_manager}"/>
+				            <input type="hidden" name="send_return_reason" value="${ReturnList.vacation_return_reason}"/>
 			            </td>
 			            <td class='col'></td>
-			            
 			        </tr>
 	        	</c:forEach>
        		</c:if>
@@ -550,46 +536,46 @@
       <div class="modal-body">
           <form name="modal_frm">
           <table style="width: 100%;" class="table table-bordered" >
-              <tr style="text-align: left;">
-               	  <td style="width: 20%;">이름</td>
+              <tr>
+               	  <td style="width: 30%;">이름</td>
 	        	  <td id="frm_name">
 	        	  	<span id="name"></span>
 	        	  </td>
               </tr>
-              <tr style="text-align: left;">
+              <tr>
                	  <td>사원번호</td>
 	        	  <td id="frm_employee_id"></td>
               </tr>
-              <tr style="text-align: left;">
+              <tr>
                	  <td>신청휴가종류</td>
 	        	  <td id="frm_vacation_type"></td>
               </tr>
-              <tr style="text-align: left;">
+              <tr>
                	  <td>반려사유</td>
 	        	  <td id="frm_return_reason"></td>
               </tr>
-              <tr style="text-align: left;">
+              <tr>
                	  <td>휴가사유</td>
-	        	  <td id="frm_vacation_reason"><input type="text" name="frm_vacation_reason" style="border: solid 1px gray;"/></td>
+	        	  <td id="frm_vacation_reason"><input type="text" name="frm_vacation_reason"/></td>
               </tr>
-              <tr style="text-align: left;">
+              <tr>
                	  <td>시작일</td>
-	        	  <td><input type="date" name="frm_vacation_start_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5" required></td>
+	        	  <td><input type="date" name="frm_vacation_start_date" class="border p-2.5" required></td>
               </tr>
-              <tr style="text-align: left;">
+              <tr>
                	  <td>종료일</td>
-	        	  <td>&nbsp;<input type="date" name="frm_vacation_end_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5" required></td>
+	        	  <td>&nbsp;<input type="date" name="frm_vacation_end_date" class="border p-2.5" required></td>
               </tr>
-              <tr style="text-align: left;">
+              <tr>
                	  <td>신청일</td>
 	        	  <td id="frm_vacation_reg_date"></td>
               </tr>
-              <tr style="text-align: left;">
+              <tr>
                	  <td>반려일</td>
 	        	  <td id="frm_vacation_return_date"></td>
               </tr>
               <tr>
-                 <td style="text-align: left;">결재자</td>
+                 <td>결재자</td>
                  <td id="frm_manager_name"></td>
               </tr>
            </table>

@@ -116,9 +116,9 @@
 	    		 
 	    		 $("div#chatMessage").append("<div style='background-color: #cce0ff; display: inline-block; width: 100%; padding: 7px; text-align:center; margin-bottom:50px;  word-break: break-all;'>1:1 채팅을 하시려면 상대방의 이름을 클릭하시면 됩니다.</div>");
 	    		 
-	    		
-	    		 
-	    		 $("span#chatStatus").text("☆★그룹웨어 채팅방 입니다.★☆");
+	    		 var html= '<img style="width:300px; height:100px;" src="<%=ctxPath%>/resources/images/logo.png"/>';
+	    		 $("span#chatStatus").html(html);
+	    		// $("span#chatStatus").text("☆★그룹웨어 채팅방 입니다.★☆");
 	    		
 	    	/*
 	    		messageObj.message = "채팅방에<span style='color:red;'입장</span> 했습니다."
@@ -293,7 +293,7 @@
    <input type="hidden" id="to" placeholder="귓속말대상웹소켓.getId()"/>
    
    
-   <br><br>
+   
        <span style="font-weight:bold; font-size:20px; color:black;">현재접속자명단 : </span>
        <span id="userList" style="font-weight:bold; font-size:20px; color:black;"></span>
    <div id="connectingUserList" style=" max-height: 100px; overFlow: auto;"></div>

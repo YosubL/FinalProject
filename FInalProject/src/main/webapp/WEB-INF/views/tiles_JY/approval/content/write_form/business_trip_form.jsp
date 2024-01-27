@@ -16,6 +16,9 @@ let fileList = [];
 //네이버 스마트 에디터용 전역변수
 var obj = [];
 
+// 오늘 날짜를 선언
+var now = new Date();
+
 $(() => {
 
 	/* 네이버 스마트 에디터  프레임생성 */
@@ -41,16 +44,28 @@ $(() => {
 		// 글제목 유효성 검사
 		const draft_subject = $("input#draft_subject").val().trim();
 		if(draft_subject == "") {
-			swal("글제목을 입력하세요!")
-			.then(function (result) {
-				document.getElementById("draft_subject").focus(); //포커싱
-		      })
+			alert("글제목을 입력하세요!");
+			document.getElementById("draft_subject").focus(); //포커싱
 			return;
 		}
 	    
+		const start_date = new Date($("input[name='trip_start_date']").val());
+		const end_date = new Date($("input[name='trip_end_date']").val());
+		
+		if(start_date > now || end_date > now) {
+			alert("출장기간은 현재 날짜보다 이전이어야 합니다!!");
+			return;
+		}
+		
+		if(start_date > end_date) {
+			alert("출장 출발일 설정에 오류가 있습니다!");
+			return;
+		}
+		
 	    // 출장정보 유효성검사
-	    if ($("#trip_purpose").val() == "" || $("#trip_start_date").val() == "" || $("#trip_end_date").val() == "" ||$("#trip_location").val() == "") {
-	    	swal("출장정보를 모두 입력하세요!");
+	    if ($("#trip_purpose").val() == "" || $("input[name='trip_start_date']").val() == "" ||
+	    	$("input[name='trip_end_date']").val() == "" ||$("#trip_location").val() == "") {
+	    	alert("출장정보를 모두 입력하세요!");
 			return;
 	    }
 	    
@@ -59,10 +74,8 @@ $(() => {
 
 	    if( draft_content == ""  || draft_content == null || draft_content == '&nbsp;' || draft_content == '<p>&nbsp;</p>')  {
 			obj.getById["draft_content"].exec("FOCUS"); //포커싱
-			swal("출장결과를 작성하세요!")
-			.then(function (result) {
-				obj.getById["draft_content"].exec("FOCUS"); //포커싱
-		      })
+			alert("출장결과를 작성하세요!");
+			obj.getById["draft_content"].exec("FOCUS"); //포커싱
 			return;
 	         
 	    }
@@ -70,7 +83,7 @@ $(() => {
 	    // 결재라인 유효성검사
 	    let aprvLineInfo = aprvTblBody.html();
 	    if (aprvLineInfo.indexOf('tr') == -1) {
-	    	swal("결재라인을 설정하세요!");
+	    	alert("결재라인을 설정하세요!");
  		return;
 	    }
 		
@@ -89,17 +102,16 @@ $(() => {
 
 	    if( draft_content == ""  || draft_content == null || draft_content == '&nbsp;' || draft_content == '<p>&nbsp;</p>')  {
 			obj.getById["draft_content"].exec("FOCUS"); //포커싱
-			swal("출장결과를 작성하세요!!")
-			.then(function (result) {
-				obj.getById["draft_content"].exec("FOCUS"); //포커싱
-		      })
+			alert("출장결과를 작성하세요!!");
+			obj.getById["draft_content"].exec("FOCUS"); //포커싱
 			return;
 	         
 	    }
 		
 	    // 출장정보 유효성검사
-	    if ($("#trip_purpose").val() == "" || $("#trip_start_date").val() == "" || $("#trip_end_date").val() == "" ||$("#trip_location").val() == "") {
-	    	swal("출장정보를 모두 입력하세요!");
+	    if ($("#trip_purpose").val() == "" || $("input[name='trip_start_date']").val() == "" ||
+	    	$("input[name='trip_end_date']").val() == "" ||$("#trip_location").val() == "") {
+	    	alert("출장정보를 모두 입력하세요!");
 			return;
 	    }
 	    
@@ -119,12 +131,9 @@ $(() => {
 		
 		// 드롭된 파일 리스트 가져오기
 		const files = Array.from(e.dataTransfer.files);
-		
-		if(files != null && files != undefined){
-		    let tag = "";
-		    
-	        let length = fileList.length;
 
+		if(files != null && files != undefined){
+		    
 		    for(i=0; i<files.length; i++){
 		        let f = files[i];
 
@@ -134,17 +143,21 @@ $(() => {
 		        let fileName = f.name;
 		        let fileSize = f.size / 1024 / 1024;
 		        fileSize = fileSize < 1 ? fileSize.toFixed(3) : fileSize.toFixed(1);
+		        
+		        console.log(fileSize);
+		        console.log(fileSize.substr(0,fileSize.indexOf('.')));
+		        
 		     	// 파일 정보 표시하기
-		        tag += 
-		                "<div class='fileList'>" +
-		                    "<span class='fileName'>" + fileName + "</span>" +
-		                    "<span class='fileSize'>" + fileSize +" MB</span>" +
-		                    "<span class='digitFileSize' style='display:none'>" + f.size + "</span>" +
-		                    "<span class='removeFile btn small name='removeFile'>삭제</span>" +
-		                "</div>";
+		     //   tag += 
+			    $(".dropBox").append("<div class='fileList'>" +
+	                    "<span class='fileName'>" + fileName + "</span>&nbsp;&nbsp;&nbsp;" +
+	                    "<span class='fileSize'>" + fileSize +" MB</span>" +
+	                    "<span class='digitFileSize' style='display:none;'>" + f.size + "</span>" +
+	                    "<span class='removeFile btn small' name='removeFile'>삭제</span>" +
+	                "</div>");
+			    
 		    }
-		    $(".dropBox span").hide();
-		    $(this).append(tag);
+		    $("span#a").hide();
 		    $(this).addClass('active');
 		}
 	}
@@ -170,9 +183,12 @@ $(() => {
 
 	// 파일 삭제 버튼 클릭시
 	$(document).on('click','[name=removeFile]', function(){
-   	 	const $this = $(this);
+
+		const $this = $(this);
    	 	delete_file_name = $this.parent().children('.fileName').text();
    	 	delete_file_size = $this.parent().children('.digitFileSize').text();
+   	 	
+   	 	$(this).parent().remove();
    	 	
    	 	for(let i = 0; i < fileList.length; i++) {
    	 		if(fileList[i].name = delete_file_name && delete_file_size == fileList[i].size )  {
@@ -181,11 +197,16 @@ $(() => {
    	 		    i--;
    	 		  }
    	 	}
-   	 $(this).parent().remove();
+   	 	
+   	 	
+   	 	if(fileList.length == 0) {
+   	 		$drop.classList.remove("active");
+   	 		$("span#a").show();
+   	 	}
    	 
 	});
 	
-});
+});// end of $(document).ready(function(){});
 
 //긴급 여부 체크
 const checkUrgent = () => {
@@ -194,7 +215,8 @@ const checkUrgent = () => {
 
 	if(urgent.prop("checked")){
 		urgent.val(1);
-	}else{
+	}
+	else{
 		urgent.val(0);
 	}
 	
@@ -232,13 +254,13 @@ const submitDraft = () => {
 		// 수신처 결재자 추가
 		recipientArr.forEach((el, i) => {
 			formData.append("avoList[" + (aprvLength + i)+ "].levelno", (aprvLength + i + 1));
-			formData.append("avoList[" + (aprvLength + i) + "].fk_approval_empno", el.empno);
-			formData.append("avoList[" + (aprvLength + i) + "].external", 1);
+			formData.append("avoList[" + (aprvLength + i) + "].fk_approval_empno", el.employee_id);
+			formData.append("avoList[" + (aprvLength + i) + "].outside", 1);
 		});
 	}
 	
 	 $.ajax({
-	     url : "<%=ctxPath%>/approval/addDraft.on",
+	     url : "<%=ctxPath%>/approval/addDraft.gw",
 	     data : formData,
 	     type:'POST',
 	     enctype:'multipart/form-data',
@@ -248,17 +270,15 @@ const submitDraft = () => {
 	     cache:false,
 	     success:function(json){
 	     	if(json.result == true) {
-	 	    	swal("등록 완료", "기안이 상신되었습니다.", "success")
-	 	    	.then((value) => {
-		    	    	location.href = "<%=ctxPath%>/approval/personal/sent.on";
-		    		});
+	 	    	alert("등록 완료\n기안이 상신되었습니다.")
+    	    	location.href = "<%=ctxPath%>/approval/personal/sent.gw";
 	     	}
 	     	else
-	     		swal("등록 실패", "등록에 실패하였습니다.", "error");
+	     		alert("등록 실패\n등록에 실패하였습니다.");
 	     },
 	     error: function(request, status, error){
 			alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-			}
+		}
 	 });
 	
 }
@@ -269,7 +289,7 @@ const saveTemp = () => {
 	let formData = new FormData($("#draftForm")[0]);
 	
 	$.ajax({
-		url : "<%=ctxPath%>/approval/saveDraft.on",
+		url : "<%=ctxPath%>/approval/saveDraft.gw",
 		data : formData,
 		type:'POST',
 		enctype:'multipart/form-data',
@@ -279,13 +299,13 @@ const saveTemp = () => {
 		cache:false,
 		success:function(json){
    	     	if(json.temp_draft_no != "" && json.temp_draft_no !== undefined) {
-   	     		swal("저장 완료", "임시저장 되었습니다.", "success")
-   	     		.then((value) => {
-   	 	    		$("input[name='temp_draft_no']").val(json.temp_draft_no); // 임시저장 번호 대입
- 	     		});
+   	     		alert("저장 완료\n임시저장 되었습니다.")
+ 	 	    	$("input[name='temp_draft_no']").val(json.temp_draft_no); // 임시저장 번호 대입
+   	     		location.href = "<%=ctxPath%>/approval/personal/saved.gw";
    	     	}
-	    	else
-	    		swal("저장 실패", "임시저장 실패하였습니다.", "error");
+	    	else {
+	    		alert("저장 실패\n임시저장 실패하였습니다.");
+	    	}
 	    },
 	    error: function(request, status, error){
 		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -298,7 +318,7 @@ const getMyApprovalLine = () => {
 	
 	$.ajax({
 		type: "GET",
-		url:"<%=ctxPath%>/approval/getSavedAprvLine.on",
+		url:"<%=ctxPath%>/approval/getSavedAprvLine.gw",
 		dataType:"json",
 		success : function(aprvLine){
 
@@ -339,13 +359,13 @@ const getApprovalEmpInfo = aprvLine => {
 	const selectedAprvLine = aprvLine.filter(el => el.aprv_line_no == selectedNo);
 	
 	if (selectedAprvLine.length == 0) {
-		swal("선택된 결재라인이 없습니다.");
+		alert("선택된 결재라인이 없습니다.");
 		return;
 	}
 	
 	$.ajax({
 		type: "GET",
-		url:"<%=ctxPath%>/approval/getSavedAprvEmpInfo.on",
+		url:"<%=ctxPath%>/approval/getSavedAprvEmpInfo.gw",
 		data: {"selectedAprvLine": JSON.stringify(selectedAprvLine)},
 		dataType:"json",
 		success : function(json){
@@ -356,10 +376,10 @@ const getApprovalEmpInfo = aprvLine => {
 
 				var html = "<tr>"
 			 			+ "<td class='levelno'>" + (index+1) + "</td>"
-						+ "<td class='department'>" + emp.department + "</td>"
-						+ "<td class='position'>" + emp.position + "</td>"
+						+ "<td class='department'>" + emp.department_name + "</td>"
+						+ "<td class='position'>" + emp.grade + "</td>"
 						+ "<input type='hidden' name='avoList[" + index + "].levelno' value='" + (index+1) + "'></td>"
-						+ "<input type='hidden' name='avoList[" + index + "].fk_approval_empno' value='" + emp.empno + "'></td>"
+						+ "<input type='hidden' name='avoList[" + index + "].fk_approval_empno' value='" + emp.employee_id + "'></td>"
 						+ "<input type='hidden' name='avoList[" + index + "].external' value='0'></td>"
 						+ "<td class='name'>" + emp.name + "</td></tr>";
 					
@@ -383,7 +403,7 @@ const selectApprovalLine = empno => {
 	const popupX = (window.screen.width / 2) - (popupWidth / 2);
 	const popupY= (window.screen.height / 2) - (popupHeight / 2);
 	
-	window.open('<%=ctxPath%>/approval/selectApprovalLine.on?type=personal','결재라인 선택','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
+	window.open('<%=ctxPath%>/approval/selectApprovalLine.gw?type=personal','결재라인 선택','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
 }	
 
 
@@ -435,7 +455,7 @@ const emptyApprovalLine = () => {
 		<div class="card-body text-center p-4">
 		<!-- 문서 작성  폼 -->
 		<form id="draftForm" enctype="multipart/form-data">
-			<input type='hidden' name='fk_draft_empno' value='${loginuser.empno}'/>
+			<input type='hidden' name='fk_draft_empno' value='${loginuser.employee_id}'/>
 			<input type='hidden' name='fk_draft_type_no' value='3'/>
 			<input type='hidden' name='temp_draft_no' value='${draftMap.dvo.draft_no}'/>
 			
@@ -449,7 +469,7 @@ const emptyApprovalLine = () => {
 					</tr>
 					<tr>
 						<th>소속</th>
-						<td>${loginuser.department}</td>
+						<td>${loginuser.department_name}</td>
 					</tr>
 					<tr>
 						<th>기안일</th>
@@ -486,7 +506,7 @@ const emptyApprovalLine = () => {
 					    	<td>${emp.levelno}
 					    	<input type='hidden' name='avoList[${sts.index}].levelno' value='${emp.levelno}'/>
 					    	<input type='hidden' name='avoList[${sts.index}].fk_approval_empno' value='${emp.fk_approval_empno}'/>
-					    	<input type='hidden' name='avoList[${sts.index}].external' value='0'>
+					    	<input type='hidden' name='avoList[${sts.index}].outside' value='0'>
 					    	</td>
 					    	<td>${emp.department}</td>
 					    	<td>${emp.position}</td>
@@ -504,7 +524,7 @@ const emptyApprovalLine = () => {
 			</script>
 
 			<!-- 수신처 -->
-			<c:if test="${recipientArr != '[]'}">
+			<c:if test="${recipientArr != 'null'}">
 			<div class='recipientLineInfo' style='width: 60%'>
 				<h5 class='my-4' style='display: inline-block; float: left'>수신처</h5>
 				<table class='mr-4 table table-sm table-bordered text-left' id='recipient'>
@@ -522,17 +542,22 @@ const emptyApprovalLine = () => {
 			    <script>
 			    	const recipientTblBody = $('#recipientTblBody');
 			    	// 수신처 결재라인을 테이블에 표시함
-			    	recipientArr.forEach((emp, index) => {
-
-			    		var html = "<tr>"
-			    	 			+ "<td class='levelno'>" + (index + 1) + "</td>"
-			    				+ "<td class='department'>" + emp.department + "</td>"
-			    				+ "<td class='position'>" + emp.position + "</td>"
-			    				+ "<td class='name'>" + emp.name + "</td></tr>";
-			    			
-	    				recipientTblBody.append(html);
-			    		
-			    	});
+			    	
+			    	if(${requestScope.recipientArr} != 'null') {
+			    	
+				    	recipientArr.forEach((emp, index) => {
+	
+				    		var html = "<tr>"
+				    	 			+ "<td class='levelno'>" + (index + 1) + "</td>"
+				    				+ "<td class='department'>" + emp.department_name + "</td>"
+				    				+ "<td class='position'>" + emp.grade + "</td>"
+				    				+ "<td class='name'>" + emp.name + "</td></tr>";
+				    			
+		    				recipientTblBody.append(html);
+				    		
+				    	});
+			    	
+			    	}
 			    </script>
 			</div>
 			</c:if>
@@ -574,7 +599,7 @@ const emptyApprovalLine = () => {
 			<!-- 파일첨부 -->
 			<div class="filebox">
 				<div class="dropBox mt-2">
-					<span style='font-size: small'>이곳에 파일을 드롭해주세요.</span>
+					<span id="a" style='font-size: small'>이곳에 파일을 드롭해주세요.</span>
 				</div>
 			</div>
 			<!-- 결재의견 및 긴급여부 체크 모달 -->
@@ -593,7 +618,7 @@ const emptyApprovalLine = () => {
 								<h6 class='text-secondary'>기안의견</h6>
 								<textarea name="draft_comment" placeholder="기안의견을 입력해주세요(선택)" style='width: 100%; min-height: 150px'></textarea>
 								<h6 class='text-secondary mt-4'>긴급문서</h6>
-								<input type="checkbox" id='urgent_status' name='urgent_status'/><label for='urgentDraft'>긴급(결재자의 대기문서 가장 상단에 표시됩니다.)</label>
+								<input type="checkbox" id='urgent_status' name='urgent_status'/><label for='urgent_status'>긴급(결재자의 대기문서 가장 상단에 표시됩니다.)</label>
 							</div>
 			
 							<!-- Modal footer -->

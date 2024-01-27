@@ -3,6 +3,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <% String ctxPath=request.getContextPath(); %>
 <style>
+
 a {
 	color: black;
 }
@@ -19,12 +20,12 @@ a:hover {
 
 .approveThis {
 	text-align: center;
-	background-color: #E3F2FD;
+	background-color: #E0F8EB;
 }
 
 .activeBtn {
 	color: white;
-	background-color: #086BDE;
+	background-color: #03c75a;
 	cursor: pointer;
 }
 
@@ -32,42 +33,22 @@ a:hover {
 	font-size: small;
 }
 
-.floating { 
-    animation-name: floating;
-    animation-duration: 1s;
-    animation-iteration-count: infinite;
-    animation-timing-function: ease-in-out;
-    cursor: pointer;
+.card-deck:hover {
+	cursor: pointer;
 }
- 
-@keyframes floating {
-	0% {
-		box-shadow: 0 3px 10px 0px #e6e6e6;
-		transform: translateY(0);
-	}
-	50% {
-		box-shadow: 0 3px 10px 0px #e6e6e6;
-		transform: translateY(-15px);
-	}
-	100% {
-		box-shadow: 0 3px 10px 0px #e6e6e6;
-		transform: translateY(0);
-	}
-}
+
 </style>	
 
 <script>
 
 $(document).ready(function(){
 	// 사이드바 메뉴 글씨색 변경
-	$('a#home').css('color','#086BDE');
+	$('a#home').css('color','#03c75a');
 	
-	// 결재대기문서 카드에 hover시 카드 띄우는 효과
+	// 결재대기문서 카드에 hover시 색상 변경
 	$('div.card').hover(function() {
-        $(this).addClass('floating');
         $(this).find('.approveThis').addClass('activeBtn');
     }, function() {
-        $(this).removeClass('floating');
         $(this).find('.approveThis').removeClass('activeBtn');
     });
 
@@ -83,7 +64,7 @@ $(document).ready(function(){
 	<c:if test="${sessionScope.loginuser.gradelevel != 1}">
 	<div class='listContainer'>
 		<h5 class='mb-3'>결재 대기 문서</h5>
-		<h6 class='mb-3'>결재해야 할 문서가 <span style='color:#086BDE'>${requestedDraftCnt}</span>건 있습니다.</h6>
+		<h6 class='mb-3'>결재해야 할 문서가 <span style='color:#03c75a'>${requestedDraftCnt}</span>건 있습니다.</h6>
 		
 		<div class='card-deck'>
 			<c:if test="${not empty requestedDraftList}">
@@ -110,7 +91,7 @@ $(document).ready(function(){
 	</c:if>
 	<div class='listContainer'>
 		<h5 class='mb-3'>기안 진행 문서</h5>
-		<h6 class='mb-3'>진행 중인 문서가 <span style='color:#086BDE'>${fn:length(processingDraftList)}</span>건 있습니다.</h6>
+		<h6 class='mb-3'>진행 중인 문서가 <span style='color:#03c75a'>${fn:length(processingDraftList)}</span>건 있습니다.</h6>
 		<table class="table">
 			<thead>
 				<tr class='row'>

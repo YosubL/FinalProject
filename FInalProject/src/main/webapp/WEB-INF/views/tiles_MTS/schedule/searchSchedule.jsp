@@ -187,7 +187,7 @@
 				
 					<div class="searchDiv2">
 						<span class="searchSubject">달력분류</span>
-						<select id="fk_lgcatgono" name="fk_lgcatgono" style="height: 30px; width: 500px;">
+						<select id="fk_lgcatgono" name="fk_lgcatgono" style="height: 30px; width: 700px;">
 							<option value="">모든 캘린더</option>
 							<option value="1">개인 캘린더</option>
 							<option value="2">회사 캘린더</option>
@@ -197,7 +197,7 @@
 					
 					<div class="searchDiv2">
 						<span class="searchSubject">검색분류</span>
-						<select id="searchType" name="searchType" style="height: 30px; width: 500px;">
+						<select id="searchType" name="searchType" style="height: 30px; width: 700px;">
 							<option value="">검색대상선택</option>
 							<option value="subject">제목</option>
 							<option value="content">내용</option>
@@ -207,28 +207,30 @@
 					
 					<div class="searchDiv2">
 						<span class="searchSubject">검색단어</span>
-						<input type="text" id="searchWord" value="${requestScope.searchWord}" style="height: 30px; width:290px;" name="searchWord"/> 
+						<input type="text" id="searchWord" value="${requestScope.searchWord}" style="height: 30px; width:420px;" name="searchWord"/> 
 						&nbsp;&nbsp;
 						
-						<select id="sizePerPage" name="sizePerPage" style="height: 30px;">
+						<select id="sizePerPage" name="sizePerPage" style="height: 30px; width:150px;">
 							<option value="">보여줄개수</option>
 							<option value="10">10</option>
 							<option value="15">15</option>
 							<option value="20">20</option>
 						</select>&nbsp;&nbsp;
-						<button type="button" class="btn_normal" style="display: inline-block; width:80px; background-color:rgb(3,199,90); font-weight:bold;" onclick="goSearch()">검색</button>
+						<button type="button" class="btn_normal" style="display: inline-block; width:100px; background-color:rgb(3,199,90); font-weight:bold;" onclick="goSearch()">검색</button>
 					</div>
 					
 					<div class="searchDiv2">
 						<span class="searchSubject">검색기간</span>
-					<i class="fa-solid fa-calendar-days fa-lg " style="margin-right:10px;" ></i><input type="text" id="fromDate" name="startdate" style="width: 200px;" readonly="readonly">&nbsp;&nbsp; 
-	  ---&nbsp;&nbsp; <i class="fa-solid fa-calendar-days fa-lg " style="margin-right:10px;" ></i><input type="text" id="toDate" name="enddate" style="width: 200px;" readonly="readonly">&nbsp;&nbsp;
+					<i class="fa-solid fa-calendar-days fa-lg " style="margin-right:10px;" ></i><input type="text" id="fromDate" name="startdate" style="width: 300px;" readonly="readonly">&nbsp;&nbsp; 
+	  				<i class="fa-solid fa-minus "></i>&nbsp;&nbsp;
+	  				<i class="fa-solid fa-calendar-days fa-lg " style="margin-right:10px;" ></i><input type="text" id="toDate" name="enddate" style="width: 300px;" readonly="readonly">&nbsp;&nbsp;
 	            	</div>
 	            	
 					<input type="hidden" name="fk_employee_id" value="${sessionScope.loginuser.employee_id}"/>
 					<input type="hidden" name="fk_department_id" value="${sessionScope.loginuser.fk_department_id}"/>
 					<input type="hidden" name="fk_email" value="${sessionScope.loginuser.email}"/>
 					</form>
+					
 				</div>
 			
 		</div>
@@ -260,10 +262,10 @@
 					<tr class="infoSchedule">
 						<td style="display: none;" class="scheduleno">${map.SCHEDULENO}</td>
 						<td>${map.STARTDATE} - ${map.ENDDATE}</td>
-						<td>${map.LGCATGONAME} - ${map.SMCATGONAME}</td>
-						<td>${map.NAME}</td>  <%-- 캘린더 작성자명 --%>
-						<td>${map.SUBJECT}</td>
-						<td>${map.CONTENT}</td>
+						<td style="padding-left:30px;">${map.LGCATGONAME} - ${map.SMCATGONAME}</td>
+						<td style="padding-left:30px;">${map.NAME}</td>  <%-- 캘린더 작성자명 --%>
+						<td style="padding-left:30px;">${map.SUBJECT}</td>
+						<td style="padding-left:30px;">${map.CONTENT}</td>
 					</tr>
 				</c:forEach>
 			</c:if>

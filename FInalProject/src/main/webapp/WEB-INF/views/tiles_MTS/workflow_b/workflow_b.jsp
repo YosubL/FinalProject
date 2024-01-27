@@ -439,10 +439,10 @@
 	    
 	    alert("굿");
 	    
-<%-- 	frm.method = "POST";
+ 		frm.method = "POST";
 		frm.action = "<%= ctxPath%>/invitation_email.gw";
-   		frm.action = "<%= ctxPath%>/welcome_mail.gw";
-        frm.submit();   --%>
+<%--    		frm.action = "<%= ctxPath%>/welcome_mail.gw"; --%>
+        frm.submit();   
 
 	}
 	

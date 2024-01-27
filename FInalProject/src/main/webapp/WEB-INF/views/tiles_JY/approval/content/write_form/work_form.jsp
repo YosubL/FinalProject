@@ -4,11 +4,7 @@
 
 <link rel = "stylesheet" href = "<%=ctxPath%>/resources/css/draft_form_style.css">
 
-<%-- sweet alert --%>
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-
 <script>
-
 
 //수신처 배열
 const recipientArr = JSON.parse('${recipientArr}');
@@ -47,10 +43,8 @@ $(() => {
 		// 글제목 유효성 검사
 		const draft_subject = $("input#draft_subject").val().trim();
 		if(draft_subject == "") {
-			swal("글제목을 입력하세요!")
-			.then(function (result) {
-				document.getElementById("draft_subject").focus(); //포커싱
-		      })
+			alert("글제목을 입력하세요!")
+			document.getElementById("draft_subject").focus(); //포커싱
 			return;
 		}
 		
@@ -59,10 +53,8 @@ $(() => {
 
 	    if( draft_content == ""  || draft_content == null || draft_content == '&nbsp;' || draft_content == '<p>&nbsp;</p>')  {
 			obj.getById["draft_content"].exec("FOCUS"); //포커싱
-			swal("글내용을 입력하세요!")
-			.then(function (result) {
-				obj.getById["draft_content"].exec("FOCUS"); //포커싱
-		      })
+			alert("글내용을 입력하세요!")
+			obj.getById["draft_content"].exec("FOCUS"); //포커싱
 			return;
 	         
 	    }
@@ -70,7 +62,7 @@ $(() => {
 	    // 결재라인 유효성검사
 	    let aprvLineInfo = aprvTblBody.html();
 	    if (aprvLineInfo.indexOf('tr') == -1) {
-	    	swal("결재라인을 설정하세요!");
+	    	alert("결재라인을 설정하세요!");
     		return;
 	    }
 		
@@ -89,10 +81,8 @@ $(() => {
 	    var draft_content = $("#draft_content").val();
 
 	    if( draft_content == ""  || draft_content == null || draft_content == '&nbsp;' || draft_content == '<p>&nbsp;</p>')  {
-			swal("글내용을 입력하세요!")
-			.then(function (result) {
-				obj.getById["draft_content"].exec("FOCUS"); //포커싱
-		      })
+			alert("글내용을 입력하세요!")
+			obj.getById["draft_content"].exec("FOCUS"); //포커싱
 			return;
 	    }
 		
@@ -103,7 +93,6 @@ $(() => {
 	/* 파일 드래그 & 드롭 */
 	// 파일 드롭 영역
 	const $drop = document.querySelector(".dropBox");
-	const fileList = $(".fileList").toArray();
 	
 	// 드래그한 파일 객체가 해당 영역에 놓였을 때
 	$drop.ondrop = function(e) {
@@ -125,6 +114,9 @@ $(() => {
 		        let fileSize = f.size / 1024 / 1024;
 		        fileSize = fileSize < 1 ? fileSize.toFixed(3) : fileSize.toFixed(1);
 		        
+		        console.log(fileSize);
+		        console.log(fileSize.substr(0,fileSize.indexOf('.')));
+		        
 		     	// 파일 정보 표시하기
 		     //   tag += 
 			    $(".dropBox").append("<div class='fileList'>" +
@@ -137,7 +129,6 @@ $(() => {
 		    }
 		    $("span#a").hide();
 		    $(this).addClass('active');
-		    
 		}
 	}
 
@@ -168,8 +159,6 @@ $(() => {
    	 	delete_file_size = $this.parent().children('.digitFileSize').text();
    	 	
    	 	$(this).parent().remove();
-   	 	
-		console.log(fileList);
    	 	
    	 	for(let i = 0; i < fileList.length; i++) {
    	 		if(fileList[i].name = delete_file_name && delete_file_size == fileList[i].size )  {
@@ -214,13 +203,14 @@ const checkUrgent = () => {
 }
 
 // 첨부파일 가져오기
+//첨부파일 가져오기
 const getFiles = formData => {
 
-    if(fileList.length > 0){
-        fileList.forEach(function(f){
-            formData.append("fileList", f);
-        });
-    }
+	if(fileList.length > 0){
+	    fileList.forEach(function(f){
+	        formData.append("fileList", f);
+	    });
+	}
 }
 
 /* 폼 제출하기 */
@@ -259,13 +249,12 @@ const submitDraft = () => {
         cache:false,
         success:function(json){
         	if(json.result == true) {
-    	    	swal("등록 완료", "기안이 상신되었습니다.", "success")
-    	    	.then((value) => {
-	    	    	location.href = "<%=ctxPath%>/approval/personal/sent.gw";
-   	    		});
+    	    	alert("등록 완료\n기안이 상신되었습니다.")
+    	    	location.href = "<%=ctxPath%>/approval/personal/sent.gw";
         	}
-        	else
-        		swal("등록 실패", "등록에 실패하였습니다.", "error");
+        	else {
+        		alert("등록 실패\n등록에 실패하였습니다.");
+        	}
         },
         error: function(request, status, error){
 		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -290,14 +279,12 @@ const saveTemp = () => {
         cache:false,
         success:function(json){
    	     	if(json.temp_draft_no != "" && json.temp_draft_no !== undefined) {
-   	     		swal("저장 완료", "임시저장 되었습니다.", "success")
-   	     		.then((value) => {
-   	 	    		$("input[name='temp_draft_no']").val(json.temp_draft_no); // 임시저장 번호 대입
-   	 	    		location.href = "<%=ctxPath%>/approval/personal/saved.gw";
-   	     		});
-        	}
-        	else
-        		swal("저장 실패", "임시저장 실패하였습니다.", "error");
+   	     		alert("저장 완료\n임시저장 되었습니다.")
+ 	    		$("input[name='temp_draft_no']").val(json.temp_draft_no); // 임시저장 번호 대입
+ 	    		location.href = "<%=ctxPath%>/approval/personal/saved.gw";
+       		} else {
+       			alert("저장 실패\n임시저장 실패하였습니다.");
+       		}
         },
         error: function(request, status, error){
 		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -352,7 +339,7 @@ const getApprovalEmpInfo = aprvLine => {
 	const selectedAprvLine = aprvLine.filter(el => el.aprv_line_no == selectedNo);
 	
 	if (selectedAprvLine.length == 0) {
-		swal("선택된 결재라인이 없습니다.");
+		alert("선택된 결재라인이 없습니다.");
 		return;
 	}
 	
@@ -368,8 +355,8 @@ const getApprovalEmpInfo = aprvLine => {
 
 				var html = "<tr>"
 			 			+ "<td class='levelno'>" + (index+1) + "</td>"
-						+ "<td class='department'>" + emp.fk_department_id + "</td>"
-						+ "<td class='position'>" + emp.gradelevel + "</td>"
+						+ "<td class='department'>" + emp.department_name + "</td>"
+						+ "<td class='position'>" + emp.grade + "</td>"
 						+ "<input type='hidden' name='avoList[" + index + "].levelno' value='" + (index+1) + "'></td>"
 						+ "<input type='hidden' name='avoList[" + index + "].fk_approval_empno' value='" + emp.employee_id + "'></td>"
 						+ "<input type='hidden' name='avoList[" + index + "].external' value='0'></td>"
@@ -466,7 +453,7 @@ const emptyApprovalLine = () => {
 						</tr>
 						<tr>
 							<th>소속</th>
-							<td>${loginuser.fk_department_id}</td>
+							<td>${loginuser.department_name}</td>
 						</tr>
 						<tr>
 							<th>기안일</th>
@@ -606,7 +593,7 @@ const emptyApprovalLine = () => {
 	
 				<div style="margin: 20px;">
 					<button type="button" class="btn btn-secondary " onclick="javascript:history.back()">취소</button>
-					<button type="button" class="btn btn-primary mr-3" id="writeBtn">확인</button>
+					<button type="button" class="btn mr-3" id="writeBtn">확인</button>
 				</div>
 			</form>
 		</div>

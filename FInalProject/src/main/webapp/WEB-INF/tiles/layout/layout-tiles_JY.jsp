@@ -85,26 +85,18 @@
 .badge {
 	vertical-align: middle;
 }
+
 .row{
-   max-height: 1000px;
-   overflow-y: auto;
+	max-height: 1000px;
+	overflow-y: auto;
 }
-
-
 </style>
 	
 </head>
 <body>
 
 <div id="mycontainer">
-		<div class="row" style="width:97%; float:right;">
-		 <div class="col col-2 container" id="mySide">
-			<tiles:insertAttribute name="side" />
-		 </div>
-		 <div class="col m-5 pl-0 pr-4" id="myContent">
-			<tiles:insertAttribute name="content" />
-		 </div>
-	  </div>
+
       <div id="myheader">
          <tiles:insertAttribute name="header" />
       </div>
@@ -113,7 +105,14 @@
          <tiles:insertAttribute name="sideinfo" />
       </div>
       
-      
+      <div class="row">
+		 <div class="col col-2 container" id="mySide">
+			<tiles:insertAttribute name="side" />
+		 </div>
+		 <div class="col m-5 pl-0 pr-4" id="myContent">
+			<tiles:insertAttribute name="content" />
+		 </div>
+	  </div>
       
    </div>
 

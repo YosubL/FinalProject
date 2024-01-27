@@ -3,9 +3,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <% String ctxPath = request.getContextPath(); %>
 
-<%-- sweet alert --%>
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-
 <link rel = "stylesheet" href = "<%=ctxPath%>/resources/css/draft_detail_style.css">
 
 <script>
@@ -100,23 +97,16 @@ const updateApproval = approval_status => {
         cache:false,
         success:function(json){
         	if(json.result == true) {
-	    		// 소켓
-           	//	if(socket){
-           			let result = '결재';
-           			if (approval_status == 2) {
-           				result = '반려';
-           			}
-        	//		let socketMsg = "전자결재,"+ "${draftMap.dvo.fk_draft_empno}," + "${loginuser.name} 님이 나의 기안 [${draftMap.dvo.draft_subject}] 을 <b>" + result + "</b>하였습니다.," + "<%=ctxPath%>/approval/draftDetail.gw?draft_no=${draftMap.dvo.draft_no}&fk_draft_type_no=${draftMap.dvo.fk_draft_type_no}";
-        	//		console.log(socketMsg);
-        	//		socket.send(socketMsg);
-           	//	}
-    	    	swal("처리 완료", "기안을 처리하였습니다.", "success")
-    	    	.then((value) => {
-    	    		location.href = "<%=ctxPath%>/approval/draftDetail.gw?draft_no=${draftMap.dvo.draft_no}&fk_draft_type_no=${draftMap.dvo.fk_draft_type_no}";
-   	    		});
+				let result = '결재';
+				if (approval_status == 2) {
+           			result = '반려';
+           		}
+    	    	alert("처리 완료", "기안을 처리하였습니다.", "success")
+   	    		location.href = "<%=ctxPath%>/approval/draftDetail.gw?draft_no=${draftMap.dvo.draft_no}&fk_draft_type_no=${draftMap.dvo.fk_draft_type_no}";
         	}
-        	else
-        		swal("처리 실패", "처리에 실패하였습니다.", "error");
+        	else {
+        		alert("처리 실패", "처리에 실패하였습니다.", "error");
+        	}
         },
         error: function(request, status, error){
 		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -152,19 +142,12 @@ const updateApprovalProxy = () => {
         cache:false,
         success:function(json){
         	if(json.result == true) {
-	    		// 소켓
-           		if(socket){
-        			let socketMsg = "전자결재,"+ "${draftMap.dvo.fk_draft_empno}," + "${loginuser.name} 님이 나의 기안 [${draftMap.dvo.draft_subject}] 을 <b>대결</b>하였습니다.," + "<%=ctxPath%>/approval/draftDetail.gw?draft_no=${draftMap.dvo.draft_no}&fk_draft_type_no=${draftMap.dvo.fk_draft_type_no}";
-        			console.log(socketMsg);
-        			socket.send(socketMsg);
-           		}
-    	    	swal("대결 완료", "기안을 대결 처리하였습니다.", "success")
-    	    	.then((value) => {
-	    	    	location.href = "<%=ctxPath%>/approval/draftDetail.gw?draft_no=${draftMap.dvo.draft_no}&fk_draft_type_no=${draftMap.dvo.fk_draft_type_no}";
-   	    		});
+    	    	alert("대결 완료", "기안을 대결 처리하였습니다.", "success")
+    	    	location.href = "<%=ctxPath%>/approval/draftDetail.gw?draft_no=${draftMap.dvo.draft_no}&fk_draft_type_no=${draftMap.dvo.fk_draft_type_no}";
         	}
-        	else
-        		swal("대결 실패", "대결 처리 실패하였습니다.", "error");
+        	else {
+        		alert("대결 실패", "대결 처리 실패하였습니다.", "error");
+        	}
         },
         error: function(request, status, error){
 		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -254,14 +237,16 @@ const cancelDraft = () => {
 				
 				let html = "";
 				internalList.forEach(el => {
-					html = "<td>" + el.position + "</td>";
+					html = "<td>" + el.grade + "</td>";
 					$("tr.in.position").append(html);
 					
 					let approval_status = "";
-					if (el.approval_status == 1)
+					if (el.approval_status == 1) {
 						approval_status = "<img src='<%=ctxPath%>/resources/images/sign/"+el.signimg+"' width='100'/>";
-					else if (el.approval_status == 2) 
+					}
+					else if (el.approval_status == 2) {
 						approval_status = "<h3 class='text-danger'>반려</h3>";
+					} 
 
 					html = "<td>"+approval_status+"</td>";					
 					$("tr.in.approval_status").append(html);
@@ -296,14 +281,16 @@ const cancelDraft = () => {
 			<script>
 				html = "";
 				externalList.forEach(el => {
-					html = "<td>" + el.position + "</td>";
+					html = "<td>" + el.grade + "</td>";
 					$("tr.ex.position").append(html);
 					
 					let approval_status = "";
-					if (el.approval_status == 1)
-						approval_status = "<img src='<%=ctxPath%>/resources/images/"+el.signimg+"' width='100'/>";
-					else if (el.approval_status == 2) 
+					if (el.approval_status == 1) {
+						approval_status = "<img src='<%=ctxPath%>/resources/images/sign/"+el.signimg+"' width='100'/>";
+					}
+					else if (el.approval_status == 2) {
 						approval_status = "<h3 class='text-danger'>반려</h3>";
+					} 
 
 					html = "<td>"+approval_status+"</td>";					
 					$("tr.ex.approval_status").append(html);
@@ -364,7 +351,7 @@ const cancelDraft = () => {
 					<table class='commentTable'>
 					<c:if test="${not empty draftMap.dvo.draft_comment}">
 						<tr>
-							<%-- <c:if test="${empty draftMap.dvo.empimg}">
+							<c:if test="${empty draftMap.dvo.empimg}">
 								<td class='profile' rowspan='2'>
 									<div class="profile_css" id="profile_bg" style="display: inline-block;">
 										${fn:substring(draftMap.dvo.draft_emp_name,0,1)}
@@ -372,8 +359,8 @@ const cancelDraft = () => {
 								</td>
 							</c:if>
 							<c:if test="${not empty draftMap.dvo.empimg}">
-								<td class='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/profile/${draftMap.dvo.empimg}' width="100" height="100"/></td>
-							</c:if> --%>
+								<td class='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/empImg/${draftMap.dvo.empimg}' width="100" height="100"/></td>
+							</c:if>
 							<td style='text-align:left'><h6>${draftMap.dvo.draft_emp_name}&nbsp;${draftMap.dvo.position}</h6></td>
 							<td id='date'><span style='color: #b3b3b3'>${draftMap.dvo.draft_date}</span></td>
 						</tr>
@@ -406,9 +393,9 @@ const cancelDraft = () => {
 									</td>
 								</c:if>
 								<c:if test="${not empty avo.empimg}">
-									<td class='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/profile/${avo.empimg}' width="100" height="100"/></td>
+									<td class='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/empImg/${avo.empimg}' width="100" height="100"/></td>
 								</c:if>
-								<td><h6>${avo.name}&nbsp;${avo.position}</h6></td>
+								<td><h6>${avo.name}&nbsp;${avo.grade}</h6></td>
 								<td id='date'><span style='color: #b3b3b3'>${avo.approval_date}</span></td>
 							</tr>
 							<tr>
@@ -427,7 +414,7 @@ const cancelDraft = () => {
 					<form id="approvalFrm">
 						<table class='commentTable mt-4' id='myComment'>
 							<tr>
-								<td id='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/profile/${loginuser.photo}' width="100" /></td>
+								<td id='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/empImg/${loginuser.photo}' width="100" /></td>
 								<td rowspan='2'><input type='text' id='approval_comment' name='approval_comment' placeholder='결재의견을 입력해주세요(선택)' style='width: 70%'/></td>
 							</tr>
 						</table>

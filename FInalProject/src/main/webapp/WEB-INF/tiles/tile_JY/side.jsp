@@ -3,9 +3,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <style>
 #goWriteBtn:hover{
-	border: 1px solid #086BDE;
+	border: 1px solid #03C75A;
 	color: white;
-	background-color: #086BDE;
+	background-color: #03C75A;
+}
+
+/* 색상 변경 */
+.formChoice {
+  accent-color: green;
 }
 
 .topMenu:hover {
@@ -13,13 +18,13 @@
 }
 
 #okBtn {
-	background-color: #086BDE;
+	background-color: #03C75A;
 	color: white;
 }
 
 #okBtn:hover {
-	background-color: #E3F2FD;
-	color: #086BDE;
+	background-color: #E0F8EB;
+	color: #03C75A;
 }
 
 .modal-body > div {
@@ -28,7 +33,7 @@
 
 label:hover {
 	cursor: pointer;
-	background-color: #E3F2FD;
+	background-color: #E0F8EB;
 }
 </style>
 
@@ -83,19 +88,23 @@ function goWriteForm() {
     <li class="nav-item topMenu">결재하기
     	<ul class='subMenus processingMenu'>
      		<li><a id="requestedList" class="nav-link" href="<%=ctxPath%>/approval/requested.gw">결재 대기 문서</a></li>
-     		<li><a id="upcomingList" class="nav-link" href="<%=ctxPath%>/approval/upcoming.gw">결재 예정 문서</a></li>     	
+     		<c:if test="${sessionScope.loginuser.gradelevel > 3}">
+     		<li><a id="upcomingList" class="nav-link" href="<%=ctxPath%>/approval/upcoming.gw">결재 예정 문서</a></li>
+     		</c:if>     	
   		</ul>
     </li>
     </c:if>
     <li style="margin-top: 7px;" class="nav-item topMenu">개인 문서함
 		<ul class='subMenus personalMenu'>
      		<li><a id="sentList" class="nav-link" href="<%=ctxPath%>/approval/personal/sent.gw">상신함</a></li>
+     		<c:if test="${sessionScope.loginuser.gradelevel != 1}">
      		<li><a id="processedList" class="nav-link" href="<%=ctxPath%>/approval/personal/processed.gw">결재함</a></li>
+     		</c:if>
      		<li><a id="savedList" class="nav-link" href="<%=ctxPath%>/approval/personal/saved.gw">임시저장함</a></li>
      	</ul>
     </li>
     <li class="nav-item">
-		<a id="teamList" class="nav-link" href="<%=ctxPath%>/approval/team.gw">팀 문서함</a>
+		<a id="teamList" class="nav-link" href="<%=ctxPath%>/approval/department.gw">부서 문서함</a>
     </li>
     <li class="nav-item topMenu">환경설정
       	<ul class='subMenus configMenu'>
@@ -103,7 +112,7 @@ function goWriteForm() {
       		<li><a id="signature" class="nav-link" href="<%=ctxPath%>/approval/config/signature.gw">서명 관리</a></li>
       	</ul>
     </li>
-	<c:if test="${loginuser != null && loginuser.gradelevel > 3}">
+	<c:if test="${loginuser != null && loginuser.gradelevel > 3 && loginuser.fk_department_id == '200'}">
     <li style="margin-top: 7px;" class="nav-item topMenu">관리자메뉴
       	<ul class='subMenus adminMenu'>
       		<li style="margin-top: 7px;"><a id="officialApprovalLine" class="nav-link" href="<%=ctxPath%>/approval/admin/officialApprovalLine.gw">공통 결재라인 설정</a></li>
