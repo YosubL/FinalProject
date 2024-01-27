@@ -65,9 +65,7 @@ public class DocumentService_imple implements DocumentService {
 		String fileName = paraMap.get("fileName");
 		
 		n2 = fileManager.doFileDeleteYS(fileName, path);
-		
-		
-		
+
 		return n1*n2;
 	}
 	
