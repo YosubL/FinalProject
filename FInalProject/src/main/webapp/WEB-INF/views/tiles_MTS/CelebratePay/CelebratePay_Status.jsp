@@ -101,7 +101,7 @@
     }
     
     #name{
-		margin-left:825px;
+    	margin-left:630px;
 		width:140px;
 	}
 </style>

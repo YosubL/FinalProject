@@ -84,7 +84,7 @@
     }
     
     #name{
-		margin-left:681px;
+		margin-left:490px;
 		width:140px;
 	}
 </style>
